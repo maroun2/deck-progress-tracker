@@ -7,13 +7,8 @@ export default {
   input: 'src/index.tsx',
   output: {
     file: 'dist/index.js',
-    format: 'iife',
-    name: 'GameProgressTracker',
-    globals: {
-      react: 'SP_REACT',
-      'react-dom': 'SP_REACTDOM',
-      'decky-frontend-lib': 'DFL'
-    }
+    format: 'esm',
+    exports: 'default'
   },
   plugins: [
     resolve({
@@ -29,5 +24,5 @@ export default {
       preventAssignment: true
     })
   ],
-  external: ['react', 'react-dom', 'decky-frontend-lib', '@decky/ui', '@decky/api']
+  external: ['react', 'react-dom', '@decky/ui', '@decky/api']
 };
