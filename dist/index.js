@@ -1,11 +1,34 @@
-import { staticClasses } from '@decky/ui';
-import { definePlugin } from '@decky/api';
-import React, { useState, useEffect } from 'react';
+const manifest = {"name":"Game Progress Tracker","author":"Maron","flags":["_root"],"publish":{"tags":["library","achievements","statistics","enhancement"],"description":"Automatic game tagging based on achievements, playtime, and completion time. Track your progress with visual badges in the Steam library.","image":"https://opengraph.githubassets.com/1/SteamDeckHomebrew/decky-loader"}};
+const API_VERSION = 2;
+if (!manifest?.name) {
+    throw new Error('[@decky/api]: Failed to find plugin manifest.');
+}
+const internalAPIConnection = window.__DECKY_SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED_deckyLoaderAPIInit;
+if (!internalAPIConnection) {
+    throw new Error('[@decky/api]: Failed to connect to the loader as as the loader API was not initialized. This is likely a bug in Decky Loader.');
+}
+let api;
+try {
+    api = internalAPIConnection.connect(API_VERSION, manifest.name);
+}
+catch {
+    api = internalAPIConnection.connect(1, manifest.name);
+    console.warn(`[@decky/api] Requested API version ${API_VERSION} but the running loader only supports version 1. Some features may not work.`);
+}
+if (api._version != API_VERSION) {
+    console.warn(`[@decky/api] Requested API version ${API_VERSION} but the running loader only supports version ${api._version}. Some features may not work.`);
+}
+const definePlugin = (fn) => {
+    return (...args) => {
+        return fn(...args);
+    };
+};
 
 /**
  * GameTag Component
  * Displays a colored badge for game tags
  */
+
 const TAG_STYLES = {
     completed: {
         background: 'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)',
@@ -48,20 +71,21 @@ const GameTag = ({ tag, onClick }) => {
         transition: 'transform 0.2s ease',
         ...(onClick ? { transform: 'scale(1)' } : {})
     };
-    return (React.createElement("div", { onClick: onClick, style: containerStyle, title: tag.is_manual ? 'Manual tag - Click to edit' : 'Automatic tag - Click to edit' },
-        React.createElement("span", null, style.label),
-        tag.is_manual && (React.createElement("span", { style: { fontSize: '12px', opacity: 0.8 } }, "\u270E"))));
+    return (SP_REACT.createElement("div", { onClick: onClick, style: containerStyle, title: tag.is_manual ? 'Manual tag - Click to edit' : 'Automatic tag - Click to edit' },
+        SP_REACT.createElement("span", null, style.label),
+        tag.is_manual && (SP_REACT.createElement("span", { style: { fontSize: '12px', opacity: 0.8 } }, "\u270E"))));
 };
 
 /**
  * TagManager Component
  * Modal for managing game tags manually
  */
+
 const TagManager = ({ serverAPI, appid, onClose }) => {
-    const [details, setDetails] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-    useEffect(() => {
+    const [details, setDetails] = SP_REACT.useState(null);
+    const [loading, setLoading] = SP_REACT.useState(true);
+    const [error, setError] = SP_REACT.useState(null);
+    SP_REACT.useEffect(() => {
         fetchDetails();
     }, [appid]);
     const fetchDetails = async () => {
@@ -119,68 +143,68 @@ const TagManager = ({ serverAPI, appid, onClose }) => {
         }
     };
     if (loading) {
-        return (React.createElement("div", { style: styles$1.modal },
-            React.createElement("div", { style: styles$1.content },
-                React.createElement("div", { style: styles$1.loading }, "Loading..."))));
+        return (SP_REACT.createElement("div", { style: styles$1.modal },
+            SP_REACT.createElement("div", { style: styles$1.content },
+                SP_REACT.createElement("div", { style: styles$1.loading }, "Loading..."))));
     }
     if (error || !details || !details.success) {
-        return (React.createElement("div", { style: styles$1.modal },
-            React.createElement("div", { style: styles$1.content },
-                React.createElement("div", { style: styles$1.error }, error || 'Failed to load game details'),
-                React.createElement("button", { onClick: onClose, style: styles$1.button }, "Close"))));
+        return (SP_REACT.createElement("div", { style: styles$1.modal },
+            SP_REACT.createElement("div", { style: styles$1.content },
+                SP_REACT.createElement("div", { style: styles$1.error }, error || 'Failed to load game details'),
+                SP_REACT.createElement("button", { onClick: onClose, style: styles$1.button }, "Close"))));
     }
     const stats = details.stats;
     const tag = details.tag;
     const hltb = details.hltb_data;
-    return (React.createElement("div", { style: styles$1.modal, onClick: onClose },
-        React.createElement("div", { style: styles$1.content, onClick: (e) => e.stopPropagation() },
-            React.createElement("h2", { style: styles$1.title },
+    return (SP_REACT.createElement("div", { style: styles$1.modal, onClick: onClose },
+        SP_REACT.createElement("div", { style: styles$1.content, onClick: (e) => e.stopPropagation() },
+            SP_REACT.createElement("h2", { style: styles$1.title },
                 "Manage Tags: ",
                 stats?.game_name || `Game ${appid}`),
-            React.createElement("div", { style: styles$1.section },
-                React.createElement("h3", { style: styles$1.sectionTitle }, "Game Statistics"),
-                stats && (React.createElement(React.Fragment, null,
-                    React.createElement("div", { style: styles$1.statRow },
-                        React.createElement("span", null, "Playtime:"),
-                        React.createElement("span", null,
+            SP_REACT.createElement("div", { style: styles$1.section },
+                SP_REACT.createElement("h3", { style: styles$1.sectionTitle }, "Game Statistics"),
+                stats && (SP_REACT.createElement(SP_REACT.Fragment, null,
+                    SP_REACT.createElement("div", { style: styles$1.statRow },
+                        SP_REACT.createElement("span", null, "Playtime:"),
+                        SP_REACT.createElement("span", null,
                             Math.floor(stats.playtime_minutes / 60),
                             "h ",
                             stats.playtime_minutes % 60,
                             "m")),
-                    React.createElement("div", { style: styles$1.statRow },
-                        React.createElement("span", null, "Achievements:"),
-                        React.createElement("span", null,
+                    SP_REACT.createElement("div", { style: styles$1.statRow },
+                        SP_REACT.createElement("span", null, "Achievements:"),
+                        SP_REACT.createElement("span", null,
                             stats.unlocked_achievements,
                             "/",
                             stats.total_achievements)))),
-                hltb && (React.createElement(React.Fragment, null,
-                    React.createElement("div", { style: styles$1.statRow },
-                        React.createElement("span", null, "HLTB Match:"),
-                        React.createElement("span", null,
+                hltb && (SP_REACT.createElement(SP_REACT.Fragment, null,
+                    SP_REACT.createElement("div", { style: styles$1.statRow },
+                        SP_REACT.createElement("span", null, "HLTB Match:"),
+                        SP_REACT.createElement("span", null,
                             hltb.matched_name,
                             " (",
                             (hltb.similarity * 100).toFixed(0),
                             "%)")),
-                    hltb.main_extra && (React.createElement("div", { style: styles$1.statRow },
-                        React.createElement("span", null, "Main+Extra:"),
-                        React.createElement("span", null,
+                    hltb.main_extra && (SP_REACT.createElement("div", { style: styles$1.statRow },
+                        SP_REACT.createElement("span", null, "Main+Extra:"),
+                        SP_REACT.createElement("span", null,
                             hltb.main_extra,
                             "h")))))),
-            React.createElement("div", { style: styles$1.section },
-                React.createElement("h3", { style: styles$1.sectionTitle }, "Current Tag"),
-                React.createElement("div", { style: styles$1.statRow }, tag?.tag ? (React.createElement("span", null,
+            SP_REACT.createElement("div", { style: styles$1.section },
+                SP_REACT.createElement("h3", { style: styles$1.sectionTitle }, "Current Tag"),
+                SP_REACT.createElement("div", { style: styles$1.statRow }, tag?.tag ? (SP_REACT.createElement("span", null,
                     tag.tag.replace('_', ' ').toUpperCase(),
-                    tag.is_manual ? ' (Manual)' : ' (Automatic)')) : (React.createElement("span", null, "No tag assigned")))),
-            React.createElement("div", { style: styles$1.section },
-                React.createElement("h3", { style: styles$1.sectionTitle }, "Set Tag"),
-                React.createElement("div", { style: styles$1.buttonGroup },
-                    React.createElement("button", { onClick: () => setTag('completed'), style: styles$1.tagButton }, "Completed"),
-                    React.createElement("button", { onClick: () => setTag('in_progress'), style: styles$1.tagButton }, "In Progress"),
-                    React.createElement("button", { onClick: () => setTag('mastered'), style: styles$1.tagButton }, "Mastered")),
-                React.createElement("div", { style: styles$1.buttonGroup },
-                    React.createElement("button", { onClick: resetToAuto, style: styles$1.secondaryButton }, "Reset to Automatic"),
-                    React.createElement("button", { onClick: removeTag, style: styles$1.secondaryButton }, "Remove Tag"))),
-            React.createElement("button", { onClick: onClose, style: styles$1.closeButton }, "Close"))));
+                    tag.is_manual ? ' (Manual)' : ' (Automatic)')) : (SP_REACT.createElement("span", null, "No tag assigned")))),
+            SP_REACT.createElement("div", { style: styles$1.section },
+                SP_REACT.createElement("h3", { style: styles$1.sectionTitle }, "Set Tag"),
+                SP_REACT.createElement("div", { style: styles$1.buttonGroup },
+                    SP_REACT.createElement("button", { onClick: () => setTag('completed'), style: styles$1.tagButton }, "Completed"),
+                    SP_REACT.createElement("button", { onClick: () => setTag('in_progress'), style: styles$1.tagButton }, "In Progress"),
+                    SP_REACT.createElement("button", { onClick: () => setTag('mastered'), style: styles$1.tagButton }, "Mastered")),
+                SP_REACT.createElement("div", { style: styles$1.buttonGroup },
+                    SP_REACT.createElement("button", { onClick: resetToAuto, style: styles$1.secondaryButton }, "Reset to Automatic"),
+                    SP_REACT.createElement("button", { onClick: removeTag, style: styles$1.secondaryButton }, "Remove Tag"))),
+            SP_REACT.createElement("button", { onClick: onClose, style: styles$1.closeButton }, "Close"))));
 };
 const styles$1 = {
     modal: {
@@ -296,18 +320,19 @@ const styles$1 = {
  * Settings Component
  * Plugin settings and configuration panel
  */
+
 const Settings = ({ serverAPI }) => {
-    const [settings, setSettings] = useState({
+    const [settings, setSettings] = SP_REACT.useState({
         auto_tag_enabled: true,
         mastered_multiplier: 1.5,
         in_progress_threshold: 60,
         cache_ttl: 7200
     });
-    const [stats, setStats] = useState(null);
-    const [loading, setLoading] = useState(false);
-    const [syncing, setSyncing] = useState(false);
-    const [message, setMessage] = useState(null);
-    useEffect(() => {
+    const [stats, setStats] = SP_REACT.useState(null);
+    const [loading, setLoading] = SP_REACT.useState(false);
+    const [syncing, setSyncing] = SP_REACT.useState(false);
+    const [message, setMessage] = SP_REACT.useState(null);
+    SP_REACT.useEffect(() => {
         loadSettings();
         loadStats();
     }, []);
@@ -388,57 +413,57 @@ const Settings = ({ serverAPI }) => {
         setMessage(msg);
         setTimeout(() => setMessage(null), 5000);
     };
-    return (React.createElement("div", { style: styles.container },
-        React.createElement("h2", { style: styles.title }, "Game Progress Tracker"),
-        message && (React.createElement("div", { style: styles.message }, message)),
-        stats && (React.createElement("div", { style: styles.section },
-            React.createElement("h3", { style: styles.sectionTitle }, "Library Statistics"),
-            React.createElement("div", { style: styles.statGrid },
-                React.createElement("div", { style: styles.statCard },
-                    React.createElement("div", { style: styles.statValue }, stats.completed),
-                    React.createElement("div", { style: styles.statLabel }, "Completed")),
-                React.createElement("div", { style: styles.statCard },
-                    React.createElement("div", { style: styles.statValue }, stats.in_progress),
-                    React.createElement("div", { style: styles.statLabel }, "In Progress")),
-                React.createElement("div", { style: styles.statCard },
-                    React.createElement("div", { style: styles.statValue }, stats.mastered),
-                    React.createElement("div", { style: styles.statLabel }, "Mastered")),
-                React.createElement("div", { style: styles.statCard },
-                    React.createElement("div", { style: styles.statValue }, stats.total),
-                    React.createElement("div", { style: styles.statLabel }, "Total Tagged"))))),
-        React.createElement("div", { style: styles.section },
-            React.createElement("h3", { style: styles.sectionTitle }, "Automatic Tagging"),
-            React.createElement("div", { style: styles.settingRow },
-                React.createElement("label", { style: styles.label },
-                    React.createElement("input", { type: "checkbox", checked: settings.auto_tag_enabled, onChange: (e) => updateSetting('auto_tag_enabled', e.target.checked), style: styles.checkbox }),
+    return (SP_REACT.createElement("div", { style: styles.container },
+        SP_REACT.createElement("h2", { style: styles.title }, "Game Progress Tracker"),
+        message && (SP_REACT.createElement("div", { style: styles.message }, message)),
+        stats && (SP_REACT.createElement("div", { style: styles.section },
+            SP_REACT.createElement("h3", { style: styles.sectionTitle }, "Library Statistics"),
+            SP_REACT.createElement("div", { style: styles.statGrid },
+                SP_REACT.createElement("div", { style: styles.statCard },
+                    SP_REACT.createElement("div", { style: styles.statValue }, stats.completed),
+                    SP_REACT.createElement("div", { style: styles.statLabel }, "Completed")),
+                SP_REACT.createElement("div", { style: styles.statCard },
+                    SP_REACT.createElement("div", { style: styles.statValue }, stats.in_progress),
+                    SP_REACT.createElement("div", { style: styles.statLabel }, "In Progress")),
+                SP_REACT.createElement("div", { style: styles.statCard },
+                    SP_REACT.createElement("div", { style: styles.statValue }, stats.mastered),
+                    SP_REACT.createElement("div", { style: styles.statLabel }, "Mastered")),
+                SP_REACT.createElement("div", { style: styles.statCard },
+                    SP_REACT.createElement("div", { style: styles.statValue }, stats.total),
+                    SP_REACT.createElement("div", { style: styles.statLabel }, "Total Tagged"))))),
+        SP_REACT.createElement("div", { style: styles.section },
+            SP_REACT.createElement("h3", { style: styles.sectionTitle }, "Automatic Tagging"),
+            SP_REACT.createElement("div", { style: styles.settingRow },
+                SP_REACT.createElement("label", { style: styles.label },
+                    SP_REACT.createElement("input", { type: "checkbox", checked: settings.auto_tag_enabled, onChange: (e) => updateSetting('auto_tag_enabled', e.target.checked), style: styles.checkbox }),
                     "Enable Auto-Tagging"))),
-        React.createElement("div", { style: styles.section },
-            React.createElement("h3", { style: styles.sectionTitle }, "Tag Thresholds"),
-            React.createElement("div", { style: styles.settingRow },
-                React.createElement("label", { style: styles.label },
+        SP_REACT.createElement("div", { style: styles.section },
+            SP_REACT.createElement("h3", { style: styles.sectionTitle }, "Tag Thresholds"),
+            SP_REACT.createElement("div", { style: styles.settingRow },
+                SP_REACT.createElement("label", { style: styles.label },
                     "Mastered Multiplier: ",
                     settings.mastered_multiplier,
                     "x"),
-                React.createElement("input", { type: "range", min: "1.0", max: "3.0", step: "0.1", value: settings.mastered_multiplier, onChange: (e) => updateSetting('mastered_multiplier', parseFloat(e.target.value)), style: styles.slider }),
-                React.createElement("div", { style: styles.hint }, "Playtime must be this many times the HLTB completion time")),
-            React.createElement("div", { style: styles.settingRow },
-                React.createElement("label", { style: styles.label },
+                SP_REACT.createElement("input", { type: "range", min: "1.0", max: "3.0", step: "0.1", value: settings.mastered_multiplier, onChange: (e) => updateSetting('mastered_multiplier', parseFloat(e.target.value)), style: styles.slider }),
+                SP_REACT.createElement("div", { style: styles.hint }, "Playtime must be this many times the HLTB completion time")),
+            SP_REACT.createElement("div", { style: styles.settingRow },
+                SP_REACT.createElement("label", { style: styles.label },
                     "In Progress Threshold: ",
                     settings.in_progress_threshold,
                     " minutes"),
-                React.createElement("input", { type: "range", min: "15", max: "300", step: "15", value: settings.in_progress_threshold, onChange: (e) => updateSetting('in_progress_threshold', parseInt(e.target.value)), style: styles.slider }),
-                React.createElement("div", { style: styles.hint }, "Minimum playtime to mark as In Progress"))),
-        React.createElement("div", { style: styles.section },
-            React.createElement("h3", { style: styles.sectionTitle }, "Data Management"),
-            React.createElement("button", { onClick: syncLibrary, disabled: syncing || loading, style: syncing ? styles.buttonDisabled : styles.button }, syncing ? 'Syncing...' : 'Sync Entire Library'),
-            React.createElement("button", { onClick: refreshCache, disabled: syncing || loading, style: styles.buttonSecondary }, "Refresh HLTB Cache"),
-            React.createElement("div", { style: styles.hint }, "Sync may take several minutes for large libraries")),
-        React.createElement("div", { style: styles.section },
-            React.createElement("h3", { style: styles.sectionTitle }, "About"),
-            React.createElement("div", { style: styles.about },
-                React.createElement("p", null, "Game Progress Tracker v1.0.0"),
-                React.createElement("p", null, "Automatic game tagging based on achievements, playtime, and completion time."),
-                React.createElement("p", { style: styles.smallText }, "Data from HowLongToBeat \u2022 Steam achievement system")))));
+                SP_REACT.createElement("input", { type: "range", min: "15", max: "300", step: "15", value: settings.in_progress_threshold, onChange: (e) => updateSetting('in_progress_threshold', parseInt(e.target.value)), style: styles.slider }),
+                SP_REACT.createElement("div", { style: styles.hint }, "Minimum playtime to mark as In Progress"))),
+        SP_REACT.createElement("div", { style: styles.section },
+            SP_REACT.createElement("h3", { style: styles.sectionTitle }, "Data Management"),
+            SP_REACT.createElement("button", { onClick: syncLibrary, disabled: syncing || loading, style: syncing ? styles.buttonDisabled : styles.button }, syncing ? 'Syncing...' : 'Sync Entire Library'),
+            SP_REACT.createElement("button", { onClick: refreshCache, disabled: syncing || loading, style: styles.buttonSecondary }, "Refresh HLTB Cache"),
+            SP_REACT.createElement("div", { style: styles.hint }, "Sync may take several minutes for large libraries")),
+        SP_REACT.createElement("div", { style: styles.section },
+            SP_REACT.createElement("h3", { style: styles.sectionTitle }, "About"),
+            SP_REACT.createElement("div", { style: styles.about },
+                SP_REACT.createElement("p", null, "Game Progress Tracker v1.0.0"),
+                SP_REACT.createElement("p", null, "Automatic game tagging based on achievements, playtime, and completion time."),
+                SP_REACT.createElement("p", { style: styles.smallText }, "Data from HowLongToBeat \u2022 Steam achievement system")))));
 };
 const styles = {
     container: {
@@ -562,11 +587,12 @@ const styles = {
 /**
  * React hook for managing game tags
  */
+
 function useGameTag(serverAPI, appid) {
-    const [tag, setTag] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-    useEffect(() => {
+    const [tag, setTag] = SP_REACT.useState(null);
+    const [loading, setLoading] = SP_REACT.useState(true);
+    const [error, setError] = SP_REACT.useState(null);
+    SP_REACT.useEffect(() => {
         fetchTag();
     }, [appid]);
     const fetchTag = async () => {
@@ -669,13 +695,13 @@ function extractAppId(path) {
  */
 const GamePageOverlay = ({ serverAPI, appid }) => {
     const { tag, loading } = useGameTag(serverAPI, appid);
-    const [showManager, setShowManager] = useState(false);
+    const [showManager, setShowManager] = SP_REACT.useState(false);
     if (loading || !tag) {
         return null;
     }
-    return (React.createElement(React.Fragment, null,
-        React.createElement(GameTag, { tag: tag, onClick: () => setShowManager(true) }),
-        showManager && (React.createElement(TagManager, { serverAPI: serverAPI, appid: appid, onClose: () => setShowManager(false) }))));
+    return (SP_REACT.createElement(SP_REACT.Fragment, null,
+        SP_REACT.createElement(GameTag, { tag: tag, onClick: () => setShowManager(true) }),
+        showManager && (SP_REACT.createElement(TagManager, { serverAPI: serverAPI, appid: appid, onClose: () => setShowManager(false) }))));
 };
 /**
  * Main Plugin Definition
@@ -686,18 +712,18 @@ var index = definePlugin((serverAPI) => {
     gamePagePatch = serverAPI.routerHook.addPatch('/library/app/:appId', (props) => {
         const appid = extractAppId(props.path);
         if (appid) {
-            return (React.createElement(React.Fragment, null,
+            return (SP_REACT.createElement(SP_REACT.Fragment, null,
                 props.children,
-                React.createElement(GamePageOverlay, { serverAPI: serverAPI, appid: appid })));
+                SP_REACT.createElement(GamePageOverlay, { serverAPI: serverAPI, appid: appid })));
         }
         return props.children;
     });
     return {
         name: 'Game Progress Tracker',
-        titleView: React.createElement("div", { className: staticClasses.Title }, "Game Progress Tracker"),
-        content: React.createElement(Settings, { serverAPI: serverAPI }),
-        icon: (React.createElement("svg", { xmlns: "http://www.w3.org/2000/svg", viewBox: "0 0 24 24", fill: "currentColor", width: "24", height: "24" },
-            React.createElement("path", { d: "M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5zm0 18c-3.87 0-7-3.13-7-7V8.3l7-3.11 7 3.11V13c0 3.87-3.13 7-7 7zm-1-5h2v2h-2v-2zm0-8h2v6h-2V7z" }))),
+        titleView: SP_REACT.createElement("div", { className: DFL.staticClasses.Title }, "Game Progress Tracker"),
+        content: SP_REACT.createElement(Settings, { serverAPI: serverAPI }),
+        icon: (SP_REACT.createElement("svg", { xmlns: "http://www.w3.org/2000/svg", viewBox: "0 0 24 24", fill: "currentColor", width: "24", height: "24" },
+            SP_REACT.createElement("path", { d: "M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5zm0 18c-3.87 0-7-3.13-7-7V8.3l7-3.11 7 3.11V13c0 3.87-3.13 7-7 7zm-1-5h2v2h-2v-2zm0-8h2v6h-2V7z" }))),
         onDismount() {
             // Clean up patches when plugin is unloaded
             serverAPI.routerHook.removePatch(gamePagePatch);
@@ -706,3 +732,4 @@ var index = definePlugin((serverAPI) => {
 });
 
 export { index as default };
+//# sourceMappingURL=index.js.map
