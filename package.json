@@ -7,14 +7,20 @@
     "watch": "rollup -c -w",
     "test": "jest"
   },
-  "keywords": ["decky", "steam-deck", "gaming", "achievements"],
+  "keywords": [
+    "decky",
+    "steam-deck",
+    "gaming",
+    "achievements"
+  ],
   "author": "Maron",
   "license": "MIT",
   "dependencies": {
-    "@decky/ui": "^4.6.2",
-    "@decky/api": "^1.1.2"
+    "@decky/api": "^1.1.2",
+    "@decky/ui": "^4.6.2"
   },
   "devDependencies": {
+    "@decky/rollup": "^1.0.2",
     "@rollup/plugin-commonjs": "^21.0.0",
     "@rollup/plugin-node-resolve": "^13.0.6",
     "@rollup/plugin-replace": "^3.0.0",
@@ -27,7 +33,10 @@
   },
   "pnpm": {
     "peerDependencyRules": {
-      "ignoreMissing": ["react", "react-dom"]
+      "ignoreMissing": [
+        "react",
+        "react-dom"
+      ]
     }
   }
 }
