@@ -8,14 +8,8 @@ export default {
   input: './src/index.tsx',
   output: {
     file: 'dist/index.js',
-    format: 'iife',
-    name: 'PluginExport',
-    globals: {
-      react: 'SP_REACT',
-      'react-dom': 'SP_REACTDOM',
-      '@decky/ui': 'DFL',
-      '@decky/api': 'DeckyAPI'
-    }
+    format: 'cjs',
+    exports: 'default'
   },
   plugins: [
     typescript(),

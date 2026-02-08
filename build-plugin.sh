@@ -12,6 +12,14 @@ VERSION=${1:-"dev"}
 
 echo "Building version: $VERSION"
 
+# Update version in package.json if not "dev"
+if [ "$VERSION" != "dev" ]; then
+    echo "Updating package.json version to $VERSION..."
+    VERSION_NUM=$(echo $VERSION | sed 's/^v//')
+    sed -i.bak "s/\"version\": \".*\"/\"version\": \"$VERSION_NUM\"/" package.json
+    rm package.json.bak 2>/dev/null || true
+fi
+
 # Clean previous builds
 echo "Cleaning previous builds..."
 rm -rf plugin-build
