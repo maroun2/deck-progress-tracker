@@ -12,12 +12,23 @@ VERSION=${1:-"dev"}
 
 echo "Building version: $VERSION"
 
-# Update version in package.json if not "dev"
+# Update version in package.json and plugin.json if not "dev"
 if [ "$VERSION" != "dev" ]; then
-    echo "Updating package.json version to $VERSION..."
+    echo "Updating versions to $VERSION..."
     VERSION_NUM=$(echo $VERSION | sed 's/^v//')
+
+    # Update package.json
     sed -i.bak "s/\"version\": \".*\"/\"version\": \"$VERSION_NUM\"/" package.json
     rm package.json.bak 2>/dev/null || true
+
+    # Update or add version to plugin.json
+    if grep -q '"version"' plugin.json; then
+        sed -i.bak "s/\"version\": \".*\"/\"version\": \"$VERSION_NUM\"/" plugin.json
+    else
+        # Add version after author field
+        sed -i.bak "s/\"author\": \".*\"/&,\n  \"version\": \"$VERSION_NUM\"/" plugin.json
+    fi
+    rm plugin.json.bak 2>/dev/null || true
 fi
 
 # Clean previous builds
