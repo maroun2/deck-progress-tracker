@@ -19,6 +19,7 @@ PY_MODULES_PATH = Path(decky.DECKY_PLUGIN_DIR) / "py_modules"
 sys.path.append(str(PY_MODULES_PATH))
 
 logger = decky.logger
+logger.info("=== Game Progress Tracker v1.0.27 starting ===")
 logger.info(f"Plugin dir: {decky.DECKY_PLUGIN_DIR}")
 logger.info(f"py_modules path: {PY_MODULES_PATH}")
 logger.info(f"py_modules exists: {PY_MODULES_PATH.exists()}")
