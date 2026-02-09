@@ -7,19 +7,22 @@ Decky Loader plugin for automatic game tagging
 import os
 import sys
 import asyncio
+from pathlib import Path
 from typing import Optional, Dict, Any, List
 
 # Import decky to get plugin directory path
 import decky
 
-# Add plugin directory and py_modules to path
-# This pattern is used by other working Decky plugins
-# See: https://github.com/wheaney/decky-XRGaming/blob/main/main.py
-# See: https://github.com/CameronRedmore/memory-deck/blob/main/main.py
-sys.path.insert(1, decky.DECKY_PLUGIN_DIR)
-sys.path.insert(1, os.path.join(decky.DECKY_PLUGIN_DIR, "py_modules"))
+# Add py_modules to path BEFORE importing custom modules
+# Pattern from: https://github.com/marissa999/decky-recorder/main/main.py
+PY_MODULES_PATH = Path(decky.DECKY_PLUGIN_DIR) / "py_modules"
+sys.path.append(str(PY_MODULES_PATH))
 
 logger = decky.logger
+logger.info(f"Plugin dir: {decky.DECKY_PLUGIN_DIR}")
+logger.info(f"py_modules path: {PY_MODULES_PATH}")
+logger.info(f"py_modules exists: {PY_MODULES_PATH.exists()}")
+logger.info(f"sys.path: {sys.path}")
 
 # Now import backend modules (py_modules is in sys.path)
 from database import Database
