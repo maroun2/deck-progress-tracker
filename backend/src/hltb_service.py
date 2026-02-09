@@ -5,10 +5,16 @@ Fetches game completion times from HowLongToBeat using standard library only
 
 import asyncio
 import json
+import ssl
 import urllib.request
 import urllib.parse
 from typing import Optional, Dict, Any, List
 from difflib import SequenceMatcher
+
+# Create SSL context that doesn't verify certificates (Steam Deck may have cert issues)
+SSL_CONTEXT = ssl.create_default_context()
+SSL_CONTEXT.check_hostname = False
+SSL_CONTEXT.verify_mode = ssl.CERT_NONE
 
 # Use Decky's built-in logger
 import decky
@@ -66,7 +72,7 @@ class HLTBService:
                 method='POST'
             )
 
-            with urllib.request.urlopen(req, timeout=10) as response:
+            with urllib.request.urlopen(req, timeout=10, context=SSL_CONTEXT) as response:
                 result = json.loads(response.read().decode('utf-8'))
 
             games = result.get("data", [])

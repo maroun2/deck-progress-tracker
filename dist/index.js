@@ -1,4 +1,4 @@
-const manifest = {"name":"Game Progress Tracker","author":"Maron","version":"1.0.32","flags":["_root"],"publish":{"tags":["library","achievements","statistics","enhancement"],"description":"Automatic game tagging based on achievements, playtime, and completion time. Track your progress with visual badges in the Steam library.","image":"https://opengraph.githubassets.com/1/SteamDeckHomebrew/decky-loader"}};
+const manifest = {"name":"Game Progress Tracker","author":"Maron","version":"1.0.43","flags":["_root"],"publish":{"tags":["library","achievements","statistics","enhancement"],"description":"Automatic game tagging based on achievements, playtime, and completion time. Track your progress with visual badges in the Steam library.","image":"https://opengraph.githubassets.com/1/SteamDeckHomebrew/decky-loader"}};
 const API_VERSION = 2;
 if (!manifest?.name) {
     throw new Error('[@decky/api]: Failed to find plugin manifest.');
@@ -362,10 +362,13 @@ const Settings = () => {
         }
     };
     const syncLibrary = async () => {
+        console.log('[GameProgressTracker] syncLibrary button clicked');
         try {
             setSyncing(true);
             setMessage('Syncing library... This may take several minutes.');
+            console.log('[GameProgressTracker] Calling backend sync_library...');
             const result = await call('sync_library');
+            console.log('[GameProgressTracker] sync_library result:', result);
             if (result.success) {
                 showMessage(`Sync complete! ${result.synced}/${result.total} games synced. ` +
                     (result.errors ? `${result.errors} errors.` : ''));
@@ -376,7 +379,7 @@ const Settings = () => {
             }
         }
         catch (err) {
-            console.error('Error syncing library:', err);
+            console.error('[GameProgressTracker] Error syncing library:', err);
             showMessage(`Sync error: ${err?.message || 'Unknown error'}`);
         }
         finally {
@@ -451,7 +454,7 @@ const Settings = () => {
             SP_REACT.createElement("div", { style: styles.about },
                 SP_REACT.createElement("p", null,
                     "Game Progress Tracker v",
-                    "1.0.32"),
+                    "1.0.43"),
                 SP_REACT.createElement("p", null, "Automatic game tagging based on achievements, playtime, and completion time."),
                 SP_REACT.createElement("p", { style: styles.smallText }, "Data from HowLongToBeat \u2022 Steam achievement system")))));
 };
