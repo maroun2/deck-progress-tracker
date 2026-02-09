@@ -18,7 +18,7 @@ PLUGIN_DIR = Path(decky.DECKY_PLUGIN_DIR)
 BACKEND_SRC = PLUGIN_DIR / "backend" / "src"
 
 logger = decky.logger
-logger.info("=== Game Progress Tracker v1.0.37 starting ===")
+logger.info("=== Game Progress Tracker v1.0.38 starting ===")
 logger.info(f"Plugin dir: {PLUGIN_DIR}")
 logger.info(f"Backend src: {BACKEND_SRC} exists={BACKEND_SRC.exists()}")
 
@@ -223,11 +223,13 @@ class Plugin:
     async def sync_library(self) -> Dict[str, Any]:
         """Bulk sync entire library"""
         try:
-            logger.info("Starting library sync...")
+            logger.info("=== sync_library called ===")
 
             # Get all games from Steam
+            logger.info("Fetching games from Steam...")
             games = await self.steam_service.get_all_games()
             total = len(games)
+            logger.info(f"Found {total} games in Steam library")
 
             if total == 0:
                 return {
@@ -275,6 +277,8 @@ class Plugin:
 
         except Exception as e:
             logger.error(f"Library sync failed: {e}")
+            import traceback
+            logger.error(traceback.format_exc())
             return {"success": False, "error": str(e)}
 
     async def refresh_hltb_cache(self) -> Dict[str, Any]:
