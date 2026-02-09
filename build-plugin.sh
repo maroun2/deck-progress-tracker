@@ -52,24 +52,19 @@ fi
 
 # Create plugin directory structure
 echo "Creating plugin directory structure..."
-mkdir -p plugin-build/game-progress-tracker
-
-# Copy backend source files - Decky extracts backend/src/
-echo "Copying backend source files..."
 mkdir -p plugin-build/game-progress-tracker/backend/src
+
+# Copy backend source files
+echo "Copying backend source files..."
 cp backend/src/database.py plugin-build/game-progress-tracker/backend/src/
 cp backend/src/steam_data.py plugin-build/game-progress-tracker/backend/src/
 cp backend/src/hltb_service.py plugin-build/game-progress-tracker/backend/src/
 cp backend/src/__init__.py plugin-build/game-progress-tracker/backend/src/
 cp backend/__init__.py plugin-build/game-progress-tracker/backend/
 
-# Also create py_modules/ at root for dependencies (extractall should extract this)
-echo "Setting up py_modules for Python dependencies..."
-mkdir -p plugin-build/game-progress-tracker/py_modules
-
-# Install Python dependencies into py_modules/
-echo "Installing Python dependencies..."
-pip3 install --target=plugin-build/game-progress-tracker/py_modules \
+# Install ALL Python dependencies directly into backend/src/
+echo "Installing Python dependencies into backend/src/..."
+pip3 install --target=plugin-build/game-progress-tracker/backend/src \
     aiosqlite \
     vdf \
     howlongtobeatpy \
@@ -77,11 +72,11 @@ pip3 install --target=plugin-build/game-progress-tracker/py_modules \
 
 # Remove any compiled .so files that won't work on Steam Deck
 echo "Cleaning incompatible compiled files..."
-find plugin-build/game-progress-tracker/py_modules -name "*.so" -delete 2>/dev/null || true
-find plugin-build/game-progress-tracker/py_modules -name "*.dylib" -delete 2>/dev/null || true
+find plugin-build/game-progress-tracker/backend/src -name "*.so" -delete 2>/dev/null || true
+find plugin-build/game-progress-tracker/backend/src -name "*.dylib" -delete 2>/dev/null || true
 
 # Remove __pycache__ directories to reduce size
-find plugin-build/game-progress-tracker/py_modules -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true
+find plugin-build/game-progress-tracker/backend/src -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true
 
 # Copy required files
 echo "Copying plugin files..."
