@@ -54,6 +54,15 @@ fi
 echo "Creating plugin directory structure..."
 mkdir -p plugin-build/game-progress-tracker
 
+# Install Python dependencies into py_modules
+echo "Installing Python dependencies..."
+mkdir -p plugin-build/game-progress-tracker/py_modules
+pip3 install --target=plugin-build/game-progress-tracker/py_modules \
+    aiosqlite>=0.17.0 \
+    howlongtobeatpy>=1.0.20 \
+    vdf>=3.4 \
+    --quiet
+
 # Copy required files
 echo "Copying plugin files..."
 cp -r dist plugin-build/game-progress-tracker/
