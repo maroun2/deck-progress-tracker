@@ -22,12 +22,38 @@ logger = decky.logger
 logger.info(f"Plugin dir: {decky.DECKY_PLUGIN_DIR}")
 logger.info(f"py_modules path: {PY_MODULES_PATH}")
 logger.info(f"py_modules exists: {PY_MODULES_PATH.exists()}")
+
+# List contents of plugin directory to see what was actually extracted
+plugin_path = Path(decky.DECKY_PLUGIN_DIR)
+if plugin_path.exists():
+    contents = list(plugin_path.iterdir())
+    logger.info(f"Plugin directory contents: {[c.name for c in contents]}")
+    for item in contents:
+        if item.is_dir():
+            try:
+                sub_contents = list(item.iterdir())[:5]  # First 5 items
+                logger.info(f"  {item.name}/ contains: {[c.name for c in sub_contents]}")
+            except:
+                pass
+
 logger.info(f"sys.path: {sys.path}")
 
 # Now import backend modules (py_modules is in sys.path)
-from database import Database
-from steam_data import SteamDataService
-from hltb_service import HLTBService
+try:
+    from database import Database
+    from steam_data import SteamDataService
+    from hltb_service import HLTBService
+except ImportError as e:
+    logger.error(f"Import failed: {e}")
+    # Create dummy classes so plugin can at least load
+    class Database:
+        def __init__(self, *args): pass
+        async def init_database(self): pass
+        async def close(self): pass
+    class SteamDataService:
+        def __init__(self): pass
+    class HLTBService:
+        def __init__(self): pass
 
 
 class Plugin:
