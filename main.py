@@ -13,27 +13,19 @@ from typing import Optional, Dict, Any, List
 # Import decky to get plugin directory path
 import decky
 
-# Setup paths
+# Setup paths - everything is in backend/src/
 PLUGIN_DIR = Path(decky.DECKY_PLUGIN_DIR)
-PY_MODULES = PLUGIN_DIR / "py_modules"
 BACKEND_SRC = PLUGIN_DIR / "backend" / "src"
 
 logger = decky.logger
-logger.info("=== Game Progress Tracker v1.0.34 starting ===")
+logger.info("=== Game Progress Tracker v1.0.35 starting ===")
 logger.info(f"Plugin dir: {PLUGIN_DIR}")
+logger.info(f"Backend src: {BACKEND_SRC} exists={BACKEND_SRC.exists()}")
 
-# Try multiple possible paths for dependencies
-paths_to_try = [
-    PY_MODULES,
-    BACKEND_SRC,
-    PLUGIN_DIR / "defaults" / "py_modules",
-]
-
-for path in paths_to_try:
-    logger.info(f"Checking path: {path} exists={path.exists()}")
-    if path.exists() and str(path) not in sys.path:
-        sys.path.insert(0, str(path))
-        logger.info(f"Added to sys.path: {path}")
+# Add backend/src to path - all modules and dependencies are there
+if BACKEND_SRC.exists() and str(BACKEND_SRC) not in sys.path:
+    sys.path.insert(0, str(BACKEND_SRC))
+    logger.info(f"Added to sys.path: {BACKEND_SRC}")
 
 # List contents of plugin directory to see what was actually extracted
 if PLUGIN_DIR.exists():
