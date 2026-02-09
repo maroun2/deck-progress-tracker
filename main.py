@@ -13,8 +13,12 @@ from typing import Optional, Dict, Any, List
 import decky
 logger = decky.logger
 
-# Add plugin directory to path for imports
+# Add plugin directory and py_modules to path for imports
 PLUGIN_DIR = Path(__file__).parent.resolve()
+PY_MODULES_DIR = PLUGIN_DIR / "py_modules"
+
+if str(PY_MODULES_DIR) not in sys.path:
+    sys.path.insert(0, str(PY_MODULES_DIR))
 if str(PLUGIN_DIR) not in sys.path:
     sys.path.insert(0, str(PLUGIN_DIR))
 
