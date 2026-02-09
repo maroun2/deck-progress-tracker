@@ -15,11 +15,11 @@ from typing import Optional, Dict, Any, List
 import decky
 logger = decky.logger
 
-# Import backend modules (these need aiosqlite, vdf, howlongtobeatpy from py_modules)
+# Import backend modules from py_modules (flat structure)
 # Decky automatically adds py_modules/ to sys.path before this file loads
-from backend.src.database import Database
-from backend.src.steam_data import SteamDataService
-from backend.src.hltb_service import HLTBService
+from database import Database
+from steam_data import SteamDataService
+from hltb_service import HLTBService
 
 
 class Plugin:
