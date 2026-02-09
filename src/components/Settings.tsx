@@ -60,11 +60,14 @@ export const Settings: FC = () => {
   };
 
   const syncLibrary = async () => {
+    console.log('[GameProgressTracker] syncLibrary button clicked');
     try {
       setSyncing(true);
       setMessage('Syncing library... This may take several minutes.');
 
+      console.log('[GameProgressTracker] Calling backend sync_library...');
       const result = await call<[], SyncResult>('sync_library');
+      console.log('[GameProgressTracker] sync_library result:', result);
 
       if (result.success) {
         showMessage(
@@ -76,7 +79,7 @@ export const Settings: FC = () => {
         showMessage(`Sync failed: ${result.error}`);
       }
     } catch (err: any) {
-      console.error('Error syncing library:', err);
+      console.error('[GameProgressTracker] Error syncing library:', err);
       showMessage(`Sync error: ${err?.message || 'Unknown error'}`);
     } finally {
       setSyncing(false);
