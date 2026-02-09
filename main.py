@@ -14,28 +14,26 @@ from typing import Optional, Dict, Any, List
 import decky
 
 # Setup paths
-# Decky extracts defaults/ folder and moves its contents to plugin root
-# So defaults/py_modules becomes py_modules/ at the plugin root
 PLUGIN_DIR = Path(decky.DECKY_PLUGIN_DIR)
 PY_MODULES = PLUGIN_DIR / "py_modules"
+BACKEND_SRC = PLUGIN_DIR / "backend" / "src"
 
 logger = decky.logger
-logger.info("=== Game Progress Tracker v1.0.33 starting ===")
+logger.info("=== Game Progress Tracker v1.0.34 starting ===")
 logger.info(f"Plugin dir: {PLUGIN_DIR}")
-logger.info(f"py_modules path: {PY_MODULES}")
-logger.info(f"py_modules exists: {PY_MODULES.exists()}")
 
-# Add py_modules to path
-if PY_MODULES.exists():
-    if str(PY_MODULES) not in sys.path:
-        sys.path.insert(0, str(PY_MODULES))
-        logger.info(f"Added {PY_MODULES} to sys.path")
-else:
-    # Fallback: check if defaults/py_modules exists (in case defaults wasn't processed)
-    defaults_py_modules = PLUGIN_DIR / "defaults" / "py_modules"
-    if defaults_py_modules.exists():
-        sys.path.insert(0, str(defaults_py_modules))
-        logger.info(f"Using fallback: {defaults_py_modules}")
+# Try multiple possible paths for dependencies
+paths_to_try = [
+    PY_MODULES,
+    BACKEND_SRC,
+    PLUGIN_DIR / "defaults" / "py_modules",
+]
+
+for path in paths_to_try:
+    logger.info(f"Checking path: {path} exists={path.exists()}")
+    if path.exists() and str(path) not in sys.path:
+        sys.path.insert(0, str(path))
+        logger.info(f"Added to sys.path: {path}")
 
 # List contents of plugin directory to see what was actually extracted
 if PLUGIN_DIR.exists():
