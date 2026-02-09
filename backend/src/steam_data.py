@@ -1,16 +1,66 @@
 """
 Steam Data Service
 Parses Steam VDF files to extract game information, playtime, and achievements
+Uses only standard library - no external vdf package
 """
 
 import os
-import vdf
+import re
 from pathlib import Path
 from typing import Optional, Dict, Any, List
 
 # Use Decky's built-in logger
 import decky
 logger = decky.logger
+
+
+def parse_vdf(content: str) -> Dict[str, Any]:
+    """
+    Simple VDF parser using only standard library.
+    VDF format is similar to JSON but with different syntax.
+    """
+    result = {}
+    stack = [result]
+    current_key = None
+
+    # Tokenize - handle quoted strings and bare words
+    token_pattern = re.compile(r'"([^"\\]*(?:\\.[^"\\]*)*)"|(\{)|(\})|(\S+)')
+
+    for match in token_pattern.finditer(content):
+        quoted, open_brace, close_brace, bare = match.groups()
+
+        token = quoted if quoted is not None else bare
+
+        if open_brace:
+            # Start new dict
+            new_dict = {}
+            if current_key is not None:
+                stack[-1][current_key] = new_dict
+                stack.append(new_dict)
+                current_key = None
+        elif close_brace:
+            # End current dict
+            if len(stack) > 1:
+                stack.pop()
+        elif token is not None:
+            if current_key is None:
+                current_key = token
+            else:
+                stack[-1][current_key] = token
+                current_key = None
+
+    return result
+
+
+def load_vdf_file(filepath: Path) -> Dict[str, Any]:
+    """Load and parse a VDF file"""
+    try:
+        with open(filepath, 'r', encoding='utf-8', errors='ignore') as f:
+            content = f.read()
+        return parse_vdf(content)
+    except Exception as e:
+        logger.error(f"Failed to parse VDF file {filepath}: {e}")
+        return {}
 
 
 class SteamDataService:
@@ -73,8 +123,7 @@ class SteamDataService:
             return 0
 
         try:
-            with open(localconfig_path, 'r', encoding='utf-8', errors='ignore') as f:
-                data = vdf.load(f)
+            data = load_vdf_file(localconfig_path)
 
             # Navigate to playtime data
             # Structure: UserLocalConfigStore -> Software -> Valve -> Steam -> Apps -> {appid} -> PlayTime
@@ -87,9 +136,6 @@ class SteamDataService:
             )
 
             if appid in apps and "LastPlayed" in apps[appid]:
-                # PlayTime is typically in seconds in some fields, or minutes
-                # Let's try to get the total playtime
-                # The actual field might vary, commonly it's under stats
                 playtime_seconds = apps[appid].get("TotalPlayTime", 0)
                 if playtime_seconds:
                     return int(playtime_seconds) // 60
@@ -114,9 +160,7 @@ class SteamDataService:
 
             if appmanifest_path.exists():
                 try:
-                    with open(appmanifest_path, 'r', encoding='utf-8', errors='ignore') as f:
-                        data = vdf.load(f)
-
+                    data = load_vdf_file(appmanifest_path)
                     game_name = data.get("AppState", {}).get("name", f"Unknown Game ({appid})")
                     return game_name
 
@@ -147,18 +191,17 @@ class SteamDataService:
 
         try:
             # Parse the first achievement file found
-            with open(achievement_files[0], 'r', encoding='utf-8', errors='ignore') as f:
-                data = vdf.load(f)
+            data = load_vdf_file(achievement_files[0])
 
             # Navigate to achievements
-            # Structure varies, but typically: stats -> achievements
             achievements = data.get("stats", {}).get("achievements", {})
 
             if not achievements:
                 return {"total": 0, "unlocked": 0, "percentage": 0.0}
 
             total = len(achievements)
-            unlocked = sum(1 for ach in achievements.values() if ach.get("achieved", 0) == 1)
+            unlocked = sum(1 for ach in achievements.values()
+                          if isinstance(ach, dict) and ach.get("achieved", "0") == "1")
             percentage = (unlocked / total * 100) if total > 0 else 0.0
 
             return {
@@ -185,11 +228,9 @@ class SteamDataService:
             return folders
 
         try:
-            with open(libraryfolders_path, 'r', encoding='utf-8', errors='ignore') as f:
-                data = vdf.load(f)
+            data = load_vdf_file(libraryfolders_path)
 
             # Parse library folders
-            # Structure: libraryfolders -> {index} -> path
             library_data = data.get("libraryfolders", {})
 
             for key, value in library_data.items():
@@ -222,8 +263,7 @@ class SteamDataService:
                     # Extract appid from filename
                     appid = manifest_path.stem.replace("appmanifest_", "")
 
-                    with open(manifest_path, 'r', encoding='utf-8', errors='ignore') as f:
-                        data = vdf.load(f)
+                    data = load_vdf_file(manifest_path)
 
                     app_state = data.get("AppState", {})
                     game_name = app_state.get("name", f"Unknown ({appid})")

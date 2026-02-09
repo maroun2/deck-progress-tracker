@@ -1,11 +1,14 @@
 """
 HowLongToBeat Service
-Integrates with HowLongToBeat to fetch game completion times
+Fetches game completion times from HowLongToBeat using standard library only
 """
 
 import asyncio
+import json
+import urllib.request
+import urllib.parse
 from typing import Optional, Dict, Any, List
-from howlongtobeatpy import HowLongToBeat
+from difflib import SequenceMatcher
 
 # Use Decky's built-in logger
 import decky
@@ -14,8 +17,97 @@ logger = decky.logger
 
 class HLTBService:
     def __init__(self):
-        self.hltb = HowLongToBeat()
         self.min_similarity = 0.7  # Minimum similarity threshold
+        self.api_url = "https://howlongtobeat.com/api/search"
+        self.headers = {
+            "Content-Type": "application/json",
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+            "Referer": "https://howlongtobeat.com/",
+            "Origin": "https://howlongtobeat.com"
+        }
+
+    def _calculate_similarity(self, str1: str, str2: str) -> float:
+        """Calculate string similarity using SequenceMatcher"""
+        return SequenceMatcher(None, str1.lower(), str2.lower()).ratio()
+
+    def _search_sync(self, game_name: str) -> Optional[Dict[str, Any]]:
+        """Synchronous HLTB search"""
+        try:
+            # HLTB API payload
+            payload = {
+                "searchType": "games",
+                "searchTerms": game_name.split(),
+                "searchPage": 1,
+                "size": 20,
+                "searchOptions": {
+                    "games": {
+                        "userId": 0,
+                        "platform": "",
+                        "sortCategory": "popular",
+                        "rangeCategory": "main",
+                        "rangeTime": {"min": None, "max": None},
+                        "gameplay": {"perspective": "", "flow": "", "genre": ""},
+                        "rangeYear": {"min": "", "max": ""},
+                        "modifier": ""
+                    },
+                    "users": {"sortCategory": "postcount"},
+                    "filter": "",
+                    "sort": 0,
+                    "randomizer": 0
+                }
+            }
+
+            data = json.dumps(payload).encode('utf-8')
+
+            req = urllib.request.Request(
+                self.api_url,
+                data=data,
+                headers=self.headers,
+                method='POST'
+            )
+
+            with urllib.request.urlopen(req, timeout=10) as response:
+                result = json.loads(response.read().decode('utf-8'))
+
+            games = result.get("data", [])
+            if not games:
+                return None
+
+            # Find best match by name similarity
+            best_match = None
+            best_similarity = 0.0
+
+            for game in games:
+                game_title = game.get("game_name", "")
+                similarity = self._calculate_similarity(game_name, game_title)
+
+                if similarity > best_similarity:
+                    best_similarity = similarity
+                    best_match = game
+
+            if not best_match or best_similarity < self.min_similarity:
+                return None
+
+            # Extract times (convert from seconds to hours)
+            def to_hours(seconds):
+                if seconds and seconds > 0:
+                    return round(seconds / 3600, 1)
+                return None
+
+            return {
+                "game_name": game_name,
+                "matched_name": best_match.get("game_name"),
+                "similarity": round(best_similarity, 2),
+                "main_story": to_hours(best_match.get("comp_main")),
+                "main_extra": to_hours(best_match.get("comp_plus")),
+                "completionist": to_hours(best_match.get("comp_100")),
+                "all_styles": to_hours(best_match.get("comp_all")),
+                "hltb_url": f"https://howlongtobeat.com/game/{best_match.get('game_id')}"
+            }
+
+        except Exception as e:
+            logger.error(f"HLTB search error: {e}")
+            return None
 
     async def search_game(self, game_name: str) -> Optional[Dict[str, Any]]:
         """Search HLTB for game completion times"""
@@ -25,39 +117,18 @@ class HLTBService:
         try:
             logger.debug(f"Searching HLTB for: {game_name}")
 
-            # Use async search
-            results = await self.hltb.async_search(game_name)
+            # Run sync request in thread pool
+            result = await asyncio.to_thread(self._search_sync, game_name)
 
-            if not results or len(results) == 0:
-                logger.debug(f"No HLTB results found for: {game_name}")
-                return None
-
-            # Find best match by similarity
-            best_match = max(results, key=lambda x: x.similarity)
-
-            # Filter by minimum similarity
-            if best_match.similarity < self.min_similarity:
-                logger.debug(
-                    f"Best match similarity too low ({best_match.similarity:.2f}): "
-                    f"{best_match.game_name} for {game_name}"
+            if result:
+                logger.info(
+                    f"Found HLTB match: {result['matched_name']} "
+                    f"(similarity: {result['similarity']:.2f})"
                 )
-                return None
+            else:
+                logger.debug(f"No HLTB results found for: {game_name}")
 
-            logger.info(
-                f"Found HLTB match: {best_match.game_name} "
-                f"(similarity: {best_match.similarity:.2f})"
-            )
-
-            return {
-                "game_name": game_name,
-                "matched_name": best_match.game_name,
-                "similarity": best_match.similarity,
-                "main_story": best_match.main_story,
-                "main_extra": best_match.main_extra,
-                "completionist": best_match.completionist,
-                "all_styles": best_match.all_styles,
-                "hltb_url": best_match.game_web_link
-            }
+            return result
 
         except Exception as e:
             logger.error(f"HLTB search failed for {game_name}: {e}")
@@ -104,12 +175,6 @@ class HLTBService:
     ) -> Optional[Dict[str, Any]]:
         """
         Get completion time for a game, checking cache first
-
-        Args:
-            appid: Steam app ID
-            game_name: Game name
-            cache_lookup_func: Optional async function to check cache
-                              Should accept (appid) and return cached data or None
         """
         # Check cache if function provided
         if cache_lookup_func:
