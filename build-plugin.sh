@@ -92,10 +92,12 @@ find plugin-build/game-progress-tracker/py_modules -name "*.dylib" -delete 2>/de
 # Remove __pycache__ directories to reduce size
 find plugin-build/game-progress-tracker/py_modules -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true
 
-# Copy backend modules INTO py_modules so Decky's sys.path picks them up
-# Decky only adds py_modules/ to sys.path, not the plugin root directory
+# Copy backend modules directly into py_modules (flat structure)
+# Decky only adds py_modules/ to sys.path, so we put files directly there
 echo "Copying backend modules to py_modules..."
-cp -r backend plugin-build/game-progress-tracker/py_modules/
+cp backend/src/database.py plugin-build/game-progress-tracker/py_modules/
+cp backend/src/steam_data.py plugin-build/game-progress-tracker/py_modules/
+cp backend/src/hltb_service.py plugin-build/game-progress-tracker/py_modules/
 
 # Copy required files
 echo "Copying plugin files..."
