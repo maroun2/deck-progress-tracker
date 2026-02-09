@@ -8,11 +8,12 @@ import os
 from pathlib import Path
 
 # Add py_modules to path before any other imports
-# This is a fallback in case Decky's path setup doesn't work as expected
-PLUGIN_DIR = Path(__file__).parent.resolve()
-PY_MODULES = PLUGIN_DIR / "py_modules"
-if PY_MODULES.exists() and str(PY_MODULES) not in sys.path:
-    sys.path.insert(0, str(PY_MODULES))
+# Use DECKY_PLUGIN_DIR env var (set by Decky before loading plugin)
+# Fall back to __file__ parent if env var not available
+PLUGIN_DIR = os.environ.get("DECKY_PLUGIN_DIR", str(Path(__file__).parent.resolve()))
+PY_MODULES = os.path.join(PLUGIN_DIR, "py_modules")
+if os.path.exists(PY_MODULES) and PY_MODULES not in sys.path:
+    sys.path.insert(0, PY_MODULES)
 
 import asyncio
 from typing import Optional, Dict, Any, List
