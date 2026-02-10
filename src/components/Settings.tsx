@@ -44,7 +44,10 @@ const getPlaytimeData = async (appids: string[]): Promise<Record<string, number>
   let successCount = 0;
   let failCount = 0;
   let withPlaytime = 0;
+  const failedAppids: string[] = [];
+  const sampleLogs: string[] = [];
 
+  // Synchronous loop - no awaits inside to avoid issues
   for (const appid of appids) {
     try {
       const overview = appStore.GetAppOverviewByAppID(parseInt(appid));
@@ -54,23 +57,35 @@ const getPlaytimeData = async (appids: string[]): Promise<Record<string, number>
         successCount++;
         if (playtime > 0) withPlaytime++;
 
-        // Log first few for debugging
-        if (successCount <= 3) {
-          await logToBackend('info', `Sample - appid ${appid}: playtime=${playtime}min, name=${overview.display_name || 'unknown'}`);
+        // Collect first few for logging later
+        if (sampleLogs.length < 3) {
+          sampleLogs.push(`appid ${appid}: playtime=${playtime}min, name=${overview.display_name || 'unknown'}`);
         }
       } else {
         failCount++;
-        if (failCount <= 3) {
-          await logToBackend('info', `No overview for appid ${appid}`);
+        if (failedAppids.length < 5) {
+          failedAppids.push(appid);
         }
       }
     } catch (e) {
       failCount++;
-      await logToBackend('error', `Failed to get playtime for ${appid}: ${e}`);
+      if (failedAppids.length < 5) {
+        failedAppids.push(appid);
+      }
     }
   }
 
+  // Log results after the loop
+  for (const log of sampleLogs) {
+    await logToBackend('info', `Sample - ${log}`);
+  }
+  if (failedAppids.length > 0) {
+    await logToBackend('info', `Failed appids (first 5): ${failedAppids.join(', ')}`);
+  }
+
   await logToBackend('info', `getPlaytimeData results: success=${successCount}, failed=${failCount}, withPlaytime=${withPlaytime}`);
+  await logToBackend('info', `playtimeMap size: ${Object.keys(playtimeMap).length}`);
+  await logToBackend('info', `playtimeMap keys sample: ${Object.keys(playtimeMap).slice(0, 10).join(', ')}`);
   return playtimeMap;
 };
 
@@ -202,6 +217,7 @@ export const Settings: FC = () => {
       const appids = gamesResult.games.map(g => g.appid);
       await logToBackend('info', `Step 1 complete: Got ${appids.length} games from backend`);
       await logToBackend('info', `First 5 appids: ${appids.slice(0, 5).join(', ')}`);
+      await logToBackend('info', `Appid types: ${appids.slice(0, 5).map(a => typeof a).join(', ')}`);
 
       // Step 2: Get playtime from Steam frontend API
       await logToBackend('info', 'Step 2: Getting playtime from Steam frontend API...');
