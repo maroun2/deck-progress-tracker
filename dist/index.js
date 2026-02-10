@@ -1,4 +1,4 @@
-const manifest = {"name":"Game Progress Tracker","author":"Maron","version":"1.0.58","api_version":1,"flags":["_root"],"publish":{"tags":["library","achievements","statistics","enhancement"],"description":"Automatic game tagging based on achievements, playtime, and completion time. Track your progress with visual badges in the Steam library.","image":"https://opengraph.githubassets.com/1/SteamDeckHomebrew/decky-loader"}};
+const manifest = {"name":"Game Progress Tracker","author":"Maron","version":"1.1.0","api_version":1,"flags":["_root"],"publish":{"tags":["library","achievements","statistics","enhancement"],"description":"Automatic game tagging based on achievements, playtime, and completion time. Track your progress with visual badges in the Steam library.","image":"https://opengraph.githubassets.com/1/SteamDeckHomebrew/decky-loader"}};
 const API_VERSION = 2;
 if (!manifest?.name) {
     throw new Error('[@decky/api]: Failed to find plugin manifest.');
@@ -26,11 +26,60 @@ const definePlugin = (fn) => {
     };
 };
 
+// Tag colors matching the existing theme
+const TAG_ICON_COLORS = {
+    mastered: '#f5576c',
+    completed: '#38ef7d',
+    in_progress: '#764ba2',
+    backlog: '#888',
+};
+/**
+ * Trophy icon for Mastered (100% achievements)
+ */
+const TrophyIcon = ({ size, color }) => (React.createElement("svg", { width: size, height: size, viewBox: "0 0 24 24", fill: "none" },
+    React.createElement("path", { d: "M12 17c-1.1 0-2-.9-2-2v-1h4v1c0 1.1-.9 2-2 2z", fill: color }),
+    React.createElement("path", { d: "M17 4h-1V3c0-.55-.45-1-1-1H9c-.55 0-1 .45-1 1v1H7c-1.1 0-2 .9-2 2v1c0 2.55 1.92 4.63 4.39 4.94.63 1.5 1.98 2.63 3.61 2.96V17H9c-.55 0-1 .45-1 1v2c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2c0-.55-.45-1-1-1h-1.5v-2.1c1.63-.33 2.98-1.46 3.61-2.96C19.08 11.63 21 9.55 21 7V6c0-1.1-.9-2-2-2h-2zm-10 3V6h2v3c0 1.48.81 2.77 2 3.46-.43-.09-.87-.16-1.31-.27C7.36 11.36 5 9.42 5 7zm14 0c0 2.42-2.36 4.36-4.69 5.19-.44.11-.88.18-1.31.27 1.19-.69 2-1.98 2-3.46V6h2v1z", fill: color })));
+/**
+ * Checkmark in circle for Completed (beat main story)
+ */
+const CheckCircleIcon = ({ size, color }) => (React.createElement("svg", { width: size, height: size, viewBox: "0 0 24 24", fill: "none" },
+    React.createElement("circle", { cx: "12", cy: "12", r: "10", stroke: color, strokeWidth: "2", fill: "none" }),
+    React.createElement("path", { d: "M8 12l3 3 5-6", stroke: color, strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round", fill: "none" })));
+/**
+ * Clock/hourglass icon for In Progress
+ */
+const ClockIcon = ({ size, color }) => (React.createElement("svg", { width: size, height: size, viewBox: "0 0 24 24", fill: "none" },
+    React.createElement("circle", { cx: "12", cy: "12", r: "10", stroke: color, strokeWidth: "2", fill: "none" }),
+    React.createElement("path", { d: "M12 6v6l4 2", stroke: color, strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round", fill: "none" })));
+/**
+ * Empty circle for Backlog (not started)
+ */
+const EmptyCircleIcon = ({ size, color }) => (React.createElement("svg", { width: size, height: size, viewBox: "0 0 24 24", fill: "none" },
+    React.createElement("circle", { cx: "12", cy: "12", r: "10", stroke: color, strokeWidth: "2", fill: "none" })));
+/**
+ * TagIcon component - displays appropriate icon based on tag type
+ */
+const TagIcon = ({ type, size = 24, className }) => {
+    if (!type)
+        return null;
+    const color = TAG_ICON_COLORS[type] || TAG_ICON_COLORS.backlog;
+    const iconStyle = {
+        display: 'inline-flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        flexShrink: 0,
+    };
+    return (React.createElement("span", { style: iconStyle, className: className },
+        type === 'mastered' && React.createElement(TrophyIcon, { size: size, color: color }),
+        type === 'completed' && React.createElement(CheckCircleIcon, { size: size, color: color }),
+        type === 'in_progress' && React.createElement(ClockIcon, { size: size, color: color }),
+        type === 'backlog' && React.createElement(EmptyCircleIcon, { size: size, color: color })));
+};
+
 /**
  * GameTag Component
- * Displays a colored badge for game tags
+ * Displays a colored badge with icon for game tags
  */
-
 const TAG_STYLES = {
     completed: {
         background: 'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)',
@@ -45,7 +94,7 @@ const TAG_STYLES = {
         label: 'Mastered'
     }
 };
-const GameTag = ({ tag, onClick }) => {
+const GameTag = ({ tag, onClick, compact = false }) => {
     if (!tag || !tag.tag) {
         return null;
     }
@@ -53,6 +102,27 @@ const GameTag = ({ tag, onClick }) => {
     if (!style) {
         return null;
     }
+    // Compact mode: just the icon with background circle
+    if (compact) {
+        const compactStyle = {
+            position: 'absolute',
+            top: '8px',
+            right: '8px',
+            background: 'rgba(0, 0, 0, 0.7)',
+            borderRadius: '50%',
+            padding: '4px',
+            boxShadow: '0 2px 4px rgba(0,0,0,0.4)',
+            zIndex: 1000,
+            cursor: onClick ? 'pointer' : 'default',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            userSelect: 'none',
+        };
+        return (SP_REACT.createElement("div", { onClick: onClick, style: compactStyle, title: style.label },
+            SP_REACT.createElement(TagIcon, { type: tag.tag, size: 16 })));
+    }
+    // Full mode: badge with icon and text
     const containerStyle = {
         position: 'absolute',
         top: '20px',
@@ -68,12 +138,12 @@ const GameTag = ({ tag, onClick }) => {
         cursor: onClick ? 'pointer' : 'default',
         display: 'flex',
         alignItems: 'center',
-        gap: '6px',
+        gap: '8px',
         userSelect: 'none',
         transition: 'transform 0.2s ease',
-        ...(onClick ? { transform: 'scale(1)' } : {})
     };
     return (SP_REACT.createElement("div", { onClick: onClick, style: containerStyle, title: tag.is_manual ? 'Manual tag - Click to edit' : 'Automatic tag - Click to edit' },
+        SP_REACT.createElement(TagIcon, { type: tag.tag, size: 18 }),
         SP_REACT.createElement("span", null, style.label),
         tag.is_manual && (SP_REACT.createElement("span", { style: { fontSize: '12px', opacity: 0.8 } }, "\u270E"))));
 };
@@ -184,15 +254,22 @@ const TagManager = ({ appid, onClose }) => {
                             "h")))))),
             SP_REACT.createElement("div", { style: styles$1.section },
                 SP_REACT.createElement("h3", { style: styles$1.sectionTitle }, "Current Tag"),
-                SP_REACT.createElement("div", { style: styles$1.statRow }, tag?.tag ? (SP_REACT.createElement("span", null,
-                    tag.tag.replace('_', ' ').toUpperCase(),
-                    tag.is_manual ? ' (Manual)' : ' (Automatic)')) : (SP_REACT.createElement("span", null, "No tag assigned")))),
+                SP_REACT.createElement("div", { style: styles$1.currentTag }, tag?.tag ? (SP_REACT.createElement(SP_REACT.Fragment, null,
+                    SP_REACT.createElement(TagIcon, { type: tag.tag, size: 24 }),
+                    SP_REACT.createElement("span", { style: { color: TAG_ICON_COLORS[tag.tag] } }, tag.tag.replace('_', ' ').toUpperCase()),
+                    SP_REACT.createElement("span", { style: styles$1.tagType }, tag.is_manual ? '(Manual)' : '(Automatic)'))) : (SP_REACT.createElement("span", { style: styles$1.noTag }, "No tag assigned")))),
             SP_REACT.createElement("div", { style: styles$1.section },
                 SP_REACT.createElement("h3", { style: styles$1.sectionTitle }, "Set Tag"),
-                SP_REACT.createElement("div", { style: styles$1.buttonGroup },
-                    SP_REACT.createElement("button", { onClick: () => setTag('completed'), style: styles$1.tagButton }, "Completed"),
-                    SP_REACT.createElement("button", { onClick: () => setTag('in_progress'), style: styles$1.tagButton }, "In Progress"),
-                    SP_REACT.createElement("button", { onClick: () => setTag('mastered'), style: styles$1.tagButton }, "Mastered")),
+                SP_REACT.createElement("div", { style: styles$1.tagButtonGroup },
+                    SP_REACT.createElement("button", { onClick: () => setTag('mastered'), style: { ...styles$1.tagButton, backgroundColor: TAG_ICON_COLORS.mastered } },
+                        SP_REACT.createElement(TagIcon, { type: "mastered", size: 20 }),
+                        SP_REACT.createElement("span", null, "Mastered")),
+                    SP_REACT.createElement("button", { onClick: () => setTag('completed'), style: { ...styles$1.tagButton, backgroundColor: TAG_ICON_COLORS.completed } },
+                        SP_REACT.createElement(TagIcon, { type: "completed", size: 20 }),
+                        SP_REACT.createElement("span", null, "Completed")),
+                    SP_REACT.createElement("button", { onClick: () => setTag('in_progress'), style: { ...styles$1.tagButton, backgroundColor: TAG_ICON_COLORS.in_progress } },
+                        SP_REACT.createElement(TagIcon, { type: "in_progress", size: 20 }),
+                        SP_REACT.createElement("span", null, "In Progress"))),
                 SP_REACT.createElement("div", { style: styles$1.buttonGroup },
                     SP_REACT.createElement("button", { onClick: resetToAuto, style: styles$1.secondaryButton }, "Reset to Automatic"),
                     SP_REACT.createElement("button", { onClick: removeTag, style: styles$1.secondaryButton }, "Remove Tag"))),
@@ -243,23 +320,50 @@ const styles$1 = {
         padding: '8px 0',
         fontSize: '14px',
     },
+    currentTag: {
+        display: 'flex',
+        alignItems: 'center',
+        gap: '12px',
+        padding: '12px',
+        backgroundColor: '#252525',
+        borderRadius: '6px',
+        fontSize: '16px',
+        fontWeight: 'bold',
+    },
+    tagType: {
+        fontSize: '12px',
+        color: '#888',
+        fontWeight: 'normal',
+    },
+    noTag: {
+        color: '#888',
+        fontStyle: 'italic',
+    },
     buttonGroup: {
         display: 'flex',
         gap: '8px',
         marginBottom: '8px',
         flexWrap: 'wrap',
     },
+    tagButtonGroup: {
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '8px',
+        marginBottom: '12px',
+    },
     tagButton: {
-        flex: 1,
-        padding: '12px',
-        backgroundColor: '#667eea',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: '10px',
+        padding: '14px',
         border: 'none',
-        borderRadius: '4px',
+        borderRadius: '6px',
         color: 'white',
-        fontSize: '14px',
+        fontSize: '15px',
         fontWeight: 'bold',
         cursor: 'pointer',
-        transition: 'background-color 0.2s',
+        transition: 'opacity 0.2s',
     },
     secondaryButton: {
         flex: 1,
@@ -312,7 +416,6 @@ const styles$1 = {
  * Settings Component
  * Plugin settings and configuration panel
  */
-
 /**
  * Log to both console and backend (for debugging without CEF)
  */
@@ -385,7 +488,9 @@ const Settings = () => {
         auto_tag_enabled: true,
         mastered_multiplier: 1.5, // Deprecated, kept for compatibility
         in_progress_threshold: 30,
-        cache_ttl: 7200
+        cache_ttl: 7200,
+        source_installed: true,
+        source_non_steam: true,
     });
     const [stats, setStats] = SP_REACT.useState(null);
     const [loading, setLoading] = SP_REACT.useState(false);
@@ -393,7 +498,11 @@ const Settings = () => {
     const [message, setMessage] = SP_REACT.useState(null);
     // Tagged games list state
     const [taggedGames, setTaggedGames] = SP_REACT.useState([]);
-    const [showTaggedList, setShowTaggedList] = SP_REACT.useState(true);
+    const [expandedSections, setExpandedSections] = SP_REACT.useState({
+        mastered: true,
+        completed: true,
+        in_progress: true,
+    });
     const [loadingGames, setLoadingGames] = SP_REACT.useState(false);
     // Settings section state
     const [showSettings, setShowSettings] = SP_REACT.useState(false);
@@ -443,11 +552,11 @@ const Settings = () => {
             setLoadingGames(false);
         }
     };
-    const toggleTaggedList = () => {
-        if (!showTaggedList && taggedGames.length === 0) {
-            loadTaggedGames();
-        }
-        setShowTaggedList(!showTaggedList);
+    const toggleSection = (tagType) => {
+        setExpandedSections(prev => ({
+            ...prev,
+            [tagType]: !prev[tagType],
+        }));
     };
     const navigateToGame = (appid) => {
         DFL.Navigation.Navigate(`/library/app/${appid}`);
@@ -467,7 +576,7 @@ const Settings = () => {
     };
     const syncLibrary = async () => {
         await logToBackend('info', '========================================');
-        await logToBackend('info', `syncLibrary button clicked - v${"1.0.58"}`);
+        await logToBackend('info', `syncLibrary button clicked - v${"1.1.0"}`);
         await logToBackend('info', '========================================');
         try {
             setSyncing(true);
@@ -571,32 +680,32 @@ const Settings = () => {
                     SP_REACT.createElement("div", { style: styles.statValue }, stats.total),
                     SP_REACT.createElement("div", { style: styles.statLabel }, "Total Games"))))),
         SP_REACT.createElement("div", { style: styles.section },
-            SP_REACT.createElement("button", { onClick: toggleTaggedList, style: styles.expandButton },
-                showTaggedList ? '- Hide' : '+ View',
-                " All Tagged Games",
-                ` (${taggedCount} games)`),
-            showTaggedList && (SP_REACT.createElement("div", { style: styles.taggedListContainer }, loadingGames ? (SP_REACT.createElement("div", { style: styles.loadingText }, "Loading games...")) : taggedGames.length === 0 ? (SP_REACT.createElement("div", { style: styles.loadingText }, "No tagged games yet. Click \"Sync Entire Library\" to tag your games based on playtime and achievements.")) : (['mastered', 'completed', 'in_progress'].map((tagType) => {
-                const games = groupedGames[tagType] || [];
-                if (games.length === 0)
+            SP_REACT.createElement("h3", { style: styles.sectionTitle },
+                "Tagged Games (",
+                taggedCount,
+                ")"),
+            loadingGames ? (SP_REACT.createElement("div", { style: styles.loadingText }, "Loading games...")) : taggedGames.length === 0 ? (SP_REACT.createElement("div", { style: styles.loadingText }, "No tagged games yet. Click \"Sync Entire Library\" to tag your games based on playtime and achievements.")) : (SP_REACT.createElement("div", { style: styles.taggedListContainer }, ['mastered', 'completed', 'in_progress'].map((tagType) => {
+                if (!tagType)
                     return null;
-                return (SP_REACT.createElement("div", { key: tagType, style: styles.tagGroup },
-                    SP_REACT.createElement("div", { style: styles.tagGroupHeader },
-                        SP_REACT.createElement("span", { style: {
-                                ...styles.tagDot,
-                                backgroundColor: TAG_COLORS[tagType],
-                            } }),
-                        tagLabels[tagType],
-                        " (",
-                        games.length,
-                        ")"),
-                    SP_REACT.createElement("div", { style: styles.gameList }, games.map((game) => (SP_REACT.createElement("div", { key: game.appid, style: styles.gameItem, onClick: () => navigateToGame(game.appid) },
+                const games = groupedGames[tagType] || [];
+                const isExpanded = expandedSections[tagType];
+                return (SP_REACT.createElement("div", { key: tagType, style: styles.tagSection },
+                    SP_REACT.createElement("button", { onClick: () => toggleSection(tagType), style: styles.tagSectionHeader },
+                        SP_REACT.createElement("div", { style: styles.tagSectionLeft },
+                            SP_REACT.createElement(TagIcon, { type: tagType, size: 18 }),
+                            SP_REACT.createElement("span", { style: styles.tagSectionTitle }, tagLabels[tagType])),
+                        SP_REACT.createElement("div", { style: styles.tagSectionRight },
+                            SP_REACT.createElement("span", { style: { ...styles.tagCount, color: TAG_COLORS[tagType] } }, games.length),
+                            SP_REACT.createElement("span", { style: styles.expandIcon }, isExpanded ? '−' : '+'))),
+                    isExpanded && games.length > 0 && (SP_REACT.createElement("div", { style: styles.gameList }, games.map((game) => (SP_REACT.createElement("div", { key: game.appid, style: styles.gameItem, onClick: () => navigateToGame(game.appid) },
                         SP_REACT.createElement("span", { style: {
                                 ...styles.smallDot,
                                 backgroundColor: TAG_COLORS[game.tag],
                             } }),
                         SP_REACT.createElement("span", { style: styles.gameName }, game.game_name),
-                        game.is_manual && (SP_REACT.createElement("span", { style: styles.manualBadge }, "manual"))))))));
-            }))))),
+                        game.is_manual && (SP_REACT.createElement("span", { style: styles.manualBadge }, "manual"))))))),
+                    isExpanded && games.length === 0 && (SP_REACT.createElement("div", { style: styles.emptySection }, "No games with this tag"))));
+            })))),
         SP_REACT.createElement("div", { style: styles.section },
             SP_REACT.createElement("button", { onClick: syncLibrary, disabled: syncing || loading, style: syncing ? styles.buttonDisabled : styles.button }, syncing ? 'Syncing...' : 'Sync Entire Library'),
             SP_REACT.createElement("div", { style: styles.hint }, "Sync may take several minutes for large libraries")),
@@ -615,15 +724,15 @@ const Settings = () => {
                     SP_REACT.createElement("h4", { style: styles.settingGroupTitle }, "Tag Rules"),
                     SP_REACT.createElement("div", { style: styles.tagRulesInfo },
                         SP_REACT.createElement("div", { style: styles.tagRule },
-                            SP_REACT.createElement("span", { style: { ...styles.tagDot, backgroundColor: TAG_COLORS.mastered } }),
+                            SP_REACT.createElement(TagIcon, { type: "mastered", size: 16 }),
                             SP_REACT.createElement("strong", null, "Mastered:"),
                             " 100% achievements unlocked"),
                         SP_REACT.createElement("div", { style: styles.tagRule },
-                            SP_REACT.createElement("span", { style: { ...styles.tagDot, backgroundColor: TAG_COLORS.completed } }),
+                            SP_REACT.createElement(TagIcon, { type: "completed", size: 16 }),
                             SP_REACT.createElement("strong", null, "Completed:"),
                             " Playtime \u2265 main story time (from HLTB)"),
                         SP_REACT.createElement("div", { style: styles.tagRule },
-                            SP_REACT.createElement("span", { style: { ...styles.tagDot, backgroundColor: TAG_COLORS.in_progress } }),
+                            SP_REACT.createElement(TagIcon, { type: "in_progress", size: 16 }),
                             SP_REACT.createElement("strong", null, "In Progress:"),
                             " Playtime \u2265 ",
                             settings.in_progress_threshold,
@@ -636,6 +745,17 @@ const Settings = () => {
                         SP_REACT.createElement("input", { type: "range", min: "15", max: "120", step: "15", value: settings.in_progress_threshold, onChange: (e) => updateSetting('in_progress_threshold', parseInt(e.target.value)), style: styles.slider }),
                         SP_REACT.createElement("div", { style: styles.hint }, "Minimum playtime to mark as In Progress"))),
                 SP_REACT.createElement("div", { style: styles.settingGroup },
+                    SP_REACT.createElement("h4", { style: styles.settingGroupTitle }, "Game Sources"),
+                    SP_REACT.createElement("div", { style: styles.hint }, "Select which games to include when syncing"),
+                    SP_REACT.createElement("div", { style: styles.settingRow },
+                        SP_REACT.createElement("label", { style: styles.label },
+                            SP_REACT.createElement("input", { type: "checkbox", checked: settings.source_installed, onChange: (e) => updateSetting('source_installed', e.target.checked), style: styles.checkbox }),
+                            "Installed Steam Games")),
+                    SP_REACT.createElement("div", { style: styles.settingRow },
+                        SP_REACT.createElement("label", { style: styles.label },
+                            SP_REACT.createElement("input", { type: "checkbox", checked: settings.source_non_steam, onChange: (e) => updateSetting('source_non_steam', e.target.checked), style: styles.checkbox }),
+                            "Non-Steam Games (Shortcuts)"))),
+                SP_REACT.createElement("div", { style: styles.settingGroup },
                     SP_REACT.createElement("h4", { style: styles.settingGroupTitle }, "Cache"),
                     SP_REACT.createElement("button", { onClick: refreshCache, disabled: syncing || loading, style: styles.buttonSecondary }, "Refresh HLTB Cache"))))),
         SP_REACT.createElement("div", { style: styles.section },
@@ -643,7 +763,7 @@ const Settings = () => {
             SP_REACT.createElement("div", { style: styles.about },
                 SP_REACT.createElement("p", null,
                     "Game Progress Tracker v",
-                    "1.0.58"),
+                    "1.1.0"),
                 SP_REACT.createElement("p", null, "Automatic game tagging based on achievements, playtime, and completion time."),
                 SP_REACT.createElement("p", { style: styles.smallText }, "Data from HowLongToBeat \u2022 Steam achievement system")))));
 };
@@ -869,6 +989,54 @@ const styles = {
         gap: '8px',
         marginBottom: '8px',
         fontSize: '13px',
+    },
+    tagSection: {
+        marginBottom: '8px',
+        backgroundColor: '#1a1a1a',
+        borderRadius: '6px',
+        overflow: 'hidden',
+    },
+    tagSectionHeader: {
+        width: '100%',
+        padding: '12px 14px',
+        backgroundColor: '#252525',
+        border: 'none',
+        borderRadius: '0',
+        color: 'white',
+        fontSize: '14px',
+        cursor: 'pointer',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+    },
+    tagSectionLeft: {
+        display: 'flex',
+        alignItems: 'center',
+        gap: '10px',
+    },
+    tagSectionRight: {
+        display: 'flex',
+        alignItems: 'center',
+        gap: '12px',
+    },
+    tagSectionTitle: {
+        fontWeight: 'bold',
+    },
+    tagCount: {
+        fontSize: '16px',
+        fontWeight: 'bold',
+    },
+    expandIcon: {
+        fontSize: '18px',
+        color: '#888',
+        width: '20px',
+        textAlign: 'center',
+    },
+    emptySection: {
+        padding: '12px 16px',
+        color: '#666',
+        fontSize: '13px',
+        fontStyle: 'italic',
     },
 };
 

@@ -103,7 +103,9 @@ class Database:
             INSERT OR IGNORE INTO settings (key, value) VALUES
                 ('auto_tag_enabled', 'true'),
                 ('in_progress_threshold', '30'),
-                ('cache_ttl', '7200')
+                ('cache_ttl', '7200'),
+                ('source_installed', 'true'),
+                ('source_non_steam', 'true')
         """)
 
         conn.commit()

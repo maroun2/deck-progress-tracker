@@ -329,3 +329,75 @@ class SteamDataService:
             "unlocked_achievements": achievements["unlocked"],
             "achievement_percentage": achievements["percentage"]
         }
+
+    async def get_non_steam_games(self) -> List[Dict[str, Any]]:
+        """Get non-Steam games from shortcuts.vdf"""
+        user_id = await self.get_steam_user_id()
+        if not user_id or not self.steam_path:
+            return []
+
+        shortcuts_path = self.steam_path / "userdata" / user_id / "config" / "shortcuts.vdf"
+
+        if not shortcuts_path.exists():
+            logger.debug("shortcuts.vdf not found")
+            return []
+
+        games = []
+        try:
+            # shortcuts.vdf is a binary VDF file, need special parsing
+            with open(shortcuts_path, 'rb') as f:
+                content = f.read()
+
+            # Parse binary VDF format for shortcuts
+            # This is a simplified parser that extracts appid and appname
+            games = self._parse_shortcuts_binary(content)
+            logger.info(f"Found {len(games)} non-Steam games")
+
+        except Exception as e:
+            logger.error(f"Failed to parse shortcuts.vdf: {e}")
+
+        return games
+
+    def _parse_shortcuts_binary(self, content: bytes) -> List[Dict[str, Any]]:
+        """Parse binary shortcuts.vdf format"""
+        games = []
+        pos = 0
+
+        try:
+            while pos < len(content):
+                # Look for AppName (0x01) marker followed by string
+                appname_marker = content.find(b'\x01AppName\x00', pos)
+                if appname_marker == -1:
+                    break
+
+                # Extract app name (null-terminated string after marker)
+                name_start = appname_marker + len(b'\x01AppName\x00')
+                name_end = content.find(b'\x00', name_start)
+                if name_end == -1:
+                    break
+
+                app_name = content[name_start:name_end].decode('utf-8', errors='ignore')
+
+                # Look for appid (0x02) marker - it's a 4-byte integer
+                appid_marker = content.find(b'\x02appid\x00', pos)
+                appid = None
+                if appid_marker != -1 and appid_marker < appname_marker + 500:
+                    appid_start = appid_marker + len(b'\x02appid\x00')
+                    if appid_start + 4 <= len(content):
+                        appid_bytes = content[appid_start:appid_start + 4]
+                        appid = int.from_bytes(appid_bytes, 'little')
+
+                if app_name and appid:
+                    games.append({
+                        "appid": str(appid),
+                        "name": app_name,
+                        "playtime_minutes": 0,  # Non-Steam games don't have playtime tracked locally
+                        "is_non_steam": True
+                    })
+
+                pos = name_end + 1
+
+        except Exception as e:
+            logger.error(f"Error parsing shortcuts binary: {e}")
+
+        return games

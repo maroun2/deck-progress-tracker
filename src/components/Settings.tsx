@@ -7,6 +7,7 @@ import React, { FC, useState, useEffect } from 'react';
 import { call } from '@decky/api';
 import { Navigation } from '@decky/ui';
 import { PluginSettings, SyncResult, TagStatistics, TaggedGame, GameListResult } from '../types';
+import { TagIcon, TagType } from './TagIcon';
 
 /**
  * Log to both console and backend (for debugging without CEF)
@@ -86,7 +87,9 @@ export const Settings: FC = () => {
     auto_tag_enabled: true,
     mastered_multiplier: 1.5,  // Deprecated, kept for compatibility
     in_progress_threshold: 30,
-    cache_ttl: 7200
+    cache_ttl: 7200,
+    source_installed: true,
+    source_non_steam: true,
   });
   const [stats, setStats] = useState<TagStatistics | null>(null);
   const [loading, setLoading] = useState(false);
@@ -95,7 +98,11 @@ export const Settings: FC = () => {
 
   // Tagged games list state
   const [taggedGames, setTaggedGames] = useState<TaggedGame[]>([]);
-  const [showTaggedList, setShowTaggedList] = useState(true);
+  const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
+    mastered: true,
+    completed: true,
+    in_progress: true,
+  });
   const [loadingGames, setLoadingGames] = useState(false);
 
   // Settings section state
@@ -147,11 +154,11 @@ export const Settings: FC = () => {
     }
   };
 
-  const toggleTaggedList = () => {
-    if (!showTaggedList && taggedGames.length === 0) {
-      loadTaggedGames();
-    }
-    setShowTaggedList(!showTaggedList);
+  const toggleSection = (tagType: string) => {
+    setExpandedSections(prev => ({
+      ...prev,
+      [tagType]: !prev[tagType],
+    }));
   };
 
   const navigateToGame = (appid: string) => {
@@ -314,40 +321,44 @@ export const Settings: FC = () => {
         </div>
       )}
 
-      {/* Tagged Games List */}
+      {/* Tagged Games List - Expandable per tag type */}
       <div style={styles.section}>
-        <button
-          onClick={toggleTaggedList}
-          style={styles.expandButton}
-        >
-          {showTaggedList ? '- Hide' : '+ View'} All Tagged Games
-          {` (${taggedCount} games)`}
-        </button>
+        <h3 style={styles.sectionTitle}>Tagged Games ({taggedCount})</h3>
 
-        {showTaggedList && (
+        {loadingGames ? (
+          <div style={styles.loadingText}>Loading games...</div>
+        ) : taggedGames.length === 0 ? (
+          <div style={styles.loadingText}>
+            No tagged games yet. Click "Sync Entire Library" to tag your games based on playtime and achievements.
+          </div>
+        ) : (
           <div style={styles.taggedListContainer}>
-            {loadingGames ? (
-              <div style={styles.loadingText}>Loading games...</div>
-            ) : taggedGames.length === 0 ? (
-              <div style={styles.loadingText}>
-                No tagged games yet. Click "Sync Entire Library" to tag your games based on playtime and achievements.
-              </div>
-            ) : (
-              ['mastered', 'completed', 'in_progress'].map((tagType) => {
-                const games = groupedGames[tagType] || [];
-                if (games.length === 0) return null;
+            {(['mastered', 'completed', 'in_progress'] as TagType[]).map((tagType) => {
+              if (!tagType) return null;
+              const games = groupedGames[tagType] || [];
+              const isExpanded = expandedSections[tagType];
 
-                return (
-                  <div key={tagType} style={styles.tagGroup}>
-                    <div style={styles.tagGroupHeader}>
-                      <span
-                        style={{
-                          ...styles.tagDot,
-                          backgroundColor: TAG_COLORS[tagType],
-                        }}
-                      />
-                      {tagLabels[tagType]} ({games.length})
+              return (
+                <div key={tagType} style={styles.tagSection}>
+                  <button
+                    onClick={() => toggleSection(tagType)}
+                    style={styles.tagSectionHeader}
+                  >
+                    <div style={styles.tagSectionLeft}>
+                      <TagIcon type={tagType} size={18} />
+                      <span style={styles.tagSectionTitle}>{tagLabels[tagType]}</span>
                     </div>
+                    <div style={styles.tagSectionRight}>
+                      <span style={{ ...styles.tagCount, color: TAG_COLORS[tagType] }}>
+                        {games.length}
+                      </span>
+                      <span style={styles.expandIcon}>
+                        {isExpanded ? '−' : '+'}
+                      </span>
+                    </div>
+                  </button>
+
+                  {isExpanded && games.length > 0 && (
                     <div style={styles.gameList}>
                       {games.map((game) => (
                         <div
@@ -368,10 +379,14 @@ export const Settings: FC = () => {
                         </div>
                       ))}
                     </div>
-                  </div>
-                );
-              })
-            )}
+                  )}
+
+                  {isExpanded && games.length === 0 && (
+                    <div style={styles.emptySection}>No games with this tag</div>
+                  )}
+                </div>
+              );
+            })}
           </div>
         )}
       </div>
@@ -422,15 +437,15 @@ export const Settings: FC = () => {
               <h4 style={styles.settingGroupTitle}>Tag Rules</h4>
               <div style={styles.tagRulesInfo}>
                 <div style={styles.tagRule}>
-                  <span style={{ ...styles.tagDot, backgroundColor: TAG_COLORS.mastered }} />
+                  <TagIcon type="mastered" size={16} />
                   <strong>Mastered:</strong> 100% achievements unlocked
                 </div>
                 <div style={styles.tagRule}>
-                  <span style={{ ...styles.tagDot, backgroundColor: TAG_COLORS.completed }} />
+                  <TagIcon type="completed" size={16} />
                   <strong>Completed:</strong> Playtime ≥ main story time (from HLTB)
                 </div>
                 <div style={styles.tagRule}>
-                  <span style={{ ...styles.tagDot, backgroundColor: TAG_COLORS.in_progress }} />
+                  <TagIcon type="in_progress" size={16} />
                   <strong>In Progress:</strong> Playtime ≥ {settings.in_progress_threshold} minutes
                 </div>
               </div>
@@ -451,6 +466,36 @@ export const Settings: FC = () => {
                 <div style={styles.hint}>
                   Minimum playtime to mark as In Progress
                 </div>
+              </div>
+            </div>
+
+            {/* Game Sources */}
+            <div style={styles.settingGroup}>
+              <h4 style={styles.settingGroupTitle}>Game Sources</h4>
+              <div style={styles.hint}>
+                Select which games to include when syncing
+              </div>
+              <div style={styles.settingRow}>
+                <label style={styles.label}>
+                  <input
+                    type="checkbox"
+                    checked={settings.source_installed}
+                    onChange={(e) => updateSetting('source_installed', e.target.checked)}
+                    style={styles.checkbox}
+                  />
+                  Installed Steam Games
+                </label>
+              </div>
+              <div style={styles.settingRow}>
+                <label style={styles.label}>
+                  <input
+                    type="checkbox"
+                    checked={settings.source_non_steam}
+                    onChange={(e) => updateSetting('source_non_steam', e.target.checked)}
+                    style={styles.checkbox}
+                  />
+                  Non-Steam Games (Shortcuts)
+                </label>
               </div>
             </div>
 
@@ -706,5 +751,53 @@ const styles: Record<string, React.CSSProperties> = {
     gap: '8px',
     marginBottom: '8px',
     fontSize: '13px',
+  },
+  tagSection: {
+    marginBottom: '8px',
+    backgroundColor: '#1a1a1a',
+    borderRadius: '6px',
+    overflow: 'hidden',
+  },
+  tagSectionHeader: {
+    width: '100%',
+    padding: '12px 14px',
+    backgroundColor: '#252525',
+    border: 'none',
+    borderRadius: '0',
+    color: 'white',
+    fontSize: '14px',
+    cursor: 'pointer',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  tagSectionLeft: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '10px',
+  },
+  tagSectionRight: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '12px',
+  },
+  tagSectionTitle: {
+    fontWeight: 'bold',
+  },
+  tagCount: {
+    fontSize: '16px',
+    fontWeight: 'bold',
+  },
+  expandIcon: {
+    fontSize: '18px',
+    color: '#888',
+    width: '20px',
+    textAlign: 'center',
+  },
+  emptySection: {
+    padding: '12px 16px',
+    color: '#666',
+    fontSize: '13px',
+    fontStyle: 'italic',
   },
 };

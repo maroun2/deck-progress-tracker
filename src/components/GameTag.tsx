@@ -1,14 +1,16 @@
 /**
  * GameTag Component
- * Displays a colored badge for game tags
+ * Displays a colored badge with icon for game tags
  */
 
 import React, { VFC, CSSProperties } from 'react';
 import { GameTag as GameTagType } from '../types';
+import { TagIcon, TAG_ICON_COLORS } from './TagIcon';
 
 interface GameTagProps {
   tag: GameTagType | null;
   onClick?: () => void;
+  compact?: boolean;  // For grid view - shows only icon
 }
 
 interface TagStyle {
@@ -31,7 +33,7 @@ const TAG_STYLES: Record<string, TagStyle> = {
   }
 };
 
-export const GameTag: VFC<GameTagProps> = ({ tag, onClick }) => {
+export const GameTag: VFC<GameTagProps> = ({ tag, onClick, compact = false }) => {
   if (!tag || !tag.tag) {
     return null;
   }
@@ -42,6 +44,32 @@ export const GameTag: VFC<GameTagProps> = ({ tag, onClick }) => {
     return null;
   }
 
+  // Compact mode: just the icon with background circle
+  if (compact) {
+    const compactStyle: CSSProperties = {
+      position: 'absolute',
+      top: '8px',
+      right: '8px',
+      background: 'rgba(0, 0, 0, 0.7)',
+      borderRadius: '50%',
+      padding: '4px',
+      boxShadow: '0 2px 4px rgba(0,0,0,0.4)',
+      zIndex: 1000,
+      cursor: onClick ? 'pointer' : 'default',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      userSelect: 'none',
+    };
+
+    return (
+      <div onClick={onClick} style={compactStyle} title={style.label}>
+        <TagIcon type={tag.tag as any} size={16} />
+      </div>
+    );
+  }
+
+  // Full mode: badge with icon and text
   const containerStyle: CSSProperties = {
     position: 'absolute',
     top: '20px',
@@ -57,10 +85,9 @@ export const GameTag: VFC<GameTagProps> = ({ tag, onClick }) => {
     cursor: onClick ? 'pointer' : 'default',
     display: 'flex',
     alignItems: 'center',
-    gap: '6px',
+    gap: '8px',
     userSelect: 'none',
     transition: 'transform 0.2s ease',
-    ...(onClick ? { transform: 'scale(1)' } : {})
   };
 
   return (
@@ -69,6 +96,7 @@ export const GameTag: VFC<GameTagProps> = ({ tag, onClick }) => {
       style={containerStyle}
       title={tag.is_manual ? 'Manual tag - Click to edit' : 'Automatic tag - Click to edit'}
     >
+      <TagIcon type={tag.tag as any} size={18} />
       <span>{style.label}</span>
       {tag.is_manual && (
         <span style={{ fontSize: '12px', opacity: 0.8 }}>✎</span>
