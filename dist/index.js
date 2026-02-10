@@ -1,4 +1,4 @@
-const manifest = {"name":"Game Progress Tracker","author":"Maron","version":"1.1.4-debug","api_version":1,"flags":["_root"],"publish":{"tags":["library","achievements","statistics","enhancement"],"description":"Automatic game tagging based on achievements, playtime, and completion time. Track your progress with visual badges in the Steam library.","image":"https://opengraph.githubassets.com/1/SteamDeckHomebrew/decky-loader"}};
+const manifest = {"name":"Game Progress Tracker","author":"Maron","version":"1.1.5-debug","api_version":1,"flags":["_root"],"publish":{"tags":["library","achievements","statistics","enhancement"],"description":"Automatic game tagging based on achievements, playtime, and completion time. Track your progress with visual badges in the Steam library.","image":"https://opengraph.githubassets.com/1/SteamDeckHomebrew/decky-loader"}};
 const API_VERSION = 2;
 if (!manifest?.name) {
     throw new Error('[@decky/api]: Failed to find plugin manifest.');
@@ -485,6 +485,9 @@ const getPlaytimeData = async (appids) => {
     let successCount = 0;
     let failCount = 0;
     let withPlaytime = 0;
+    const failedAppids = [];
+    const sampleLogs = [];
+    // Synchronous loop - no awaits inside to avoid issues
     for (const appid of appids) {
         try {
             const overview = appStore.GetAppOverviewByAppID(parseInt(appid));
@@ -494,24 +497,35 @@ const getPlaytimeData = async (appids) => {
                 successCount++;
                 if (playtime > 0)
                     withPlaytime++;
-                // Log first few for debugging
-                if (successCount <= 3) {
-                    await logToBackend('info', `Sample - appid ${appid}: playtime=${playtime}min, name=${overview.display_name || 'unknown'}`);
+                // Collect first few for logging later
+                if (sampleLogs.length < 3) {
+                    sampleLogs.push(`appid ${appid}: playtime=${playtime}min, name=${overview.display_name || 'unknown'}`);
                 }
             }
             else {
                 failCount++;
-                if (failCount <= 3) {
-                    await logToBackend('info', `No overview for appid ${appid}`);
+                if (failedAppids.length < 5) {
+                    failedAppids.push(appid);
                 }
             }
         }
         catch (e) {
             failCount++;
-            await logToBackend('error', `Failed to get playtime for ${appid}: ${e}`);
+            if (failedAppids.length < 5) {
+                failedAppids.push(appid);
+            }
         }
     }
+    // Log results after the loop
+    for (const log of sampleLogs) {
+        await logToBackend('info', `Sample - ${log}`);
+    }
+    if (failedAppids.length > 0) {
+        await logToBackend('info', `Failed appids (first 5): ${failedAppids.join(', ')}`);
+    }
     await logToBackend('info', `getPlaytimeData results: success=${successCount}, failed=${failCount}, withPlaytime=${withPlaytime}`);
+    await logToBackend('info', `playtimeMap size: ${Object.keys(playtimeMap).length}`);
+    await logToBackend('info', `playtimeMap keys sample: ${Object.keys(playtimeMap).slice(0, 10).join(', ')}`);
     return playtimeMap;
 };
 // Tag color mapping
@@ -615,7 +629,7 @@ const Settings = () => {
     };
     const syncLibrary = async () => {
         await logToBackend('info', '========================================');
-        await logToBackend('info', `syncLibrary button clicked - v${"1.1.4-debug"}`);
+        await logToBackend('info', `syncLibrary button clicked - v${"1.1.5-debug"}`);
         await logToBackend('info', '========================================');
         try {
             setSyncing(true);
@@ -632,6 +646,7 @@ const Settings = () => {
             const appids = gamesResult.games.map(g => g.appid);
             await logToBackend('info', `Step 1 complete: Got ${appids.length} games from backend`);
             await logToBackend('info', `First 5 appids: ${appids.slice(0, 5).join(', ')}`);
+            await logToBackend('info', `Appid types: ${appids.slice(0, 5).map(a => typeof a).join(', ')}`);
             // Step 2: Get playtime from Steam frontend API
             await logToBackend('info', 'Step 2: Getting playtime from Steam frontend API...');
             setMessage(`Getting playtime data for ${appids.length} games...`);
@@ -797,7 +812,7 @@ const Settings = () => {
             SP_REACT.createElement("div", { style: styles.about },
                 SP_REACT.createElement("p", null,
                     "Game Progress Tracker v",
-                    "1.1.4-debug"),
+                    "1.1.5-debug"),
                 SP_REACT.createElement("p", null, "Automatic game tagging based on achievements, playtime, and completion time."),
                 SP_REACT.createElement("p", { style: styles.smallText }, "Data from HowLongToBeat \u2022 Steam achievement system")))));
 };
