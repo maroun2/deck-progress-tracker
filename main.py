@@ -18,7 +18,7 @@ PLUGIN_DIR = Path(decky.DECKY_PLUGIN_DIR)
 BACKEND_SRC = PLUGIN_DIR / "backend" / "src"
 
 logger = decky.logger
-logger.info("=== Game Progress Tracker v1.0.47 starting ===")
+logger.info("=== Game Progress Tracker v1.0.48 starting ===")
 logger.info(f"Plugin dir: {PLUGIN_DIR}")
 logger.info(f"Backend src: {BACKEND_SRC} exists={BACKEND_SRC.exists()}")
 
@@ -151,22 +151,34 @@ class Plugin:
             stats = await self.steam_service.get_game_stats_full(appid)
             await self.db.update_game_stats(appid, stats)
 
+            # Log playtime and achievement info
+            logger.info(f"  Stats: playtime={stats.get('playtime_minutes', 0)}min, " +
+                        f"achievements={stats.get('unlocked_achievements', 0)}/{stats.get('total_achievements', 0)}")
+
             # Fetch HLTB data if not cached
             cached_hltb = await self.db.get_hltb_cache(appid)
             if not cached_hltb:
                 hltb_data = await self.hltb_service.search_game(stats['game_name'])
                 if hltb_data:
                     await self.db.cache_hltb_data(appid, hltb_data)
+                    cached_hltb = hltb_data
+
+            # Log HLTB info
+            if cached_hltb:
+                logger.info(f"  HLTB: main={cached_hltb.get('main_story')}h, extra={cached_hltb.get('main_extra')}h")
+            else:
+                logger.info(f"  HLTB: no data")
 
             # Calculate new tag
             new_tag = await Plugin.calculate_auto_tag(self, appid)
+            logger.info(f"  Calculated tag: {new_tag or 'none'}")
 
             # Update if changed or doesn't exist
             if new_tag:
                 current_tag_value = current_tag.get('tag') if current_tag else None
                 if new_tag != current_tag_value:
                     await self.db.set_tag(appid, new_tag, is_manual=False)
-                    logger.info(f"Updated tag for {appid}: {new_tag}")
+                    logger.info(f"  -> Tag set: {new_tag}")
 
             return await self.db.get_tag(appid) or {}
 

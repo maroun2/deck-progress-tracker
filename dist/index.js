@@ -1,4 +1,4 @@
-const manifest = {"name":"Game Progress Tracker","author":"Maron","version":"1.0.47","flags":["_root"],"publish":{"tags":["library","achievements","statistics","enhancement"],"description":"Automatic game tagging based on achievements, playtime, and completion time. Track your progress with visual badges in the Steam library.","image":"https://opengraph.githubassets.com/1/SteamDeckHomebrew/decky-loader"}};
+const manifest = {"name":"Game Progress Tracker","author":"Maron","version":"1.0.48","flags":["_root"],"publish":{"tags":["library","achievements","statistics","enhancement"],"description":"Automatic game tagging based on achievements, playtime, and completion time. Track your progress with visual badges in the Steam library.","image":"https://opengraph.githubassets.com/1/SteamDeckHomebrew/decky-loader"}};
 const API_VERSION = 2;
 if (!manifest?.name) {
     throw new Error('[@decky/api]: Failed to find plugin manifest.');
@@ -335,10 +335,18 @@ const Settings = () => {
     const [taggedGames, setTaggedGames] = SP_REACT.useState([]);
     const [showTaggedList, setShowTaggedList] = SP_REACT.useState(false);
     const [loadingGames, setLoadingGames] = SP_REACT.useState(false);
+    // Settings section state
+    const [showSettings, setShowSettings] = SP_REACT.useState(false);
     SP_REACT.useEffect(() => {
         loadSettings();
         loadStats();
     }, []);
+    // Auto-load tagged games when stats show there are tagged games
+    SP_REACT.useEffect(() => {
+        if (stats && (stats.completed + stats.in_progress + stats.mastered) > 0) {
+            loadTaggedGames();
+        }
+    }, [stats]);
     const loadSettings = async () => {
         try {
             const result = await call('get_settings');
@@ -410,10 +418,7 @@ const Settings = () => {
                 showMessage(`Sync complete! ${result.synced}/${result.total} games synced. ` +
                     (result.errors ? `${result.errors} errors.` : ''));
                 await loadStats();
-                // Reload tagged games if the list is visible
-                if (showTaggedList) {
-                    await loadTaggedGames();
-                }
+                await loadTaggedGames();
             }
             else {
                 showMessage(`Sync failed: ${result.error}`);
@@ -458,6 +463,7 @@ const Settings = () => {
         mastered: 'Mastered',
         in_progress: 'In Progress',
     };
+    const taggedCount = stats ? stats.completed + stats.in_progress + stats.mastered : 0;
     return (SP_REACT.createElement("div", { style: styles.container },
         SP_REACT.createElement("h2", { style: styles.title }, "Game Progress Tracker"),
         message && (SP_REACT.createElement("div", { style: styles.message }, message)),
@@ -483,8 +489,8 @@ const Settings = () => {
             SP_REACT.createElement("button", { onClick: toggleTaggedList, style: styles.expandButton },
                 showTaggedList ? '- Hide' : '+ View',
                 " All Tagged Games",
-                stats && ` (${stats.completed + stats.in_progress + stats.mastered} games)`),
-            showTaggedList && (SP_REACT.createElement("div", { style: styles.taggedListContainer }, loadingGames ? (SP_REACT.createElement("div", { style: styles.loadingText }, "Loading games...")) : taggedGames.length === 0 ? (SP_REACT.createElement("div", { style: styles.loadingText }, "No tagged games yet. Run a sync first!")) : (['completed', 'mastered', 'in_progress'].map((tagType) => {
+                ` (${taggedCount} games)`),
+            showTaggedList && (SP_REACT.createElement("div", { style: styles.taggedListContainer }, loadingGames ? (SP_REACT.createElement("div", { style: styles.loadingText }, "Loading games...")) : taggedGames.length === 0 ? (SP_REACT.createElement("div", { style: styles.loadingText }, "No tagged games yet. Games need 60+ min playtime, 100% achievements, or HLTB mastery to be tagged.")) : (['completed', 'mastered', 'in_progress'].map((tagType) => {
                 const games = groupedGames[tagType] || [];
                 if (games.length === 0)
                     return null;
@@ -507,38 +513,44 @@ const Settings = () => {
                         game.is_manual && (SP_REACT.createElement("span", { style: styles.manualBadge }, "manual"))))))));
             }))))),
         SP_REACT.createElement("div", { style: styles.section },
-            SP_REACT.createElement("h3", { style: styles.sectionTitle }, "Automatic Tagging"),
-            SP_REACT.createElement("div", { style: styles.settingRow },
-                SP_REACT.createElement("label", { style: styles.label },
-                    SP_REACT.createElement("input", { type: "checkbox", checked: settings.auto_tag_enabled, onChange: (e) => updateSetting('auto_tag_enabled', e.target.checked), style: styles.checkbox }),
-                    "Enable Auto-Tagging"))),
-        SP_REACT.createElement("div", { style: styles.section },
-            SP_REACT.createElement("h3", { style: styles.sectionTitle }, "Tag Thresholds"),
-            SP_REACT.createElement("div", { style: styles.settingRow },
-                SP_REACT.createElement("label", { style: styles.label },
-                    "Mastered Multiplier: ",
-                    settings.mastered_multiplier,
-                    "x"),
-                SP_REACT.createElement("input", { type: "range", min: "1.0", max: "3.0", step: "0.1", value: settings.mastered_multiplier, onChange: (e) => updateSetting('mastered_multiplier', parseFloat(e.target.value)), style: styles.slider }),
-                SP_REACT.createElement("div", { style: styles.hint }, "Playtime must be this many times the HLTB completion time")),
-            SP_REACT.createElement("div", { style: styles.settingRow },
-                SP_REACT.createElement("label", { style: styles.label },
-                    "In Progress Threshold: ",
-                    settings.in_progress_threshold,
-                    " minutes"),
-                SP_REACT.createElement("input", { type: "range", min: "15", max: "300", step: "15", value: settings.in_progress_threshold, onChange: (e) => updateSetting('in_progress_threshold', parseInt(e.target.value)), style: styles.slider }),
-                SP_REACT.createElement("div", { style: styles.hint }, "Minimum playtime to mark as In Progress"))),
-        SP_REACT.createElement("div", { style: styles.section },
-            SP_REACT.createElement("h3", { style: styles.sectionTitle }, "Data Management"),
             SP_REACT.createElement("button", { onClick: syncLibrary, disabled: syncing || loading, style: syncing ? styles.buttonDisabled : styles.button }, syncing ? 'Syncing...' : 'Sync Entire Library'),
-            SP_REACT.createElement("button", { onClick: refreshCache, disabled: syncing || loading, style: styles.buttonSecondary }, "Refresh HLTB Cache"),
             SP_REACT.createElement("div", { style: styles.hint }, "Sync may take several minutes for large libraries")),
+        SP_REACT.createElement("div", { style: styles.section },
+            SP_REACT.createElement("button", { onClick: () => setShowSettings(!showSettings), style: styles.expandButton },
+                showSettings ? '- Hide' : '+ Show',
+                " Settings"),
+            showSettings && (SP_REACT.createElement("div", { style: styles.settingsContainer },
+                SP_REACT.createElement("div", { style: styles.settingGroup },
+                    SP_REACT.createElement("h4", { style: styles.settingGroupTitle }, "Automatic Tagging"),
+                    SP_REACT.createElement("div", { style: styles.settingRow },
+                        SP_REACT.createElement("label", { style: styles.label },
+                            SP_REACT.createElement("input", { type: "checkbox", checked: settings.auto_tag_enabled, onChange: (e) => updateSetting('auto_tag_enabled', e.target.checked), style: styles.checkbox }),
+                            "Enable Auto-Tagging"))),
+                SP_REACT.createElement("div", { style: styles.settingGroup },
+                    SP_REACT.createElement("h4", { style: styles.settingGroupTitle }, "Tag Thresholds"),
+                    SP_REACT.createElement("div", { style: styles.settingRow },
+                        SP_REACT.createElement("label", { style: styles.label },
+                            "Mastered Multiplier: ",
+                            settings.mastered_multiplier,
+                            "x"),
+                        SP_REACT.createElement("input", { type: "range", min: "1.0", max: "3.0", step: "0.1", value: settings.mastered_multiplier, onChange: (e) => updateSetting('mastered_multiplier', parseFloat(e.target.value)), style: styles.slider }),
+                        SP_REACT.createElement("div", { style: styles.hint }, "Playtime must be this many times the HLTB completion time")),
+                    SP_REACT.createElement("div", { style: styles.settingRow },
+                        SP_REACT.createElement("label", { style: styles.label },
+                            "In Progress Threshold: ",
+                            settings.in_progress_threshold,
+                            " minutes"),
+                        SP_REACT.createElement("input", { type: "range", min: "15", max: "300", step: "15", value: settings.in_progress_threshold, onChange: (e) => updateSetting('in_progress_threshold', parseInt(e.target.value)), style: styles.slider }),
+                        SP_REACT.createElement("div", { style: styles.hint }, "Minimum playtime to mark as In Progress"))),
+                SP_REACT.createElement("div", { style: styles.settingGroup },
+                    SP_REACT.createElement("h4", { style: styles.settingGroupTitle }, "Cache"),
+                    SP_REACT.createElement("button", { onClick: refreshCache, disabled: syncing || loading, style: styles.buttonSecondary }, "Refresh HLTB Cache"))))),
         SP_REACT.createElement("div", { style: styles.section },
             SP_REACT.createElement("h3", { style: styles.sectionTitle }, "About"),
             SP_REACT.createElement("div", { style: styles.about },
                 SP_REACT.createElement("p", null,
                     "Game Progress Tracker v",
-                    "1.0.47"),
+                    "1.0.48"),
                 SP_REACT.createElement("p", null, "Automatic game tagging based on achievements, playtime, and completion time."),
                 SP_REACT.createElement("p", { style: styles.smallText }, "Data from HowLongToBeat \u2022 Steam achievement system")))));
 };
@@ -670,8 +682,23 @@ const styles = {
         padding: '2px 6px',
         borderRadius: '3px',
     },
+    settingsContainer: {
+        marginTop: '12px',
+        padding: '12px',
+        backgroundColor: '#1a1a1a',
+        borderRadius: '4px',
+    },
+    settingGroup: {
+        marginBottom: '16px',
+    },
+    settingGroupTitle: {
+        margin: '0 0 8px 0',
+        fontSize: '14px',
+        fontWeight: 'bold',
+        color: '#888',
+    },
     settingRow: {
-        marginBottom: '20px',
+        marginBottom: '16px',
     },
     label: {
         display: 'block',
