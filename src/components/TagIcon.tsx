@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import React, { FC } from 'react';
 
 export type TagType = 'mastered' | 'completed' | 'in_progress' | 'backlog' | null;
 

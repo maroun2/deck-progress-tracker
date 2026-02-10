@@ -1,4 +1,4 @@
-const manifest = {"name":"Game Progress Tracker","author":"Maron","version":"1.1.0","api_version":1,"flags":["_root"],"publish":{"tags":["library","achievements","statistics","enhancement"],"description":"Automatic game tagging based on achievements, playtime, and completion time. Track your progress with visual badges in the Steam library.","image":"https://opengraph.githubassets.com/1/SteamDeckHomebrew/decky-loader"}};
+const manifest = {"name":"Game Progress Tracker","author":"Maron","version":"1.1.1","api_version":1,"flags":["_root"],"publish":{"tags":["library","achievements","statistics","enhancement"],"description":"Automatic game tagging based on achievements, playtime, and completion time. Track your progress with visual badges in the Steam library.","image":"https://opengraph.githubassets.com/1/SteamDeckHomebrew/decky-loader"}};
 const API_VERSION = 2;
 if (!manifest?.name) {
     throw new Error('[@decky/api]: Failed to find plugin manifest.');
@@ -36,26 +36,26 @@ const TAG_ICON_COLORS = {
 /**
  * Trophy icon for Mastered (100% achievements)
  */
-const TrophyIcon = ({ size, color }) => (React.createElement("svg", { width: size, height: size, viewBox: "0 0 24 24", fill: "none" },
-    React.createElement("path", { d: "M12 17c-1.1 0-2-.9-2-2v-1h4v1c0 1.1-.9 2-2 2z", fill: color }),
-    React.createElement("path", { d: "M17 4h-1V3c0-.55-.45-1-1-1H9c-.55 0-1 .45-1 1v1H7c-1.1 0-2 .9-2 2v1c0 2.55 1.92 4.63 4.39 4.94.63 1.5 1.98 2.63 3.61 2.96V17H9c-.55 0-1 .45-1 1v2c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2c0-.55-.45-1-1-1h-1.5v-2.1c1.63-.33 2.98-1.46 3.61-2.96C19.08 11.63 21 9.55 21 7V6c0-1.1-.9-2-2-2h-2zm-10 3V6h2v3c0 1.48.81 2.77 2 3.46-.43-.09-.87-.16-1.31-.27C7.36 11.36 5 9.42 5 7zm14 0c0 2.42-2.36 4.36-4.69 5.19-.44.11-.88.18-1.31.27 1.19-.69 2-1.98 2-3.46V6h2v1z", fill: color })));
+const TrophyIcon = ({ size, color }) => (SP_REACT.createElement("svg", { width: size, height: size, viewBox: "0 0 24 24", fill: "none" },
+    SP_REACT.createElement("path", { d: "M12 17c-1.1 0-2-.9-2-2v-1h4v1c0 1.1-.9 2-2 2z", fill: color }),
+    SP_REACT.createElement("path", { d: "M17 4h-1V3c0-.55-.45-1-1-1H9c-.55 0-1 .45-1 1v1H7c-1.1 0-2 .9-2 2v1c0 2.55 1.92 4.63 4.39 4.94.63 1.5 1.98 2.63 3.61 2.96V17H9c-.55 0-1 .45-1 1v2c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2c0-.55-.45-1-1-1h-1.5v-2.1c1.63-.33 2.98-1.46 3.61-2.96C19.08 11.63 21 9.55 21 7V6c0-1.1-.9-2-2-2h-2zm-10 3V6h2v3c0 1.48.81 2.77 2 3.46-.43-.09-.87-.16-1.31-.27C7.36 11.36 5 9.42 5 7zm14 0c0 2.42-2.36 4.36-4.69 5.19-.44.11-.88.18-1.31.27 1.19-.69 2-1.98 2-3.46V6h2v1z", fill: color })));
 /**
  * Checkmark in circle for Completed (beat main story)
  */
-const CheckCircleIcon = ({ size, color }) => (React.createElement("svg", { width: size, height: size, viewBox: "0 0 24 24", fill: "none" },
-    React.createElement("circle", { cx: "12", cy: "12", r: "10", stroke: color, strokeWidth: "2", fill: "none" }),
-    React.createElement("path", { d: "M8 12l3 3 5-6", stroke: color, strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round", fill: "none" })));
+const CheckCircleIcon = ({ size, color }) => (SP_REACT.createElement("svg", { width: size, height: size, viewBox: "0 0 24 24", fill: "none" },
+    SP_REACT.createElement("circle", { cx: "12", cy: "12", r: "10", stroke: color, strokeWidth: "2", fill: "none" }),
+    SP_REACT.createElement("path", { d: "M8 12l3 3 5-6", stroke: color, strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round", fill: "none" })));
 /**
  * Clock/hourglass icon for In Progress
  */
-const ClockIcon = ({ size, color }) => (React.createElement("svg", { width: size, height: size, viewBox: "0 0 24 24", fill: "none" },
-    React.createElement("circle", { cx: "12", cy: "12", r: "10", stroke: color, strokeWidth: "2", fill: "none" }),
-    React.createElement("path", { d: "M12 6v6l4 2", stroke: color, strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round", fill: "none" })));
+const ClockIcon = ({ size, color }) => (SP_REACT.createElement("svg", { width: size, height: size, viewBox: "0 0 24 24", fill: "none" },
+    SP_REACT.createElement("circle", { cx: "12", cy: "12", r: "10", stroke: color, strokeWidth: "2", fill: "none" }),
+    SP_REACT.createElement("path", { d: "M12 6v6l4 2", stroke: color, strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round", fill: "none" })));
 /**
  * Empty circle for Backlog (not started)
  */
-const EmptyCircleIcon = ({ size, color }) => (React.createElement("svg", { width: size, height: size, viewBox: "0 0 24 24", fill: "none" },
-    React.createElement("circle", { cx: "12", cy: "12", r: "10", stroke: color, strokeWidth: "2", fill: "none" })));
+const EmptyCircleIcon = ({ size, color }) => (SP_REACT.createElement("svg", { width: size, height: size, viewBox: "0 0 24 24", fill: "none" },
+    SP_REACT.createElement("circle", { cx: "12", cy: "12", r: "10", stroke: color, strokeWidth: "2", fill: "none" })));
 /**
  * TagIcon component - displays appropriate icon based on tag type
  */
@@ -69,11 +69,11 @@ const TagIcon = ({ type, size = 24, className }) => {
         justifyContent: 'center',
         flexShrink: 0,
     };
-    return (React.createElement("span", { style: iconStyle, className: className },
-        type === 'mastered' && React.createElement(TrophyIcon, { size: size, color: color }),
-        type === 'completed' && React.createElement(CheckCircleIcon, { size: size, color: color }),
-        type === 'in_progress' && React.createElement(ClockIcon, { size: size, color: color }),
-        type === 'backlog' && React.createElement(EmptyCircleIcon, { size: size, color: color })));
+    return (SP_REACT.createElement("span", { style: iconStyle, className: className },
+        type === 'mastered' && SP_REACT.createElement(TrophyIcon, { size: size, color: color }),
+        type === 'completed' && SP_REACT.createElement(CheckCircleIcon, { size: size, color: color }),
+        type === 'in_progress' && SP_REACT.createElement(ClockIcon, { size: size, color: color }),
+        type === 'backlog' && SP_REACT.createElement(EmptyCircleIcon, { size: size, color: color })));
 };
 
 /**
@@ -576,7 +576,7 @@ const Settings = () => {
     };
     const syncLibrary = async () => {
         await logToBackend('info', '========================================');
-        await logToBackend('info', `syncLibrary button clicked - v${"1.1.0"}`);
+        await logToBackend('info', `syncLibrary button clicked - v${"1.1.1"}`);
         await logToBackend('info', '========================================');
         try {
             setSyncing(true);
@@ -763,7 +763,7 @@ const Settings = () => {
             SP_REACT.createElement("div", { style: styles.about },
                 SP_REACT.createElement("p", null,
                     "Game Progress Tracker v",
-                    "1.1.0"),
+                    "1.1.1"),
                 SP_REACT.createElement("p", null, "Automatic game tagging based on achievements, playtime, and completion time."),
                 SP_REACT.createElement("p", { style: styles.smallText }, "Data from HowLongToBeat \u2022 Steam achievement system")))));
 };
