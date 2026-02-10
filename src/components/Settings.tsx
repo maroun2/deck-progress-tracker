@@ -33,10 +33,20 @@ export const Settings: FC = () => {
   const [showTaggedList, setShowTaggedList] = useState(false);
   const [loadingGames, setLoadingGames] = useState(false);
 
+  // Settings section state
+  const [showSettings, setShowSettings] = useState(false);
+
   useEffect(() => {
     loadSettings();
     loadStats();
   }, []);
+
+  // Auto-load tagged games when stats show there are tagged games
+  useEffect(() => {
+    if (stats && (stats.completed + stats.in_progress + stats.mastered) > 0) {
+      loadTaggedGames();
+    }
+  }, [stats]);
 
   const loadSettings = async () => {
     try {
@@ -115,10 +125,7 @@ export const Settings: FC = () => {
           (result.errors ? `${result.errors} errors.` : '')
         );
         await loadStats();
-        // Reload tagged games if the list is visible
-        if (showTaggedList) {
-          await loadTaggedGames();
-        }
+        await loadTaggedGames();
       } else {
         showMessage(`Sync failed: ${result.error}`);
       }
@@ -163,6 +170,8 @@ export const Settings: FC = () => {
     in_progress: 'In Progress',
   };
 
+  const taggedCount = stats ? stats.completed + stats.in_progress + stats.mastered : 0;
+
   return (
     <div style={styles.container}>
       <h2 style={styles.title}>Game Progress Tracker</h2>
@@ -171,7 +180,7 @@ export const Settings: FC = () => {
         <div style={styles.message}>{message}</div>
       )}
 
-      {/* Statistics */}
+      {/* Statistics - always visible */}
       {stats && (
         <div style={styles.section}>
           <h3 style={styles.sectionTitle}>Library Statistics</h3>
@@ -215,7 +224,7 @@ export const Settings: FC = () => {
           style={styles.expandButton}
         >
           {showTaggedList ? '- Hide' : '+ View'} All Tagged Games
-          {stats && ` (${stats.completed + stats.in_progress + stats.mastered} games)`}
+          {` (${taggedCount} games)`}
         </button>
 
         {showTaggedList && (
@@ -223,7 +232,9 @@ export const Settings: FC = () => {
             {loadingGames ? (
               <div style={styles.loadingText}>Loading games...</div>
             ) : taggedGames.length === 0 ? (
-              <div style={styles.loadingText}>No tagged games yet. Run a sync first!</div>
+              <div style={styles.loadingText}>
+                No tagged games yet. Games need 60+ min playtime, 100% achievements, or HLTB mastery to be tagged.
+              </div>
             ) : (
               ['completed', 'mastered', 'in_progress'].map((tagType) => {
                 const games = groupedGames[tagType] || [];
@@ -268,68 +279,8 @@ export const Settings: FC = () => {
         )}
       </div>
 
-      {/* Auto-tagging Settings */}
+      {/* Sync Button - always visible */}
       <div style={styles.section}>
-        <h3 style={styles.sectionTitle}>Automatic Tagging</h3>
-
-        <div style={styles.settingRow}>
-          <label style={styles.label}>
-            <input
-              type="checkbox"
-              checked={settings.auto_tag_enabled}
-              onChange={(e) => updateSetting('auto_tag_enabled', e.target.checked)}
-              style={styles.checkbox}
-            />
-            Enable Auto-Tagging
-          </label>
-        </div>
-      </div>
-
-      {/* Tag Thresholds */}
-      <div style={styles.section}>
-        <h3 style={styles.sectionTitle}>Tag Thresholds</h3>
-
-        <div style={styles.settingRow}>
-          <label style={styles.label}>
-            Mastered Multiplier: {settings.mastered_multiplier}x
-          </label>
-          <input
-            type="range"
-            min="1.0"
-            max="3.0"
-            step="0.1"
-            value={settings.mastered_multiplier}
-            onChange={(e) => updateSetting('mastered_multiplier', parseFloat(e.target.value))}
-            style={styles.slider}
-          />
-          <div style={styles.hint}>
-            Playtime must be this many times the HLTB completion time
-          </div>
-        </div>
-
-        <div style={styles.settingRow}>
-          <label style={styles.label}>
-            In Progress Threshold: {settings.in_progress_threshold} minutes
-          </label>
-          <input
-            type="range"
-            min="15"
-            max="300"
-            step="15"
-            value={settings.in_progress_threshold}
-            onChange={(e) => updateSetting('in_progress_threshold', parseInt(e.target.value))}
-            style={styles.slider}
-          />
-          <div style={styles.hint}>
-            Minimum playtime to mark as In Progress
-          </div>
-        </div>
-      </div>
-
-      {/* Data Management */}
-      <div style={styles.section}>
-        <h3 style={styles.sectionTitle}>Data Management</h3>
-
         <button
           onClick={syncLibrary}
           disabled={syncing || loading}
@@ -337,18 +288,92 @@ export const Settings: FC = () => {
         >
           {syncing ? 'Syncing...' : 'Sync Entire Library'}
         </button>
-
-        <button
-          onClick={refreshCache}
-          disabled={syncing || loading}
-          style={styles.buttonSecondary}
-        >
-          Refresh HLTB Cache
-        </button>
-
         <div style={styles.hint}>
           Sync may take several minutes for large libraries
         </div>
+      </div>
+
+      {/* Settings - collapsible */}
+      <div style={styles.section}>
+        <button
+          onClick={() => setShowSettings(!showSettings)}
+          style={styles.expandButton}
+        >
+          {showSettings ? '- Hide' : '+ Show'} Settings
+        </button>
+
+        {showSettings && (
+          <div style={styles.settingsContainer}>
+            {/* Auto-tagging Settings */}
+            <div style={styles.settingGroup}>
+              <h4 style={styles.settingGroupTitle}>Automatic Tagging</h4>
+              <div style={styles.settingRow}>
+                <label style={styles.label}>
+                  <input
+                    type="checkbox"
+                    checked={settings.auto_tag_enabled}
+                    onChange={(e) => updateSetting('auto_tag_enabled', e.target.checked)}
+                    style={styles.checkbox}
+                  />
+                  Enable Auto-Tagging
+                </label>
+              </div>
+            </div>
+
+            {/* Tag Thresholds */}
+            <div style={styles.settingGroup}>
+              <h4 style={styles.settingGroupTitle}>Tag Thresholds</h4>
+
+              <div style={styles.settingRow}>
+                <label style={styles.label}>
+                  Mastered Multiplier: {settings.mastered_multiplier}x
+                </label>
+                <input
+                  type="range"
+                  min="1.0"
+                  max="3.0"
+                  step="0.1"
+                  value={settings.mastered_multiplier}
+                  onChange={(e) => updateSetting('mastered_multiplier', parseFloat(e.target.value))}
+                  style={styles.slider}
+                />
+                <div style={styles.hint}>
+                  Playtime must be this many times the HLTB completion time
+                </div>
+              </div>
+
+              <div style={styles.settingRow}>
+                <label style={styles.label}>
+                  In Progress Threshold: {settings.in_progress_threshold} minutes
+                </label>
+                <input
+                  type="range"
+                  min="15"
+                  max="300"
+                  step="15"
+                  value={settings.in_progress_threshold}
+                  onChange={(e) => updateSetting('in_progress_threshold', parseInt(e.target.value))}
+                  style={styles.slider}
+                />
+                <div style={styles.hint}>
+                  Minimum playtime to mark as In Progress
+                </div>
+              </div>
+            </div>
+
+            {/* Cache Management */}
+            <div style={styles.settingGroup}>
+              <h4 style={styles.settingGroupTitle}>Cache</h4>
+              <button
+                onClick={refreshCache}
+                disabled={syncing || loading}
+                style={styles.buttonSecondary}
+              >
+                Refresh HLTB Cache
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* About */}
@@ -494,8 +519,23 @@ const styles: Record<string, React.CSSProperties> = {
     padding: '2px 6px',
     borderRadius: '3px',
   },
+  settingsContainer: {
+    marginTop: '12px',
+    padding: '12px',
+    backgroundColor: '#1a1a1a',
+    borderRadius: '4px',
+  },
+  settingGroup: {
+    marginBottom: '16px',
+  },
+  settingGroupTitle: {
+    margin: '0 0 8px 0',
+    fontSize: '14px',
+    fontWeight: 'bold',
+    color: '#888',
+  },
   settingRow: {
-    marginBottom: '20px',
+    marginBottom: '16px',
   },
   label: {
     display: 'block',
