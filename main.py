@@ -488,14 +488,21 @@ class Plugin:
         """Sync library using playtime data provided by frontend"""
         logger.info("=== sync_library_with_playtime called ===")
         logger.info(f"Received playtime_data type: {type(playtime_data)}")
-        logger.info(f"Received playtime_data keys count: {len(playtime_data) if isinstance(playtime_data, dict) else 'NOT A DICT'}")
+        logger.info(f"Received playtime_data: {str(playtime_data)[:500]}")
 
-        # Log sample of playtime data
+        # Handle case where playtime_data might be nested or wrong type
         if isinstance(playtime_data, dict):
+            logger.info(f"Received playtime_data keys count: {len(playtime_data)}")
             sample = list(playtime_data.items())[:5]
             logger.info(f"Sample playtime data (first 5): {sample}")
-            non_zero = sum(1 for v in playtime_data.values() if v > 0)
-            logger.info(f"Games with playtime > 0: {non_zero}/{len(playtime_data)}")
+            # Safely count non-zero values
+            try:
+                non_zero = sum(1 for v in playtime_data.values() if isinstance(v, (int, float)) and v > 0)
+                logger.info(f"Games with playtime > 0: {non_zero}/{len(playtime_data)}")
+            except Exception as e:
+                logger.error(f"Error counting non-zero playtime: {e}")
+        else:
+            logger.error(f"playtime_data is not a dict! Type: {type(playtime_data)}")
 
         try:
             logger.info(f"=== Starting sync with {len(playtime_data)} playtime entries ===")
@@ -510,10 +517,15 @@ class Plugin:
                 appid = game['appid']
                 game_name = game.get('name', f'Game {appid}')
 
-                # Use playtime from frontend
-                playtime_minutes = playtime_data.get(appid, 0)
+                # Use playtime from frontend - ensure it's an int
+                raw_playtime = playtime_data.get(appid, 0)
+                if isinstance(raw_playtime, (int, float)):
+                    playtime_minutes = int(raw_playtime)
+                else:
+                    logger.warning(f"Unexpected playtime type for {appid}: {type(raw_playtime)} = {raw_playtime}")
+                    playtime_minutes = 0
 
-                logger.info(f"[{i+1}/{total}] Syncing: {game_name} ({appid})")
+                logger.info(f"[{i+1}/{total}] Syncing: {game_name} ({appid}), playtime={playtime_minutes}")
 
                 try:
                     await Plugin.sync_game_with_playtime(self, appid, playtime_minutes)
