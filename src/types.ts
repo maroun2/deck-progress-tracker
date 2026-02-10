@@ -53,7 +53,15 @@ export interface TagStatistics {
   completed: number;
   in_progress: number;
   mastered: number;
+  backlog: number;
   total: number;
+}
+
+export interface TaggedGame {
+  appid: string;
+  game_name: string;
+  tag: 'completed' | 'in_progress' | 'mastered';
+  is_manual: boolean;
 }
 
 export interface SyncResult {

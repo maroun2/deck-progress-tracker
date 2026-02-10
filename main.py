@@ -18,7 +18,7 @@ PLUGIN_DIR = Path(decky.DECKY_PLUGIN_DIR)
 BACKEND_SRC = PLUGIN_DIR / "backend" / "src"
 
 logger = decky.logger
-logger.info("=== Game Progress Tracker v1.0.46 starting ===")
+logger.info("=== Game Progress Tracker v1.0.47 starting ===")
 logger.info(f"Plugin dir: {PLUGIN_DIR}")
 logger.info(f"Backend src: {BACKEND_SRC} exists={BACKEND_SRC.exists()}")
 
@@ -361,12 +361,15 @@ class Plugin:
         """Get counts per tag type"""
         try:
             all_tags = await self.db.get_all_tags()
+            all_games = await self.db.get_all_game_stats()
+            total_library = len(all_games) if all_games else 0
 
             stats = {
                 "completed": 0,
                 "in_progress": 0,
                 "mastered": 0,
-                "total": len(all_tags)
+                "backlog": total_library - len(all_tags),
+                "total": total_library
             }
 
             for tag_entry in all_tags:
@@ -378,3 +381,30 @@ class Plugin:
         except Exception as e:
             logger.error(f"Error getting tag statistics: {e}")
             return {"success": False, "error": str(e)}
+
+    async def get_all_tags_with_names(self) -> Dict[str, Any]:
+        """Get all tags with game names for display"""
+        try:
+            all_tags = await self.db.get_all_tags()
+
+            result = []
+            for tag_entry in all_tags:
+                appid = tag_entry['appid']
+                stats = await self.db.get_game_stats(appid)
+                game_name = stats.get('game_name', f'Game {appid}') if stats else f'Game {appid}'
+
+                result.append({
+                    'appid': appid,
+                    'game_name': game_name,
+                    'tag': tag_entry['tag'],
+                    'is_manual': tag_entry.get('is_manual', False)
+                })
+
+            # Sort by tag type, then by name
+            tag_order = {'completed': 0, 'mastered': 1, 'in_progress': 2}
+            result.sort(key=lambda x: (tag_order.get(x['tag'], 99), x['game_name'].lower()))
+
+            return {'success': True, 'games': result}
+        except Exception as e:
+            logger.error(f"Error getting all tags with names: {e}")
+            return {'success': False, 'error': str(e)}
