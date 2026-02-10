@@ -99,9 +99,10 @@ export const Settings: FC = () => {
   // Tagged games list state
   const [taggedGames, setTaggedGames] = useState<TaggedGame[]>([]);
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
-    mastered: true,
     completed: true,
     in_progress: true,
+    backlog: false,
+    mastered: true,
   });
   const [loadingGames, setLoadingGames] = useState(false);
 
@@ -269,12 +270,21 @@ export const Settings: FC = () => {
   }, {} as Record<string, TaggedGame[]>);
 
   const tagLabels: Record<string, string> = {
-    mastered: 'Mastered (100% Achievements)',
     completed: 'Completed (Beat Main Story)',
     in_progress: 'In Progress',
+    backlog: 'Backlog (Not Started)',
+    mastered: 'Mastered (100% Achievements)',
   };
 
-  const taggedCount = stats ? stats.completed + stats.in_progress + stats.mastered : 0;
+  const totalGames = stats ? stats.total : 0;
+
+  // Get count for each category including backlog from stats
+  const getCategoryCount = (tagType: string): number => {
+    if (tagType === 'backlog') {
+      return stats?.backlog || 0;
+    }
+    return (groupedGames[tagType] || []).length;
+  };
 
   return (
     <div style={styles.container}>
@@ -284,65 +294,33 @@ export const Settings: FC = () => {
         <div style={styles.message}>{message}</div>
       )}
 
-      {/* Statistics - always visible */}
-      {stats && (
-        <div style={styles.section}>
-          <h3 style={styles.sectionTitle}>Library Statistics</h3>
-          <div style={styles.statGrid}>
-            <div style={styles.statCard}>
-              <div style={{ ...styles.statValue, color: TAG_COLORS.completed }}>
-                {stats.completed}
-              </div>
-              <div style={styles.statLabel}>Completed</div>
-            </div>
-            <div style={styles.statCard}>
-              <div style={{ ...styles.statValue, color: TAG_COLORS.in_progress }}>
-                {stats.in_progress}
-              </div>
-              <div style={styles.statLabel}>In Progress</div>
-            </div>
-            <div style={styles.statCard}>
-              <div style={{ ...styles.statValue, color: TAG_COLORS.mastered }}>
-                {stats.mastered}
-              </div>
-              <div style={styles.statLabel}>Mastered</div>
-            </div>
-            <div style={styles.statCard}>
-              <div style={{ ...styles.statValue, color: TAG_COLORS.backlog }}>
-                {stats.backlog}
-              </div>
-              <div style={styles.statLabel}>Backlog</div>
-            </div>
-            <div style={styles.statCard}>
-              <div style={styles.statValue}>{stats.total}</div>
-              <div style={styles.statLabel}>Total Games</div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Tagged Games List - Expandable per tag type */}
+      {/* Game Lists - Expandable per tag type */}
       <div style={styles.section}>
-        <h3 style={styles.sectionTitle}>Tagged Games ({taggedCount})</h3>
+        <h3 style={styles.sectionTitle}>Library ({totalGames} games)</h3>
 
         {loadingGames ? (
           <div style={styles.loadingText}>Loading games...</div>
-        ) : taggedGames.length === 0 ? (
+        ) : totalGames === 0 ? (
           <div style={styles.loadingText}>
-            No tagged games yet. Click "Sync Entire Library" to tag your games based on playtime and achievements.
+            No games synced yet. Click "Sync Entire Library" to tag your games based on playtime and achievements.
           </div>
         ) : (
           <div style={styles.taggedListContainer}>
-            {(['mastered', 'completed', 'in_progress'] as TagType[]).map((tagType) => {
+            {(['completed', 'in_progress', 'backlog', 'mastered'] as TagType[]).map((tagType) => {
               if (!tagType) return null;
               const games = groupedGames[tagType] || [];
+              const count = getCategoryCount(tagType);
               const isExpanded = expandedSections[tagType];
+              const isBacklog = tagType === 'backlog';
 
               return (
                 <div key={tagType} style={styles.tagSection}>
                   <button
-                    onClick={() => toggleSection(tagType)}
-                    style={styles.tagSectionHeader}
+                    onClick={() => !isBacklog && toggleSection(tagType)}
+                    style={{
+                      ...styles.tagSectionHeader,
+                      cursor: isBacklog ? 'default' : 'pointer',
+                    }}
                   >
                     <div style={styles.tagSectionLeft}>
                       <TagIcon type={tagType} size={18} />
@@ -350,15 +328,17 @@ export const Settings: FC = () => {
                     </div>
                     <div style={styles.tagSectionRight}>
                       <span style={{ ...styles.tagCount, color: TAG_COLORS[tagType] }}>
-                        {games.length}
+                        {count}
                       </span>
-                      <span style={styles.expandIcon}>
-                        {isExpanded ? '−' : '+'}
-                      </span>
+                      {!isBacklog && (
+                        <span style={styles.expandIcon}>
+                          {isExpanded ? '−' : '+'}
+                        </span>
+                      )}
                     </div>
                   </button>
 
-                  {isExpanded && games.length > 0 && (
+                  {!isBacklog && isExpanded && games.length > 0 && (
                     <div style={styles.gameList}>
                       {games.map((game) => (
                         <div
@@ -381,7 +361,7 @@ export const Settings: FC = () => {
                     </div>
                   )}
 
-                  {isExpanded && games.length === 0 && (
+                  {!isBacklog && isExpanded && games.length === 0 && (
                     <div style={styles.emptySection}>No games with this tag</div>
                   )}
                 </div>
