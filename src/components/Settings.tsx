@@ -5,7 +5,16 @@
 
 import React, { FC, useState, useEffect } from 'react';
 import { call } from '@decky/api';
-import { PluginSettings, SyncResult, TagStatistics } from '../types';
+import { Navigation } from '@decky/ui';
+import { PluginSettings, SyncResult, TagStatistics, TaggedGame } from '../types';
+
+// Tag color mapping
+const TAG_COLORS: Record<string, string> = {
+  completed: '#38ef7d',
+  in_progress: '#764ba2',
+  mastered: '#f5576c',
+  backlog: '#888',
+};
 
 export const Settings: FC = () => {
   const [settings, setSettings] = useState<PluginSettings>({
@@ -18,6 +27,11 @@ export const Settings: FC = () => {
   const [loading, setLoading] = useState(false);
   const [syncing, setSyncing] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+
+  // Tagged games list state
+  const [taggedGames, setTaggedGames] = useState<TaggedGame[]>([]);
+  const [showTaggedList, setShowTaggedList] = useState(false);
+  const [loadingGames, setLoadingGames] = useState(false);
 
   useEffect(() => {
     loadSettings();
@@ -44,6 +58,32 @@ export const Settings: FC = () => {
     } catch (err) {
       console.error('Error loading stats:', err);
     }
+  };
+
+  const loadTaggedGames = async () => {
+    try {
+      setLoadingGames(true);
+      const result = await call<[], { success: boolean; games: TaggedGame[] }>('get_all_tags_with_names');
+      if (result.success && result.games) {
+        setTaggedGames(result.games);
+      }
+    } catch (err) {
+      console.error('Error loading tagged games:', err);
+    } finally {
+      setLoadingGames(false);
+    }
+  };
+
+  const toggleTaggedList = () => {
+    if (!showTaggedList && taggedGames.length === 0) {
+      loadTaggedGames();
+    }
+    setShowTaggedList(!showTaggedList);
+  };
+
+  const navigateToGame = (appid: string) => {
+    Navigation.Navigate(`/library/app/${appid}`);
+    Navigation.CloseSideMenus();
   };
 
   const updateSetting = async (key: keyof PluginSettings, value: any) => {
@@ -75,6 +115,10 @@ export const Settings: FC = () => {
           (result.errors ? `${result.errors} errors.` : '')
         );
         await loadStats();
+        // Reload tagged games if the list is visible
+        if (showTaggedList) {
+          await loadTaggedGames();
+        }
       } else {
         showMessage(`Sync failed: ${result.error}`);
       }
@@ -104,6 +148,21 @@ export const Settings: FC = () => {
     setTimeout(() => setMessage(null), 5000);
   };
 
+  // Group tagged games by tag type
+  const groupedGames = taggedGames.reduce((acc, game) => {
+    if (!acc[game.tag]) {
+      acc[game.tag] = [];
+    }
+    acc[game.tag].push(game);
+    return acc;
+  }, {} as Record<string, TaggedGame[]>);
+
+  const tagLabels: Record<string, string> = {
+    completed: 'Completed',
+    mastered: 'Mastered',
+    in_progress: 'In Progress',
+  };
+
   return (
     <div style={styles.container}>
       <h2 style={styles.title}>Game Progress Tracker</h2>
@@ -118,24 +177,96 @@ export const Settings: FC = () => {
           <h3 style={styles.sectionTitle}>Library Statistics</h3>
           <div style={styles.statGrid}>
             <div style={styles.statCard}>
-              <div style={styles.statValue}>{stats.completed}</div>
+              <div style={{ ...styles.statValue, color: TAG_COLORS.completed }}>
+                {stats.completed}
+              </div>
               <div style={styles.statLabel}>Completed</div>
             </div>
             <div style={styles.statCard}>
-              <div style={styles.statValue}>{stats.in_progress}</div>
+              <div style={{ ...styles.statValue, color: TAG_COLORS.in_progress }}>
+                {stats.in_progress}
+              </div>
               <div style={styles.statLabel}>In Progress</div>
             </div>
             <div style={styles.statCard}>
-              <div style={styles.statValue}>{stats.mastered}</div>
+              <div style={{ ...styles.statValue, color: TAG_COLORS.mastered }}>
+                {stats.mastered}
+              </div>
               <div style={styles.statLabel}>Mastered</div>
             </div>
             <div style={styles.statCard}>
+              <div style={{ ...styles.statValue, color: TAG_COLORS.backlog }}>
+                {stats.backlog}
+              </div>
+              <div style={styles.statLabel}>Backlog</div>
+            </div>
+            <div style={styles.statCard}>
               <div style={styles.statValue}>{stats.total}</div>
-              <div style={styles.statLabel}>Total Tagged</div>
+              <div style={styles.statLabel}>Total Games</div>
             </div>
           </div>
         </div>
       )}
+
+      {/* Tagged Games List */}
+      <div style={styles.section}>
+        <button
+          onClick={toggleTaggedList}
+          style={styles.expandButton}
+        >
+          {showTaggedList ? '- Hide' : '+ View'} All Tagged Games
+          {stats && ` (${stats.completed + stats.in_progress + stats.mastered} games)`}
+        </button>
+
+        {showTaggedList && (
+          <div style={styles.taggedListContainer}>
+            {loadingGames ? (
+              <div style={styles.loadingText}>Loading games...</div>
+            ) : taggedGames.length === 0 ? (
+              <div style={styles.loadingText}>No tagged games yet. Run a sync first!</div>
+            ) : (
+              ['completed', 'mastered', 'in_progress'].map((tagType) => {
+                const games = groupedGames[tagType] || [];
+                if (games.length === 0) return null;
+
+                return (
+                  <div key={tagType} style={styles.tagGroup}>
+                    <div style={styles.tagGroupHeader}>
+                      <span
+                        style={{
+                          ...styles.tagDot,
+                          backgroundColor: TAG_COLORS[tagType],
+                        }}
+                      />
+                      {tagLabels[tagType]} ({games.length})
+                    </div>
+                    <div style={styles.gameList}>
+                      {games.map((game) => (
+                        <div
+                          key={game.appid}
+                          style={styles.gameItem}
+                          onClick={() => navigateToGame(game.appid)}
+                        >
+                          <span
+                            style={{
+                              ...styles.smallDot,
+                              backgroundColor: TAG_COLORS[game.tag],
+                            }}
+                          />
+                          <span style={styles.gameName}>{game.game_name}</span>
+                          {game.is_manual && (
+                            <span style={styles.manualBadge}>manual</span>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })
+            )}
+          </div>
+        )}
+      </div>
 
       {/* Auto-tagging Settings */}
       <div style={styles.section}>
@@ -266,24 +397,102 @@ const styles: Record<string, React.CSSProperties> = {
   },
   statGrid: {
     display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))',
-    gap: '12px',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(100px, 1fr))',
+    gap: '10px',
   },
   statCard: {
     backgroundColor: '#252525',
-    padding: '16px',
+    padding: '12px 8px',
     borderRadius: '8px',
     textAlign: 'center',
   },
   statValue: {
-    fontSize: '32px',
+    fontSize: '28px',
     fontWeight: 'bold',
     color: '#667eea',
     marginBottom: '4px',
   },
   statLabel: {
-    fontSize: '12px',
+    fontSize: '11px',
     color: '#aaa',
+  },
+  expandButton: {
+    width: '100%',
+    padding: '12px',
+    backgroundColor: '#333',
+    border: '1px solid #444',
+    borderRadius: '4px',
+    color: 'white',
+    fontSize: '14px',
+    cursor: 'pointer',
+    textAlign: 'left',
+  },
+  taggedListContainer: {
+    marginTop: '12px',
+    maxHeight: '400px',
+    overflowY: 'auto',
+  },
+  loadingText: {
+    padding: '16px',
+    textAlign: 'center',
+    color: '#888',
+    fontSize: '14px',
+  },
+  tagGroup: {
+    marginBottom: '16px',
+  },
+  tagGroupHeader: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    fontSize: '14px',
+    fontWeight: 'bold',
+    color: '#ccc',
+    marginBottom: '8px',
+    paddingBottom: '4px',
+    borderBottom: '1px solid #333',
+  },
+  tagDot: {
+    width: '12px',
+    height: '12px',
+    borderRadius: '50%',
+    display: 'inline-block',
+  },
+  gameList: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '4px',
+  },
+  gameItem: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    padding: '8px 12px',
+    backgroundColor: '#252525',
+    borderRadius: '4px',
+    cursor: 'pointer',
+    transition: 'background-color 0.2s',
+  },
+  smallDot: {
+    width: '8px',
+    height: '8px',
+    borderRadius: '50%',
+    flexShrink: 0,
+  },
+  gameName: {
+    fontSize: '13px',
+    color: '#ddd',
+    flex: 1,
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
+  },
+  manualBadge: {
+    fontSize: '10px',
+    color: '#888',
+    backgroundColor: '#333',
+    padding: '2px 6px',
+    borderRadius: '3px',
   },
   settingRow: {
     marginBottom: '20px',

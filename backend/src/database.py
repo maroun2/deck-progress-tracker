@@ -349,6 +349,19 @@ class Database:
             }
         return None
 
+    def _get_all_game_stats_sync(self, conn):
+        cursor = conn.cursor()
+        cursor.execute("SELECT appid FROM game_stats")
+        return cursor.fetchall()
+
+    async def get_all_game_stats(self) -> List[Dict[str, Any]]:
+        """Get all game statistics records (appid only for counting)"""
+        if not self.connection:
+            return []
+
+        rows = await asyncio.to_thread(self._get_all_game_stats_sync, self.connection)
+        return [{"appid": row["appid"]} for row in rows]
+
     # Settings operations
     def _get_setting_sync(self, conn, key: str):
         cursor = conn.cursor()

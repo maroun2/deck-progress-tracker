@@ -1,4 +1,4 @@
-const manifest = {"name":"Game Progress Tracker","author":"Maron","version":"1.0.46","flags":["_root"],"publish":{"tags":["library","achievements","statistics","enhancement"],"description":"Automatic game tagging based on achievements, playtime, and completion time. Track your progress with visual badges in the Steam library.","image":"https://opengraph.githubassets.com/1/SteamDeckHomebrew/decky-loader"}};
+const manifest = {"name":"Game Progress Tracker","author":"Maron","version":"1.0.47","flags":["_root"],"publish":{"tags":["library","achievements","statistics","enhancement"],"description":"Automatic game tagging based on achievements, playtime, and completion time. Track your progress with visual badges in the Steam library.","image":"https://opengraph.githubassets.com/1/SteamDeckHomebrew/decky-loader"}};
 const API_VERSION = 2;
 if (!manifest?.name) {
     throw new Error('[@decky/api]: Failed to find plugin manifest.');
@@ -312,6 +312,14 @@ const styles$1 = {
  * Settings Component
  * Plugin settings and configuration panel
  */
+
+// Tag color mapping
+const TAG_COLORS = {
+    completed: '#38ef7d',
+    in_progress: '#764ba2',
+    mastered: '#f5576c',
+    backlog: '#888',
+};
 const Settings = () => {
     const [settings, setSettings] = SP_REACT.useState({
         auto_tag_enabled: true,
@@ -323,6 +331,10 @@ const Settings = () => {
     const [loading, setLoading] = SP_REACT.useState(false);
     const [syncing, setSyncing] = SP_REACT.useState(false);
     const [message, setMessage] = SP_REACT.useState(null);
+    // Tagged games list state
+    const [taggedGames, setTaggedGames] = SP_REACT.useState([]);
+    const [showTaggedList, setShowTaggedList] = SP_REACT.useState(false);
+    const [loadingGames, setLoadingGames] = SP_REACT.useState(false);
     SP_REACT.useEffect(() => {
         loadSettings();
         loadStats();
@@ -349,6 +361,31 @@ const Settings = () => {
             console.error('Error loading stats:', err);
         }
     };
+    const loadTaggedGames = async () => {
+        try {
+            setLoadingGames(true);
+            const result = await call('get_all_tags_with_names');
+            if (result.success && result.games) {
+                setTaggedGames(result.games);
+            }
+        }
+        catch (err) {
+            console.error('Error loading tagged games:', err);
+        }
+        finally {
+            setLoadingGames(false);
+        }
+    };
+    const toggleTaggedList = () => {
+        if (!showTaggedList && taggedGames.length === 0) {
+            loadTaggedGames();
+        }
+        setShowTaggedList(!showTaggedList);
+    };
+    const navigateToGame = (appid) => {
+        DFL.Navigation.Navigate(`/library/app/${appid}`);
+        DFL.Navigation.CloseSideMenus();
+    };
     const updateSetting = async (key, value) => {
         const newSettings = { ...settings, [key]: value };
         setSettings(newSettings);
@@ -373,6 +410,10 @@ const Settings = () => {
                 showMessage(`Sync complete! ${result.synced}/${result.total} games synced. ` +
                     (result.errors ? `${result.errors} errors.` : ''));
                 await loadStats();
+                // Reload tagged games if the list is visible
+                if (showTaggedList) {
+                    await loadTaggedGames();
+                }
             }
             else {
                 showMessage(`Sync failed: ${result.error}`);
@@ -404,6 +445,19 @@ const Settings = () => {
         setMessage(msg);
         setTimeout(() => setMessage(null), 5000);
     };
+    // Group tagged games by tag type
+    const groupedGames = taggedGames.reduce((acc, game) => {
+        if (!acc[game.tag]) {
+            acc[game.tag] = [];
+        }
+        acc[game.tag].push(game);
+        return acc;
+    }, {});
+    const tagLabels = {
+        completed: 'Completed',
+        mastered: 'Mastered',
+        in_progress: 'In Progress',
+    };
     return (SP_REACT.createElement("div", { style: styles.container },
         SP_REACT.createElement("h2", { style: styles.title }, "Game Progress Tracker"),
         message && (SP_REACT.createElement("div", { style: styles.message }, message)),
@@ -411,17 +465,47 @@ const Settings = () => {
             SP_REACT.createElement("h3", { style: styles.sectionTitle }, "Library Statistics"),
             SP_REACT.createElement("div", { style: styles.statGrid },
                 SP_REACT.createElement("div", { style: styles.statCard },
-                    SP_REACT.createElement("div", { style: styles.statValue }, stats.completed),
+                    SP_REACT.createElement("div", { style: { ...styles.statValue, color: TAG_COLORS.completed } }, stats.completed),
                     SP_REACT.createElement("div", { style: styles.statLabel }, "Completed")),
                 SP_REACT.createElement("div", { style: styles.statCard },
-                    SP_REACT.createElement("div", { style: styles.statValue }, stats.in_progress),
+                    SP_REACT.createElement("div", { style: { ...styles.statValue, color: TAG_COLORS.in_progress } }, stats.in_progress),
                     SP_REACT.createElement("div", { style: styles.statLabel }, "In Progress")),
                 SP_REACT.createElement("div", { style: styles.statCard },
-                    SP_REACT.createElement("div", { style: styles.statValue }, stats.mastered),
+                    SP_REACT.createElement("div", { style: { ...styles.statValue, color: TAG_COLORS.mastered } }, stats.mastered),
                     SP_REACT.createElement("div", { style: styles.statLabel }, "Mastered")),
                 SP_REACT.createElement("div", { style: styles.statCard },
+                    SP_REACT.createElement("div", { style: { ...styles.statValue, color: TAG_COLORS.backlog } }, stats.backlog),
+                    SP_REACT.createElement("div", { style: styles.statLabel }, "Backlog")),
+                SP_REACT.createElement("div", { style: styles.statCard },
                     SP_REACT.createElement("div", { style: styles.statValue }, stats.total),
-                    SP_REACT.createElement("div", { style: styles.statLabel }, "Total Tagged"))))),
+                    SP_REACT.createElement("div", { style: styles.statLabel }, "Total Games"))))),
+        SP_REACT.createElement("div", { style: styles.section },
+            SP_REACT.createElement("button", { onClick: toggleTaggedList, style: styles.expandButton },
+                showTaggedList ? '- Hide' : '+ View',
+                " All Tagged Games",
+                stats && ` (${stats.completed + stats.in_progress + stats.mastered} games)`),
+            showTaggedList && (SP_REACT.createElement("div", { style: styles.taggedListContainer }, loadingGames ? (SP_REACT.createElement("div", { style: styles.loadingText }, "Loading games...")) : taggedGames.length === 0 ? (SP_REACT.createElement("div", { style: styles.loadingText }, "No tagged games yet. Run a sync first!")) : (['completed', 'mastered', 'in_progress'].map((tagType) => {
+                const games = groupedGames[tagType] || [];
+                if (games.length === 0)
+                    return null;
+                return (SP_REACT.createElement("div", { key: tagType, style: styles.tagGroup },
+                    SP_REACT.createElement("div", { style: styles.tagGroupHeader },
+                        SP_REACT.createElement("span", { style: {
+                                ...styles.tagDot,
+                                backgroundColor: TAG_COLORS[tagType],
+                            } }),
+                        tagLabels[tagType],
+                        " (",
+                        games.length,
+                        ")"),
+                    SP_REACT.createElement("div", { style: styles.gameList }, games.map((game) => (SP_REACT.createElement("div", { key: game.appid, style: styles.gameItem, onClick: () => navigateToGame(game.appid) },
+                        SP_REACT.createElement("span", { style: {
+                                ...styles.smallDot,
+                                backgroundColor: TAG_COLORS[game.tag],
+                            } }),
+                        SP_REACT.createElement("span", { style: styles.gameName }, game.game_name),
+                        game.is_manual && (SP_REACT.createElement("span", { style: styles.manualBadge }, "manual"))))))));
+            }))))),
         SP_REACT.createElement("div", { style: styles.section },
             SP_REACT.createElement("h3", { style: styles.sectionTitle }, "Automatic Tagging"),
             SP_REACT.createElement("div", { style: styles.settingRow },
@@ -454,7 +538,7 @@ const Settings = () => {
             SP_REACT.createElement("div", { style: styles.about },
                 SP_REACT.createElement("p", null,
                     "Game Progress Tracker v",
-                    "1.0.46"),
+                    "1.0.47"),
                 SP_REACT.createElement("p", null, "Automatic game tagging based on achievements, playtime, and completion time."),
                 SP_REACT.createElement("p", { style: styles.smallText }, "Data from HowLongToBeat \u2022 Steam achievement system")))));
 };
@@ -489,24 +573,102 @@ const styles = {
     },
     statGrid: {
         display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))',
-        gap: '12px',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(100px, 1fr))',
+        gap: '10px',
     },
     statCard: {
         backgroundColor: '#252525',
-        padding: '16px',
+        padding: '12px 8px',
         borderRadius: '8px',
         textAlign: 'center',
     },
     statValue: {
-        fontSize: '32px',
+        fontSize: '28px',
         fontWeight: 'bold',
         color: '#667eea',
         marginBottom: '4px',
     },
     statLabel: {
-        fontSize: '12px',
+        fontSize: '11px',
         color: '#aaa',
+    },
+    expandButton: {
+        width: '100%',
+        padding: '12px',
+        backgroundColor: '#333',
+        border: '1px solid #444',
+        borderRadius: '4px',
+        color: 'white',
+        fontSize: '14px',
+        cursor: 'pointer',
+        textAlign: 'left',
+    },
+    taggedListContainer: {
+        marginTop: '12px',
+        maxHeight: '400px',
+        overflowY: 'auto',
+    },
+    loadingText: {
+        padding: '16px',
+        textAlign: 'center',
+        color: '#888',
+        fontSize: '14px',
+    },
+    tagGroup: {
+        marginBottom: '16px',
+    },
+    tagGroupHeader: {
+        display: 'flex',
+        alignItems: 'center',
+        gap: '8px',
+        fontSize: '14px',
+        fontWeight: 'bold',
+        color: '#ccc',
+        marginBottom: '8px',
+        paddingBottom: '4px',
+        borderBottom: '1px solid #333',
+    },
+    tagDot: {
+        width: '12px',
+        height: '12px',
+        borderRadius: '50%',
+        display: 'inline-block',
+    },
+    gameList: {
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '4px',
+    },
+    gameItem: {
+        display: 'flex',
+        alignItems: 'center',
+        gap: '8px',
+        padding: '8px 12px',
+        backgroundColor: '#252525',
+        borderRadius: '4px',
+        cursor: 'pointer',
+        transition: 'background-color 0.2s',
+    },
+    smallDot: {
+        width: '8px',
+        height: '8px',
+        borderRadius: '50%',
+        flexShrink: 0,
+    },
+    gameName: {
+        fontSize: '13px',
+        color: '#ddd',
+        flex: 1,
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        whiteSpace: 'nowrap',
+    },
+    manualBadge: {
+        fontSize: '10px',
+        color: '#888',
+        backgroundColor: '#333',
+        padding: '2px 6px',
+        borderRadius: '3px',
     },
     settingRow: {
         marginBottom: '20px',
