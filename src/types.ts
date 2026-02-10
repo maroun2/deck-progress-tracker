@@ -47,6 +47,9 @@ export interface PluginSettings {
   mastered_multiplier: number;
   in_progress_threshold: number;
   cache_ttl: number;
+  // Game source settings
+  source_installed: boolean;
+  source_non_steam: boolean;
 }
 
 export interface TagStatistics {

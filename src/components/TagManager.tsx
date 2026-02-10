@@ -6,6 +6,7 @@
 import React, { FC, useState, useEffect } from 'react';
 import { call } from '@decky/api';
 import { GameDetails } from '../types';
+import { TagIcon, TAG_ICON_COLORS } from './TagIcon';
 
 interface TagManagerProps {
   appid: string;
@@ -128,29 +129,46 @@ export const TagManager: FC<TagManagerProps> = ({ appid, onClose }) => {
 
         <div style={styles.section}>
           <h3 style={styles.sectionTitle}>Current Tag</h3>
-          <div style={styles.statRow}>
+          <div style={styles.currentTag}>
             {tag?.tag ? (
-              <span>
-                {tag.tag.replace('_', ' ').toUpperCase()}
-                {tag.is_manual ? ' (Manual)' : ' (Automatic)'}
-              </span>
+              <>
+                <TagIcon type={tag.tag as any} size={24} />
+                <span style={{ color: TAG_ICON_COLORS[tag.tag as keyof typeof TAG_ICON_COLORS] }}>
+                  {tag.tag.replace('_', ' ').toUpperCase()}
+                </span>
+                <span style={styles.tagType}>
+                  {tag.is_manual ? '(Manual)' : '(Automatic)'}
+                </span>
+              </>
             ) : (
-              <span>No tag assigned</span>
+              <span style={styles.noTag}>No tag assigned</span>
             )}
           </div>
         </div>
 
         <div style={styles.section}>
           <h3 style={styles.sectionTitle}>Set Tag</h3>
-          <div style={styles.buttonGroup}>
-            <button onClick={() => setTag('completed')} style={styles.tagButton}>
-              Completed
+          <div style={styles.tagButtonGroup}>
+            <button
+              onClick={() => setTag('mastered')}
+              style={{ ...styles.tagButton, backgroundColor: TAG_ICON_COLORS.mastered }}
+            >
+              <TagIcon type="mastered" size={20} />
+              <span>Mastered</span>
             </button>
-            <button onClick={() => setTag('in_progress')} style={styles.tagButton}>
-              In Progress
+            <button
+              onClick={() => setTag('completed')}
+              style={{ ...styles.tagButton, backgroundColor: TAG_ICON_COLORS.completed }}
+            >
+              <TagIcon type="completed" size={20} />
+              <span>Completed</span>
             </button>
-            <button onClick={() => setTag('mastered')} style={styles.tagButton}>
-              Mastered
+            <button
+              onClick={() => setTag('in_progress')}
+              style={{ ...styles.tagButton, backgroundColor: TAG_ICON_COLORS.in_progress }}
+            >
+              <TagIcon type="in_progress" size={20} />
+              <span>In Progress</span>
             </button>
           </div>
           <div style={styles.buttonGroup}>
@@ -214,23 +232,50 @@ const styles: Record<string, React.CSSProperties> = {
     padding: '8px 0',
     fontSize: '14px',
   },
+  currentTag: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '12px',
+    padding: '12px',
+    backgroundColor: '#252525',
+    borderRadius: '6px',
+    fontSize: '16px',
+    fontWeight: 'bold',
+  },
+  tagType: {
+    fontSize: '12px',
+    color: '#888',
+    fontWeight: 'normal',
+  },
+  noTag: {
+    color: '#888',
+    fontStyle: 'italic',
+  },
   buttonGroup: {
     display: 'flex',
     gap: '8px',
     marginBottom: '8px',
     flexWrap: 'wrap',
   },
+  tagButtonGroup: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '8px',
+    marginBottom: '12px',
+  },
   tagButton: {
-    flex: 1,
-    padding: '12px',
-    backgroundColor: '#667eea',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '10px',
+    padding: '14px',
     border: 'none',
-    borderRadius: '4px',
+    borderRadius: '6px',
     color: 'white',
-    fontSize: '14px',
+    fontSize: '15px',
     fontWeight: 'bold',
     cursor: 'pointer',
-    transition: 'background-color 0.2s',
+    transition: 'opacity 0.2s',
   },
   secondaryButton: {
     flex: 1,

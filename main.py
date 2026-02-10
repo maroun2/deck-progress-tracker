@@ -438,8 +438,28 @@ class Plugin:
         """Get list of all games for frontend to fetch playtime"""
         logger.info("=== get_all_games called (frontend requesting game list) ===")
         try:
-            games = await self.steam_service.get_all_games()
-            logger.info(f"get_all_games: returning {len(games)} games to frontend")
+            # Get source settings
+            settings = await self.db.get_all_settings()
+            source_installed = settings.get('source_installed', True)
+            source_non_steam = settings.get('source_non_steam', False)
+
+            logger.info(f"Game sources: installed={source_installed}, non_steam={source_non_steam}")
+
+            games = []
+
+            # Get installed Steam games
+            if source_installed:
+                installed_games = await self.steam_service.get_all_games()
+                games.extend(installed_games)
+                logger.info(f"Added {len(installed_games)} installed games")
+
+            # Get non-Steam games
+            if source_non_steam:
+                non_steam_games = await self.steam_service.get_non_steam_games()
+                games.extend(non_steam_games)
+                logger.info(f"Added {len(non_steam_games)} non-Steam games")
+
+            logger.info(f"get_all_games: returning {len(games)} total games to frontend")
             return {"success": True, "games": games}
         except Exception as e:
             logger.error(f"get_all_games failed: {e}")
