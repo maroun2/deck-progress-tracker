@@ -74,3 +74,9 @@ export interface SyncResult {
   error?: string;
 }
 
+export interface GameListResult {
+  success: boolean;
+  games: Array<{ appid: string; name: string }>;
+  error?: string;
+}
+

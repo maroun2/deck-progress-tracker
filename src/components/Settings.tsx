@@ -6,7 +6,35 @@
 import React, { FC, useState, useEffect } from 'react';
 import { call } from '@decky/api';
 import { Navigation } from '@decky/ui';
-import { PluginSettings, SyncResult, TagStatistics, TaggedGame } from '../types';
+import { PluginSettings, SyncResult, TagStatistics, TaggedGame, GameListResult } from '../types';
+
+/**
+ * Get playtime data for a list of appids from Steam's frontend API
+ * Uses window.appStore which is Steam's internal game data cache
+ */
+const getPlaytimeData = (appids: string[]): Record<string, number> => {
+  const playtimeMap: Record<string, number> = {};
+
+  // Access Steam's global appStore (typed by @decky/ui)
+  const appStore = (window as any).appStore;
+  if (!appStore) {
+    console.error('[GameProgressTracker] appStore not available');
+    return playtimeMap;
+  }
+
+  for (const appid of appids) {
+    try {
+      const overview = appStore.GetAppOverviewByAppID(parseInt(appid));
+      if (overview) {
+        playtimeMap[appid] = overview.minutes_playtime_forever || 0;
+      }
+    } catch (e) {
+      console.error(`[GameProgressTracker] Failed to get playtime for ${appid}:`, e);
+    }
+  }
+
+  return playtimeMap;
+};
 
 // Tag color mapping
 const TAG_COLORS: Record<string, string> = {
@@ -113,11 +141,34 @@ export const Settings: FC = () => {
     console.log('[GameProgressTracker] syncLibrary button clicked');
     try {
       setSyncing(true);
-      setMessage('Syncing library... This may take several minutes.');
+      setMessage('Fetching game list...');
 
-      console.log('[GameProgressTracker] Calling backend sync_library...');
-      const result = await call<[], SyncResult>('sync_library');
-      console.log('[GameProgressTracker] sync_library result:', result);
+      // Step 1: Get all game appids from backend
+      console.log('[GameProgressTracker] Fetching game list from backend...');
+      const gamesResult = await call<[], GameListResult>('get_all_games');
+
+      if (!gamesResult.success || !gamesResult.games) {
+        showMessage(`Failed to get game list: ${gamesResult.error || 'Unknown error'}`);
+        return;
+      }
+
+      const appids = gamesResult.games.map(g => g.appid);
+      console.log(`[GameProgressTracker] Got ${appids.length} games from backend`);
+
+      // Step 2: Get playtime from Steam frontend API
+      setMessage(`Getting playtime data for ${appids.length} games...`);
+      const playtimeData = getPlaytimeData(appids);
+      const gamesWithPlaytime = Object.values(playtimeData).filter(v => v > 0).length;
+      console.log(`[GameProgressTracker] Got playtime for ${gamesWithPlaytime}/${appids.length} games`);
+
+      // Step 3: Sync with playtime data
+      setMessage('Syncing library... This may take several minutes.');
+      console.log('[GameProgressTracker] Calling backend sync_library_with_playtime...');
+      const result = await call<[{ playtime_data: Record<string, number> }], SyncResult>(
+        'sync_library_with_playtime',
+        { playtime_data: playtimeData }
+      );
+      console.log('[GameProgressTracker] sync_library_with_playtime result:', result);
 
       if (result.success) {
         showMessage(
