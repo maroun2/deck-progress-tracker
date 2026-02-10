@@ -1,4 +1,4 @@
-const manifest = {"name":"Game Progress Tracker","author":"Maron","version":"1.0.48","flags":["_root"],"publish":{"tags":["library","achievements","statistics","enhancement"],"description":"Automatic game tagging based on achievements, playtime, and completion time. Track your progress with visual badges in the Steam library.","image":"https://opengraph.githubassets.com/1/SteamDeckHomebrew/decky-loader"}};
+const manifest = {"name":"Game Progress Tracker","author":"Maron","version":"1.0.50","flags":["_root"],"publish":{"tags":["library","achievements","statistics","enhancement"],"description":"Automatic game tagging based on achievements, playtime, and completion time. Track your progress with visual badges in the Steam library.","image":"https://opengraph.githubassets.com/1/SteamDeckHomebrew/decky-loader"}};
 const API_VERSION = 2;
 if (!manifest?.name) {
     throw new Error('[@decky/api]: Failed to find plugin manifest.');
@@ -313,6 +313,31 @@ const styles$1 = {
  * Plugin settings and configuration panel
  */
 
+/**
+ * Get playtime data for a list of appids from Steam's frontend API
+ * Uses window.appStore which is Steam's internal game data cache
+ */
+const getPlaytimeData = (appids) => {
+    const playtimeMap = {};
+    // Access Steam's global appStore (typed by @decky/ui)
+    const appStore = window.appStore;
+    if (!appStore) {
+        console.error('[GameProgressTracker] appStore not available');
+        return playtimeMap;
+    }
+    for (const appid of appids) {
+        try {
+            const overview = appStore.GetAppOverviewByAppID(parseInt(appid));
+            if (overview) {
+                playtimeMap[appid] = overview.minutes_playtime_forever || 0;
+            }
+        }
+        catch (e) {
+            console.error(`[GameProgressTracker] Failed to get playtime for ${appid}:`, e);
+        }
+    }
+    return playtimeMap;
+};
 // Tag color mapping
 const TAG_COLORS = {
     completed: '#38ef7d',
@@ -410,10 +435,26 @@ const Settings = () => {
         console.log('[GameProgressTracker] syncLibrary button clicked');
         try {
             setSyncing(true);
+            setMessage('Fetching game list...');
+            // Step 1: Get all game appids from backend
+            console.log('[GameProgressTracker] Fetching game list from backend...');
+            const gamesResult = await call('get_all_games');
+            if (!gamesResult.success || !gamesResult.games) {
+                showMessage(`Failed to get game list: ${gamesResult.error || 'Unknown error'}`);
+                return;
+            }
+            const appids = gamesResult.games.map(g => g.appid);
+            console.log(`[GameProgressTracker] Got ${appids.length} games from backend`);
+            // Step 2: Get playtime from Steam frontend API
+            setMessage(`Getting playtime data for ${appids.length} games...`);
+            const playtimeData = getPlaytimeData(appids);
+            const gamesWithPlaytime = Object.values(playtimeData).filter(v => v > 0).length;
+            console.log(`[GameProgressTracker] Got playtime for ${gamesWithPlaytime}/${appids.length} games`);
+            // Step 3: Sync with playtime data
             setMessage('Syncing library... This may take several minutes.');
-            console.log('[GameProgressTracker] Calling backend sync_library...');
-            const result = await call('sync_library');
-            console.log('[GameProgressTracker] sync_library result:', result);
+            console.log('[GameProgressTracker] Calling backend sync_library_with_playtime...');
+            const result = await call('sync_library_with_playtime', { playtime_data: playtimeData });
+            console.log('[GameProgressTracker] sync_library_with_playtime result:', result);
             if (result.success) {
                 showMessage(`Sync complete! ${result.synced}/${result.total} games synced. ` +
                     (result.errors ? `${result.errors} errors.` : ''));
@@ -550,7 +591,7 @@ const Settings = () => {
             SP_REACT.createElement("div", { style: styles.about },
                 SP_REACT.createElement("p", null,
                     "Game Progress Tracker v",
-                    "1.0.48"),
+                    "1.0.50"),
                 SP_REACT.createElement("p", null, "Automatic game tagging based on achievements, playtime, and completion time."),
                 SP_REACT.createElement("p", { style: styles.smallText }, "Data from HowLongToBeat \u2022 Steam achievement system")))));
 };

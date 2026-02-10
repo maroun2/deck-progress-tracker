@@ -18,7 +18,7 @@ PLUGIN_DIR = Path(decky.DECKY_PLUGIN_DIR)
 BACKEND_SRC = PLUGIN_DIR / "backend" / "src"
 
 logger = decky.logger
-logger.info("=== Game Progress Tracker v1.0.48 starting ===")
+logger.info("=== Game Progress Tracker v1.0.50 starting ===")
 logger.info(f"Plugin dir: {PLUGIN_DIR}")
 logger.info(f"Backend src: {BACKEND_SRC} exists={BACKEND_SRC.exists()}")
 
@@ -393,6 +393,122 @@ class Plugin:
         except Exception as e:
             logger.error(f"Error getting tag statistics: {e}")
             return {"success": False, "error": str(e)}
+
+    async def get_all_games(self) -> Dict[str, Any]:
+        """Get list of all games for frontend to fetch playtime"""
+        try:
+            games = await self.steam_service.get_all_games()
+            return {"success": True, "games": games}
+        except Exception as e:
+            logger.error(f"Failed to get all games: {e}")
+            return {"success": False, "error": str(e)}
+
+    async def sync_library_with_playtime(self, playtime_data: Dict[str, int]) -> Dict[str, Any]:
+        """Sync library using playtime data provided by frontend"""
+        try:
+            logger.info(f"=== sync_library_with_playtime called with {len(playtime_data)} playtime entries ===")
+
+            games = await self.steam_service.get_all_games()
+            total = len(games)
+            synced = 0
+            errors = 0
+            error_list = []
+
+            for i, game in enumerate(games):
+                appid = game['appid']
+                game_name = game.get('name', f'Game {appid}')
+
+                # Use playtime from frontend
+                playtime_minutes = playtime_data.get(appid, 0)
+
+                logger.info(f"[{i+1}/{total}] Syncing: {game_name} ({appid})")
+
+                try:
+                    await Plugin.sync_game_with_playtime(self, appid, playtime_minutes)
+                    synced += 1
+                    logger.info(f"[{i+1}/{total}] Completed: {game_name}")
+
+                    # Add delay for HLTB rate limiting
+                    if i < total - 1:
+                        await asyncio.sleep(1.0)
+
+                except Exception as e:
+                    errors += 1
+                    error_list.append({"appid": appid, "error": str(e)})
+                    logger.error(f"[{i+1}/{total}] Failed: {game_name} - {e}")
+
+            logger.info(f"Library sync completed: {synced}/{total} synced, {errors} errors")
+
+            return {
+                "success": True,
+                "total": total,
+                "synced": synced,
+                "errors": errors,
+                "error_details": error_list[:10]
+            }
+
+        except Exception as e:
+            logger.error(f"sync_library_with_playtime failed: {e}")
+            import traceback
+            logger.error(traceback.format_exc())
+            return {"success": False, "error": str(e)}
+
+    async def sync_game_with_playtime(self, appid: str, playtime_minutes: int) -> Dict[str, Any]:
+        """Sync a single game using frontend-provided playtime"""
+        # Get current tag
+        current_tag = await self.db.get_tag(appid)
+
+        # Skip if manual override
+        if current_tag and current_tag.get('is_manual'):
+            logger.debug(f"Skipping {appid} (manual override)")
+            return current_tag
+
+        # Get game name from steam service
+        game_name = await self.steam_service.get_game_name(appid)
+
+        # Get achievements from steam service
+        achievements = await self.steam_service.get_game_achievements(appid)
+
+        # Build stats object with frontend playtime
+        stats = {
+            "appid": appid,
+            "game_name": game_name,
+            "playtime_minutes": playtime_minutes,  # From frontend!
+            "total_achievements": achievements["total"],
+            "unlocked_achievements": achievements["unlocked"],
+            "achievement_percentage": achievements["percentage"]
+        }
+
+        await self.db.update_game_stats(appid, stats)
+
+        logger.info(f"  Stats: playtime={playtime_minutes}min, " +
+                    f"achievements={achievements['unlocked']}/{achievements['total']}")
+
+        # Fetch HLTB if needed
+        cached_hltb = await self.db.get_hltb_cache(appid)
+        if not cached_hltb:
+            hltb_data = await self.hltb_service.search_game(game_name)
+            if hltb_data:
+                await self.db.cache_hltb_data(appid, hltb_data)
+                cached_hltb = hltb_data
+
+        if cached_hltb:
+            logger.info(f"  HLTB: main={cached_hltb.get('main_story')}h, extra={cached_hltb.get('main_extra')}h")
+        else:
+            logger.info(f"  HLTB: no data")
+
+        # Calculate tag
+        new_tag = await Plugin.calculate_auto_tag(self, appid)
+        logger.info(f"  Calculated tag: {new_tag or 'none'}")
+
+        # Update if changed or doesn't exist
+        if new_tag:
+            current_tag_value = current_tag.get('tag') if current_tag else None
+            if new_tag != current_tag_value:
+                await self.db.set_tag(appid, new_tag, is_manual=False)
+                logger.info(f"  -> Tag set: {new_tag}")
+
+        return await self.db.get_tag(appid) or {}
 
     async def get_all_tags_with_names(self) -> Dict[str, Any]:
         """Get all tags with game names for display"""

@@ -65,3 +65,11 @@ export interface SyncResult {
     message?: string;
     error?: string;
 }
+export interface GameListResult {
+    success: boolean;
+    games: Array<{
+        appid: string;
+        name: string;
+    }>;
+    error?: string;
+}
