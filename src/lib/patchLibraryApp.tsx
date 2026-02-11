@@ -8,6 +8,7 @@ import {
   afterPatch,
   findInReactTree,
   appDetailsClasses,
+  appDetailsHeaderClasses,
   createReactTreePatcher
 } from '@decky/ui';
 import { routerHook } from '@decky/api';
@@ -75,16 +76,16 @@ function patchLibraryApp() {
               )?.props?.children
             ],
             (_: Array<Record<string, unknown>>, ret?: ReactElement) => {
-              // Find the inner container where we'll inject our badge
-              const container = findInReactTree(
+              // Find the Header container where we'll inject our badge overlay
+              const header = findInReactTree(
                 ret,
                 (x: ReactElement) =>
                   Array.isArray(x?.props?.children) &&
-                  x?.props?.className?.includes(appDetailsClasses.InnerContainer)
+                  x?.props?.className?.includes(appDetailsClasses.Header)
               );
 
-              if (typeof container !== 'object') {
-                log('Container not found, returning original');
+              if (typeof header !== 'object') {
+                log('Header not found, returning original');
                 return ret;
               }
 
@@ -92,12 +93,10 @@ function patchLibraryApp() {
               const appid = getAppIdFromUrl();
 
               if (appid) {
-                log(`Injecting GameTagBadge for appid=${appid}`);
+                log(`Injecting GameTagBadge for appid=${appid} into Header`);
 
-                // Inject our badge component at position 1 (after the first child)
-                container.props.children.splice(
-                  1,
-                  0,
+                // Inject our badge component into the header (will use absolute positioning)
+                header.props.children.push(
                   <GameTagBadge key="game-progress-tag" appid={appid} />
                 );
               } else {
