@@ -523,18 +523,26 @@ class Plugin:
             logger.error(traceback.format_exc())
             return {"success": False, "error": str(e)}
 
-    async def sync_library_with_playtime(self, playtime_data: Dict[str, int], achievement_data: Dict[str, Dict[str, int]] = None) -> Dict[str, Any]:
+    async def sync_library_with_playtime(self, playtime_data_or_params: Dict[str, Any], achievement_data: Dict[str, Dict[str, int]] = None) -> Dict[str, Any]:
         """Sync library using playtime and achievement data provided by frontend"""
         logger.info("=== sync_library_with_playtime called ===")
-        logger.info(f"Received playtime_data type: {type(playtime_data)}")
-        logger.info(f"Received playtime_data: {str(playtime_data)[:500]}")
-        logger.info(f"Received achievement_data type: {type(achievement_data)}")
-        if achievement_data:
-            logger.info(f"Received achievement_data: {str(achievement_data)[:500]}")
+        logger.info(f"Received first arg type: {type(playtime_data_or_params)}")
 
-        # Initialize achievement_data if not provided (backwards compatibility)
-        if achievement_data is None:
-            achievement_data = {}
+        # Handle Decky API passing all params as single dict
+        # Frontend calls: call('sync_library_with_playtime', { playtime_data, achievement_data })
+        # Decky passes entire object as first argument
+        if isinstance(playtime_data_or_params, dict) and 'playtime_data' in playtime_data_or_params:
+            logger.info("Extracting nested params from first argument")
+            playtime_data = playtime_data_or_params.get('playtime_data', {})
+            achievement_data = playtime_data_or_params.get('achievement_data', {})
+        else:
+            # Direct params (backwards compatibility)
+            playtime_data = playtime_data_or_params
+            if achievement_data is None:
+                achievement_data = {}
+
+        logger.info(f"Playtime data type: {type(playtime_data)}, keys: {len(playtime_data) if isinstance(playtime_data, dict) else 'N/A'}")
+        logger.info(f"Achievement data type: {type(achievement_data)}, keys: {len(achievement_data) if isinstance(achievement_data, dict) else 'N/A'}")
 
         # Handle case where playtime_data might be nested or wrong type
         if isinstance(playtime_data, dict):
