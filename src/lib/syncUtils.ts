@@ -33,6 +33,8 @@ const logToBackend = async (level: 'info' | 'error' | 'warn', message: string) =
 export interface AchievementData {
   total: number;
   unlocked: number;
+  percentage: number;
+  all_unlocked: boolean;
 }
 
 /**
@@ -57,11 +59,12 @@ export interface SyncResult {
 
 /**
  * Get achievement data for a list of appids from Steam's frontend API
- * Uses window.appAchievementProgressCache which is Steam's internal achievement cache
+ * Uses window.appAchievementProgressCache.m_achievementProgress.mapCache for full data
  */
 export const getAchievementData = async (appids: string[]): Promise<Record<string, AchievementData>> => {
   log(`getAchievementData called with ${appids.length} appids`);
   const achievementMap: Record<string, AchievementData> = {};
+  const defaultData: AchievementData = { total: 0, unlocked: 0, percentage: 0, all_unlocked: false };
 
   // Access Steam's global achievement progress cache
   const achievementCache = (window as any).appAchievementProgressCache;
@@ -69,58 +72,46 @@ export const getAchievementData = async (appids: string[]): Promise<Record<strin
 
   if (!achievementCache) {
     log('appAchievementProgressCache not available - cannot get achievements!');
-
-    // Log what global objects ARE available for debugging
-    const windowKeys = Object.keys(window).filter(k =>
-      k.toLowerCase().includes('achievement') ||
-      k.toLowerCase().includes('app') ||
-      k.toLowerCase().includes('steam')
-    );
-    log(`Available window objects: ${windowKeys.slice(0, 20).join(', ')}`);
-
     return achievementMap;
   }
 
-  // Log the cache object's methods/properties
-  const cacheKeys = Object.keys(achievementCache);
-  log(`achievementCache keys: ${cacheKeys.join(', ')}`);
-  log(`GetAchievementProgress exists: ${typeof achievementCache.GetAchievementProgress}`);
+  // Access the mapCache which has the full achievement data
+  const mapCache = achievementCache.m_achievementProgress?.mapCache;
+
+  if (!mapCache) {
+    log('mapCache not available in achievementCache');
+    return achievementMap;
+  }
+
+  log(`mapCache available, size: ${mapCache.size}`);
 
   let successCount = 0;
-  let failCount = 0;
   let withAchievements = 0;
   const sampleLogs: string[] = [];
 
   for (const appid of appids) {
     try {
-      const progress = achievementCache.GetAchievementProgress(parseInt(appid));
+      const entry = mapCache.get(parseInt(appid));
 
-      // Log raw progress object for first few games
-      if (sampleLogs.length < 3 && progress) {
-        const progressKeys = Object.keys(progress);
-        log(`RAW progress for ${appid}: keys=${progressKeys.join(',')}, JSON=${JSON.stringify(progress).slice(0, 200)}`);
-      }
-
-      if (progress) {
-        // Progress object typically has nAchieved (unlocked) and nTotal (total)
-        const total = progress.nTotal || progress.total || 0;
-        const unlocked = progress.nAchieved || progress.unlocked || 0;
-
-        achievementMap[appid] = { total, unlocked };
+      if (entry) {
+        // entry has: { appid, unlocked, total, percentage, all_unlocked, cache_time, vetted }
+        achievementMap[appid] = {
+          total: entry.total || 0,
+          unlocked: entry.unlocked || 0,
+          percentage: entry.percentage || 0,
+          all_unlocked: entry.all_unlocked || false
+        };
         successCount++;
-        if (total > 0) withAchievements++;
+        if (entry.total > 0) withAchievements++;
 
         if (sampleLogs.length < 5) {
-          sampleLogs.push(`appid ${appid}: ${unlocked}/${total} achievements`);
+          sampleLogs.push(`appid ${appid}: ${entry.unlocked}/${entry.total} (${entry.percentage.toFixed(1)}%)`);
         }
       } else {
-        // No achievement data - game might not have achievements
-        achievementMap[appid] = { total: 0, unlocked: 0 };
-        failCount++;
+        achievementMap[appid] = { ...defaultData };
       }
     } catch (e: any) {
-      achievementMap[appid] = { total: 0, unlocked: 0 };
-      failCount++;
+      achievementMap[appid] = { ...defaultData };
     }
   }
 
@@ -128,7 +119,7 @@ export const getAchievementData = async (appids: string[]): Promise<Record<strin
   for (const logMsg of sampleLogs) {
     log(`Achievement sample - ${logMsg}`);
   }
-  log(`getAchievementData results: success=${successCount}, noData=${failCount}, withAchievements=${withAchievements}`);
+  log(`getAchievementData: found ${successCount} entries, ${withAchievements} with achievements`);
 
   return achievementMap;
 };

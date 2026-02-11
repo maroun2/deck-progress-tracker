@@ -8,6 +8,8 @@
 export interface AchievementData {
     total: number;
     unlocked: number;
+    percentage: number;
+    all_unlocked: boolean;
 }
 /**
  * Sync result from backend
@@ -21,7 +23,7 @@ export interface SyncResult {
 }
 /**
  * Get achievement data for a list of appids from Steam's frontend API
- * Uses window.appAchievementProgressCache which is Steam's internal achievement cache
+ * Uses window.appAchievementProgressCache.m_achievementProgress.mapCache for full data
  */
 export declare const getAchievementData: (appids: string[]) => Promise<Record<string, AchievementData>>;
 /**
