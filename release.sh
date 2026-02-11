@@ -1,6 +1,6 @@
 #!/bin/bash
 # Build, commit, and release the plugin
-# Usage: ./release.sh v1.1.13 "Fix non-Steam game parsing"
+# Usage: ./release.sh 1.1.14 "Fix non-Steam game parsing"
 
 set -e  # Exit on error
 
@@ -11,12 +11,15 @@ echo "======================================"
 # Check arguments
 if [ -z "$1" ]; then
     echo "Usage: ./release.sh <version> [release-title]"
-    echo "Example: ./release.sh v1.1.13 'Fix non-Steam game parsing'"
+    echo "Example: ./release.sh 1.1.14 'Fix non-Steam game parsing'"
+    echo ""
+    echo "Version should be numbers and dots only (e.g., 1.1.14)"
     exit 1
 fi
 
-VERSION="$1"
-VERSION_NUM=$(echo "$VERSION" | sed 's/^v//')
+# Version is numbers only (no 'v' prefix)
+VERSION_NUM=$(echo "$1" | sed 's/^v//')
+VERSION="$VERSION_NUM"
 RELEASE_TITLE="${2:-$VERSION}"
 
 echo "Version: $VERSION"

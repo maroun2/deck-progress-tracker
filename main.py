@@ -406,6 +406,15 @@ class Plugin:
             hltb_data = await self.db.get_hltb_cache(appid)
             logger.info(f"[get_game_details] hltb_data: {hltb_data}")
 
+            # Fix game name if it's "Unknown Game" (e.g., non-Steam games)
+            if stats:
+                game_name = stats.get('game_name')
+                if not game_name or game_name.startswith('Unknown Game') or game_name.startswith('Game '):
+                    real_name = await self.steam_service.get_game_name(appid)
+                    if real_name and not real_name.startswith('Unknown Game') and not real_name.startswith('Game '):
+                        stats['game_name'] = real_name
+                        logger.info(f"[get_game_details] fixed game_name to: {real_name}")
+
             result = {
                 "success": True,
                 "appid": appid,
