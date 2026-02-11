@@ -39,6 +39,8 @@ npm-debug.log*
 
 # Test files
 INSTALL_URL.txt
+message.txt
+*.vdf
 
 # Temporary
 .tmp/

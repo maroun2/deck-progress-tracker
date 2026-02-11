@@ -179,11 +179,11 @@ class SteamDataService:
             return 0
 
     async def get_game_name(self, appid: str) -> str:
-        """Get game name from appmanifest files"""
+        """Get game name from appmanifest files or shortcuts.vdf for non-Steam games"""
         if not self.steam_path:
             return f"Unknown Game ({appid})"
 
-        # Check common steam library locations
+        # Check common steam library locations for Steam games
         library_folders = await self.get_library_folders()
 
         for library_path in library_folders:
@@ -197,6 +197,12 @@ class SteamDataService:
 
                 except Exception as e:
                     logger.error(f"Failed to parse appmanifest for {appid}: {e}")
+
+        # Check non-Steam games in shortcuts.vdf
+        non_steam_games = await self.get_non_steam_games()
+        for game in non_steam_games:
+            if game.get('appid') == appid:
+                return game.get('name', f"Unknown Game ({appid})")
 
         return f"Unknown Game ({appid})"
 
@@ -329,3 +335,104 @@ class SteamDataService:
             "unlocked_achievements": achievements["unlocked"],
             "achievement_percentage": achievements["percentage"]
         }
+
+    async def get_non_steam_games(self) -> List[Dict[str, Any]]:
+        """Get non-Steam games from shortcuts.vdf"""
+        logger.info("=== get_non_steam_games called ===")
+        user_id = await self.get_steam_user_id()
+        logger.info(f"[get_non_steam_games] user_id={user_id}, steam_path={self.steam_path}")
+        if not user_id or not self.steam_path:
+            logger.info("[get_non_steam_games] no user_id or steam_path, returning empty")
+            return []
+
+        shortcuts_path = self.steam_path / "userdata" / user_id / "config" / "shortcuts.vdf"
+        logger.info(f"[get_non_steam_games] shortcuts_path={shortcuts_path}, exists={shortcuts_path.exists()}")
+
+        if not shortcuts_path.exists():
+            logger.info("[get_non_steam_games] shortcuts.vdf not found")
+            return []
+
+        games = []
+        try:
+            # shortcuts.vdf is a binary VDF file, need special parsing
+            with open(shortcuts_path, 'rb') as f:
+                content = f.read()
+            logger.info(f"[get_non_steam_games] read {len(content)} bytes from shortcuts.vdf")
+
+            # Parse binary VDF format for shortcuts
+            # This is a simplified parser that extracts appid and appname
+            games = self._parse_shortcuts_binary(content)
+            logger.info(f"[get_non_steam_games] parsed {len(games)} non-Steam games")
+            if games:
+                logger.info(f"[get_non_steam_games] sample: {games[:3]}")
+
+        except Exception as e:
+            logger.error(f"Failed to parse shortcuts.vdf: {e}")
+            import traceback
+            logger.error(traceback.format_exc())
+
+        return games
+
+    def _parse_shortcuts_binary(self, content: bytes) -> List[Dict[str, Any]]:
+        """Parse binary shortcuts.vdf format
+
+        Binary VDF format uses:
+        - 0x00 for nested object start
+        - 0x01 for string type (followed by key\x00value\x00)
+        - 0x02 for int32 type (followed by key\x00 + 4 bytes)
+        - 0x08 for end of object
+        """
+        games = []
+
+        try:
+            # Find all appname occurrences (lowercase, as seen in actual file)
+            appname_marker = b'\x01appname\x00'
+            appid_marker = b'\x02appid\x00'
+
+            pos = 0
+            while True:
+                # Find next appname
+                name_pos = content.find(appname_marker, pos)
+                if name_pos == -1:
+                    break
+
+                # Extract app name (null-terminated string after marker)
+                name_start = name_pos + len(appname_marker)
+                name_end = content.find(b'\x00', name_start)
+                if name_end == -1:
+                    break
+
+                app_name = content[name_start:name_end].decode('utf-8', errors='ignore')
+
+                # Look for appid before appname (it comes first in each entry)
+                # Search backwards from appname position
+                search_start = max(0, name_pos - 100)
+                search_chunk = content[search_start:name_pos]
+
+                appid = None
+                appid_offset = search_chunk.rfind(appid_marker)  # Find last occurrence before appname
+                if appid_offset != -1:
+                    appid_start = appid_offset + len(appid_marker)
+                    if appid_start + 4 <= len(search_chunk):
+                        appid_bytes = search_chunk[appid_start:appid_start + 4]
+                        # Interpret as unsigned 32-bit integer
+                        appid = int.from_bytes(appid_bytes, 'little', signed=False)
+
+                if app_name and appid:
+                    games.append({
+                        "appid": str(appid),
+                        "name": app_name,
+                        "playtime_minutes": 0,
+                        "is_non_steam": True
+                    })
+                    logger.debug(f"[_parse_shortcuts_binary] Found: {app_name} (appid={appid})")
+
+                pos = name_end + 1
+
+        except Exception as e:
+            logger.error(f"Error parsing shortcuts binary: {e}")
+            import traceback
+            logger.error(traceback.format_exc())
+
+        logger.info(f"[_parse_shortcuts_binary] Parsed {len(games)} games")
+        return games

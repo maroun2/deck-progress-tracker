@@ -7,6 +7,8 @@ import React, { FC, useState, useEffect } from 'react';
 import { call } from '@decky/api';
 import { Navigation } from '@decky/ui';
 import { PluginSettings, SyncResult, TagStatistics, TaggedGame, GameListResult } from '../types';
+import { TagIcon, TagType } from './TagIcon';
+import { getAchievementData, getPlaytimeData, AchievementData } from '../lib/syncUtils';
 
 /**
  * Log to both console and backend (for debugging without CEF)
@@ -18,59 +20,6 @@ const logToBackend = async (level: 'info' | 'error' | 'warn', message: string) =
   } catch (e) {
     // Silently fail if backend logging fails
   }
-};
-
-/**
- * Get playtime data for a list of appids from Steam's frontend API
- * Uses window.appStore which is Steam's internal game data cache
- */
-const getPlaytimeData = async (appids: string[]): Promise<Record<string, number>> => {
-  await logToBackend('info', `getPlaytimeData called with ${appids.length} appids`);
-  const playtimeMap: Record<string, number> = {};
-
-  // Access Steam's global appStore (typed by @decky/ui)
-  const appStore = (window as any).appStore;
-  await logToBackend('info', `appStore available: ${!!appStore}, type: ${typeof appStore}`);
-
-  if (!appStore) {
-    await logToBackend('error', 'appStore not available - cannot get playtime!');
-    return playtimeMap;
-  }
-
-  // Check if GetAppOverviewByAppID method exists
-  await logToBackend('info', `GetAppOverviewByAppID exists: ${typeof appStore.GetAppOverviewByAppID}`);
-
-  let successCount = 0;
-  let failCount = 0;
-  let withPlaytime = 0;
-
-  for (const appid of appids) {
-    try {
-      const overview = appStore.GetAppOverviewByAppID(parseInt(appid));
-      if (overview) {
-        const playtime = overview.minutes_playtime_forever || 0;
-        playtimeMap[appid] = playtime;
-        successCount++;
-        if (playtime > 0) withPlaytime++;
-
-        // Log first few for debugging
-        if (successCount <= 3) {
-          await logToBackend('info', `Sample - appid ${appid}: playtime=${playtime}min, name=${overview.display_name || 'unknown'}`);
-        }
-      } else {
-        failCount++;
-        if (failCount <= 3) {
-          await logToBackend('info', `No overview for appid ${appid}`);
-        }
-      }
-    } catch (e) {
-      failCount++;
-      await logToBackend('error', `Failed to get playtime for ${appid}: ${e}`);
-    }
-  }
-
-  await logToBackend('info', `getPlaytimeData results: success=${successCount}, failed=${failCount}, withPlaytime=${withPlaytime}`);
-  return playtimeMap;
 };
 
 // Tag color mapping
@@ -86,7 +35,9 @@ export const Settings: FC = () => {
     auto_tag_enabled: true,
     mastered_multiplier: 1.5,  // Deprecated, kept for compatibility
     in_progress_threshold: 30,
-    cache_ttl: 7200
+    cache_ttl: 7200,
+    source_installed: true,
+    source_non_steam: true,
   });
   const [stats, setStats] = useState<TagStatistics | null>(null);
   const [loading, setLoading] = useState(false);
@@ -95,8 +46,15 @@ export const Settings: FC = () => {
 
   // Tagged games list state
   const [taggedGames, setTaggedGames] = useState<TaggedGame[]>([]);
-  const [showTaggedList, setShowTaggedList] = useState(true);
+  const [backlogGames, setBacklogGames] = useState<TaggedGame[]>([]);
+  const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
+    completed: false,
+    in_progress: false,
+    backlog: false,
+    mastered: false,
+  });
   const [loadingGames, setLoadingGames] = useState(false);
+  const [loadingBacklog, setLoadingBacklog] = useState(false);
 
   // Settings section state
   const [showSettings, setShowSettings] = useState(false);
@@ -147,11 +105,33 @@ export const Settings: FC = () => {
     }
   };
 
-  const toggleTaggedList = () => {
-    if (!showTaggedList && taggedGames.length === 0) {
-      loadTaggedGames();
+  const loadBacklogGames = async () => {
+    await logToBackend('info', 'loadBacklogGames called');
+    try {
+      setLoadingBacklog(true);
+      const result = await call<[], { success: boolean; games: TaggedGame[] }>('get_backlog_games');
+      await logToBackend('info', `loadBacklogGames result: success=${result.success}, games=${result.games?.length || 0}`);
+      if (result.success && result.games) {
+        setBacklogGames(result.games);
+      }
+    } catch (err) {
+      await logToBackend('error', `loadBacklogGames error: ${err}`);
+    } finally {
+      setLoadingBacklog(false);
     }
-    setShowTaggedList(!showTaggedList);
+  };
+
+  const toggleSection = (tagType: string) => {
+    const willExpand = !expandedSections[tagType];
+    setExpandedSections(prev => ({
+      ...prev,
+      [tagType]: willExpand,
+    }));
+
+    // Load backlog games when expanding backlog section (and not already loaded)
+    if (tagType === 'backlog' && willExpand && backlogGames.length === 0) {
+      loadBacklogGames();
+    }
   };
 
   const navigateToGame = (appid: string) => {
@@ -194,6 +174,7 @@ export const Settings: FC = () => {
       const appids = gamesResult.games.map(g => g.appid);
       await logToBackend('info', `Step 1 complete: Got ${appids.length} games from backend`);
       await logToBackend('info', `First 5 appids: ${appids.slice(0, 5).join(', ')}`);
+      await logToBackend('info', `Appid types: ${appids.slice(0, 5).map(a => typeof a).join(', ')}`);
 
       // Step 2: Get playtime from Steam frontend API
       await logToBackend('info', 'Step 2: Getting playtime from Steam frontend API...');
@@ -206,13 +187,24 @@ export const Settings: FC = () => {
       const sampleEntries = Object.entries(playtimeData).slice(0, 5);
       await logToBackend('info', `Sample playtime data: ${JSON.stringify(sampleEntries)}`);
 
-      // Step 3: Sync with playtime data
+      // Step 2.5: Get achievement data from Steam frontend API
+      await logToBackend('info', 'Step 2.5: Getting achievement data from Steam frontend API...');
+      setMessage(`Getting achievement data for ${appids.length} games...`);
+      const achievementData = await getAchievementData(appids);
+      const gamesWithAchievements = Object.values(achievementData).filter(v => v.total > 0).length;
+      await logToBackend('info', `Step 2.5 complete: Got achievements for ${gamesWithAchievements}/${appids.length} games`);
+
+      // Log sample of achievement data
+      const achievementSample = Object.entries(achievementData).slice(0, 5);
+      await logToBackend('info', `Sample achievement data: ${JSON.stringify(achievementSample)}`);
+
+      // Step 3: Sync with playtime and achievement data
       await logToBackend('info', 'Step 3: Calling backend sync_library_with_playtime...');
-      await logToBackend('info', `Sending ${Object.keys(playtimeData).length} playtime entries to backend`);
+      await logToBackend('info', `Sending ${Object.keys(playtimeData).length} playtime entries and ${Object.keys(achievementData).length} achievement entries to backend`);
       setMessage('Syncing library... This may take several minutes.');
-      const result = await call<[{ playtime_data: Record<string, number> }], SyncResult>(
+      const result = await call<[{ playtime_data: Record<string, number>; achievement_data: Record<string, AchievementData> }], SyncResult>(
         'sync_library_with_playtime',
-        { playtime_data: playtimeData }
+        { playtime_data: playtimeData, achievement_data: achievementData }
       );
       await logToBackend('info', `Step 3 complete - sync result: ${JSON.stringify(result)}`);
 
@@ -262,12 +254,21 @@ export const Settings: FC = () => {
   }, {} as Record<string, TaggedGame[]>);
 
   const tagLabels: Record<string, string> = {
-    mastered: 'Mastered (100% Achievements)',
     completed: 'Completed (Beat Main Story)',
     in_progress: 'In Progress',
+    backlog: 'Backlog (Not Started)',
+    mastered: 'Mastered (85%+ Achievements)',
   };
 
-  const taggedCount = stats ? stats.completed + stats.in_progress + stats.mastered : 0;
+  const totalGames = stats ? stats.total : 0;
+
+  // Get count for each category including backlog from stats
+  const getCategoryCount = (tagType: string): number => {
+    if (tagType === 'backlog') {
+      return stats?.backlog || 0;
+    }
+    return (groupedGames[tagType] || []).length;
+  };
 
   return (
     <div style={styles.container}>
@@ -277,77 +278,50 @@ export const Settings: FC = () => {
         <div style={styles.message}>{message}</div>
       )}
 
-      {/* Statistics - always visible */}
-      {stats && (
-        <div style={styles.section}>
-          <h3 style={styles.sectionTitle}>Library Statistics</h3>
-          <div style={styles.statGrid}>
-            <div style={styles.statCard}>
-              <div style={{ ...styles.statValue, color: TAG_COLORS.completed }}>
-                {stats.completed}
-              </div>
-              <div style={styles.statLabel}>Completed</div>
-            </div>
-            <div style={styles.statCard}>
-              <div style={{ ...styles.statValue, color: TAG_COLORS.in_progress }}>
-                {stats.in_progress}
-              </div>
-              <div style={styles.statLabel}>In Progress</div>
-            </div>
-            <div style={styles.statCard}>
-              <div style={{ ...styles.statValue, color: TAG_COLORS.mastered }}>
-                {stats.mastered}
-              </div>
-              <div style={styles.statLabel}>Mastered</div>
-            </div>
-            <div style={styles.statCard}>
-              <div style={{ ...styles.statValue, color: TAG_COLORS.backlog }}>
-                {stats.backlog}
-              </div>
-              <div style={styles.statLabel}>Backlog</div>
-            </div>
-            <div style={styles.statCard}>
-              <div style={styles.statValue}>{stats.total}</div>
-              <div style={styles.statLabel}>Total Games</div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Tagged Games List */}
+      {/* Game Lists - Expandable per tag type */}
       <div style={styles.section}>
-        <button
-          onClick={toggleTaggedList}
-          style={styles.expandButton}
-        >
-          {showTaggedList ? '- Hide' : '+ View'} All Tagged Games
-          {` (${taggedCount} games)`}
-        </button>
+        <h3 style={styles.sectionTitle}>Library ({totalGames} games)</h3>
 
-        {showTaggedList && (
+        {loadingGames ? (
+          <div style={styles.loadingText}>Loading games...</div>
+        ) : totalGames === 0 ? (
+          <div style={styles.loadingText}>
+            No games synced yet. Click "Sync Entire Library" to tag your games based on playtime and achievements.
+          </div>
+        ) : (
           <div style={styles.taggedListContainer}>
-            {loadingGames ? (
-              <div style={styles.loadingText}>Loading games...</div>
-            ) : taggedGames.length === 0 ? (
-              <div style={styles.loadingText}>
-                No tagged games yet. Click "Sync Entire Library" to tag your games based on playtime and achievements.
-              </div>
-            ) : (
-              ['mastered', 'completed', 'in_progress'].map((tagType) => {
-                const games = groupedGames[tagType] || [];
-                if (games.length === 0) return null;
+            {(['in_progress', 'completed', 'mastered', 'backlog'] as TagType[]).map((tagType) => {
+              if (!tagType) return null;
+              const isBacklog = tagType === 'backlog';
+              const games = isBacklog ? backlogGames : (groupedGames[tagType] || []);
+              const count = getCategoryCount(tagType);
+              const isExpanded = expandedSections[tagType];
 
-                return (
-                  <div key={tagType} style={styles.tagGroup}>
-                    <div style={styles.tagGroupHeader}>
-                      <span
-                        style={{
-                          ...styles.tagDot,
-                          backgroundColor: TAG_COLORS[tagType],
-                        }}
-                      />
-                      {tagLabels[tagType]} ({games.length})
+              return (
+                <div key={tagType} style={styles.tagSection}>
+                  <button
+                    onClick={() => toggleSection(tagType)}
+                    style={styles.tagSectionHeader}
+                  >
+                    <div style={styles.tagSectionLeft}>
+                      <TagIcon type={tagType} size={18} />
+                      <span style={styles.tagSectionTitle}>{tagLabels[tagType]}</span>
                     </div>
+                    <div style={styles.tagSectionRight}>
+                      <span style={{ ...styles.tagCount, color: TAG_COLORS[tagType] }}>
+                        {count}
+                      </span>
+                      <span style={styles.expandIcon}>
+                        {isExpanded ? '−' : '+'}
+                      </span>
+                    </div>
+                  </button>
+
+                  {isExpanded && isBacklog && loadingBacklog && (
+                    <div style={styles.emptySection}>Loading backlog games...</div>
+                  )}
+
+                  {isExpanded && games.length > 0 && (
                     <div style={styles.gameList}>
                       {games.map((game) => (
                         <div
@@ -368,10 +342,14 @@ export const Settings: FC = () => {
                         </div>
                       ))}
                     </div>
-                  </div>
-                );
-              })
-            )}
+                  )}
+
+                  {isExpanded && games.length === 0 && !loadingBacklog && (
+                    <div style={styles.emptySection}>No games with this tag</div>
+                  )}
+                </div>
+              );
+            })}
           </div>
         )}
       </div>
@@ -422,15 +400,15 @@ export const Settings: FC = () => {
               <h4 style={styles.settingGroupTitle}>Tag Rules</h4>
               <div style={styles.tagRulesInfo}>
                 <div style={styles.tagRule}>
-                  <span style={{ ...styles.tagDot, backgroundColor: TAG_COLORS.mastered }} />
-                  <strong>Mastered:</strong> 100% achievements unlocked
+                  <TagIcon type="mastered" size={16} />
+                  <strong>Mastered:</strong> 85%+ achievements unlocked
                 </div>
                 <div style={styles.tagRule}>
-                  <span style={{ ...styles.tagDot, backgroundColor: TAG_COLORS.completed }} />
+                  <TagIcon type="completed" size={16} />
                   <strong>Completed:</strong> Playtime ≥ main story time (from HLTB)
                 </div>
                 <div style={styles.tagRule}>
-                  <span style={{ ...styles.tagDot, backgroundColor: TAG_COLORS.in_progress }} />
+                  <TagIcon type="in_progress" size={16} />
                   <strong>In Progress:</strong> Playtime ≥ {settings.in_progress_threshold} minutes
                 </div>
               </div>
@@ -451,6 +429,36 @@ export const Settings: FC = () => {
                 <div style={styles.hint}>
                   Minimum playtime to mark as In Progress
                 </div>
+              </div>
+            </div>
+
+            {/* Game Sources */}
+            <div style={styles.settingGroup}>
+              <h4 style={styles.settingGroupTitle}>Game Sources</h4>
+              <div style={styles.hint}>
+                Select which games to include when syncing
+              </div>
+              <div style={styles.settingRow}>
+                <label style={styles.label}>
+                  <input
+                    type="checkbox"
+                    checked={settings.source_installed}
+                    onChange={(e) => updateSetting('source_installed', e.target.checked)}
+                    style={styles.checkbox}
+                  />
+                  Installed Steam Games
+                </label>
+              </div>
+              <div style={styles.settingRow}>
+                <label style={styles.label}>
+                  <input
+                    type="checkbox"
+                    checked={settings.source_non_steam}
+                    onChange={(e) => updateSetting('source_non_steam', e.target.checked)}
+                    style={styles.checkbox}
+                  />
+                  Non-Steam Games (Shortcuts)
+                </label>
               </div>
             </div>
 
@@ -706,5 +714,53 @@ const styles: Record<string, React.CSSProperties> = {
     gap: '8px',
     marginBottom: '8px',
     fontSize: '13px',
+  },
+  tagSection: {
+    marginBottom: '8px',
+    backgroundColor: '#1a1a1a',
+    borderRadius: '6px',
+    overflow: 'hidden',
+  },
+  tagSectionHeader: {
+    width: '100%',
+    padding: '12px 14px',
+    backgroundColor: '#252525',
+    border: 'none',
+    borderRadius: '0',
+    color: 'white',
+    fontSize: '14px',
+    cursor: 'pointer',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  tagSectionLeft: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '10px',
+  },
+  tagSectionRight: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '12px',
+  },
+  tagSectionTitle: {
+    fontWeight: 'bold',
+  },
+  tagCount: {
+    fontSize: '16px',
+    fontWeight: 'bold',
+  },
+  expandIcon: {
+    fontSize: '18px',
+    color: '#888',
+    width: '20px',
+    textAlign: 'center',
+  },
+  emptySection: {
+    padding: '12px 16px',
+    color: '#666',
+    fontSize: '13px',
+    fontStyle: 'italic',
   },
 };

@@ -1,71 +1,55 @@
 /**
  * Game Progress Tracker - Main Plugin Entry
  * Decky Loader plugin for automatic game tagging
+ *
+ * Uses safe route patching pattern based on ProtonDB Badges plugin
  */
 
 import { staticClasses } from '@decky/ui';
 import { definePlugin, routerHook } from '@decky/api';
-import React, { ReactElement, useState, FC } from 'react';
-import { GameTag } from './components/GameTag';
-import { TagManager } from './components/TagManager';
+import React from 'react';
 import { Settings } from './components/Settings';
-import { useGameTag } from './hooks/useGameTag';
+import patchLibraryApp from './lib/patchLibraryApp';
+import { syncLibraryWithFrontendData } from './lib/syncUtils';
 
-/**
- * Extract appid from route path
- */
-function extractAppId(path: string): string | null {
-  const match = path.match(/\/library\/app\/(\d+)/);
-  return match ? match[1] : null;
-}
-
-/**
- * Game Page Overlay Component
- * Displays tag badge and manages tag editor
- */
-const GamePageOverlay: FC<{ appid: string }> = ({ appid }) => {
-  const { tag, loading } = useGameTag(appid);
-  const [showManager, setShowManager] = useState(false);
-
-  if (loading || !tag) {
-    return null;
+// Debug logging helper
+const log = (msg: string, data?: any) => {
+  const logMsg = `[GameProgressTracker] ${msg}`;
+  if (data !== undefined) {
+    console.log(logMsg, data);
+  } else {
+    console.log(logMsg);
   }
-
-  return (
-    <>
-      <GameTag tag={tag} onClick={() => setShowManager(true)} />
-      {showManager && (
-        <TagManager
-          appid={appid}
-          onClose={() => setShowManager(false)}
-        />
-      )}
-    </>
-  );
 };
 
 /**
  * Main Plugin Definition
  */
 export default definePlugin(() => {
-  // Patch the game library page to inject our tag component
-  const gamePagePatch = routerHook.addPatch(
-    '/library/app/:appId',
-    (props: { path: string; children: ReactElement }) => {
-      const appid = extractAppId(props.path);
+  log('=== Plugin initializing ===');
 
-      if (appid) {
-        return (
-          <>
-            {props.children}
-            <GamePageOverlay appid={appid} />
-          </>
-        );
-      }
+  // Patch the game library page using the safe ProtonDB-style approach
+  log('Setting up library app patch');
+  let libraryPatch: ReturnType<typeof patchLibraryApp> | null = null;
 
-      return props.children;
+  try {
+    libraryPatch = patchLibraryApp();
+    log('Library app patch registered successfully');
+  } catch (error) {
+    log('Failed to register library app patch:', error);
+  }
+
+  // Trigger sync with frontend data (replaces backend auto-sync)
+  // This uses Steam's frontend API for real-time playtime and achievement data
+  log('Triggering initial sync with frontend data...');
+  (async () => {
+    try {
+      const result = await syncLibraryWithFrontendData();
+      log('Initial sync result:', result);
+    } catch (err) {
+      log('Initial sync failed:', err);
     }
-  );
+  })();
 
   return {
     name: 'Game Progress Tracker',
@@ -83,8 +67,16 @@ export default definePlugin(() => {
       </svg>
     ),
     onDismount() {
+      log('=== Plugin dismounting ===');
       // Clean up patches when plugin is unloaded
-      routerHook.removePatch('/library/app/:appId', gamePagePatch);
+      if (libraryPatch) {
+        try {
+          routerHook.removePatch('/library/app/:appid', libraryPatch);
+          log('Library app patch removed successfully');
+        } catch (error) {
+          log('Error removing library app patch:', error);
+        }
+      }
     }
   };
 });
