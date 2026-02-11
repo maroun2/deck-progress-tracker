@@ -346,7 +346,7 @@ export const Settings: FC = () => {
           </div>
         ) : (
           <div style={styles.taggedListContainer}>
-            {(['completed', 'in_progress', 'backlog', 'mastered'] as TagType[]).map((tagType) => {
+            {(['in_progress', 'completed', 'mastered', 'backlog'] as TagType[]).map((tagType) => {
               if (!tagType) return null;
               const isBacklog = tagType === 'backlog';
               const games = isBacklog ? backlogGames : (groupedGames[tagType] || []);

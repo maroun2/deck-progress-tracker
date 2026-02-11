@@ -553,7 +553,25 @@ class Plugin:
         try:
             logger.info(f"=== Starting sync with {len(playtime_data)} playtime entries ===")
 
-            games = await self.steam_service.get_all_games()
+            # Get game sources from settings (same logic as get_all_games)
+            settings = await self.db.get_all_settings()
+            source_installed = settings.get('source_installed', True)
+            source_non_steam = settings.get('source_non_steam', False)
+
+            games = []
+
+            # Get installed Steam games
+            if source_installed:
+                installed_games = await self.steam_service.get_all_games()
+                games.extend(installed_games)
+                logger.info(f"Sync: Added {len(installed_games)} installed Steam games")
+
+            # Get non-Steam games
+            if source_non_steam:
+                non_steam_games = await self.steam_service.get_non_steam_games()
+                games.extend(non_steam_games)
+                logger.info(f"Sync: Added {len(non_steam_games)} non-Steam games")
+
             total = len(games)
             synced = 0
             errors = 0

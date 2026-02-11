@@ -170,7 +170,7 @@ export const GameTagBadge: FC<GameTagBadgeProps> = ({ appid }) => {
   // Position on top-right (opposite side from ProtonDB's default top-left)
   const containerStyle: React.CSSProperties = {
     position: 'absolute',
-    top: '40px',
+    top: '50px',
     right: '20px',
     zIndex: 10,
   };
