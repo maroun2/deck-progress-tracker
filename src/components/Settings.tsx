@@ -113,13 +113,15 @@ export const Settings: FC = () => {
 
   // Tagged games list state
   const [taggedGames, setTaggedGames] = useState<TaggedGame[]>([]);
+  const [backlogGames, setBacklogGames] = useState<TaggedGame[]>([]);
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
-    completed: true,
-    in_progress: true,
+    completed: false,
+    in_progress: false,
     backlog: false,
-    mastered: true,
+    mastered: false,
   });
   const [loadingGames, setLoadingGames] = useState(false);
+  const [loadingBacklog, setLoadingBacklog] = useState(false);
 
   // Settings section state
   const [showSettings, setShowSettings] = useState(false);
@@ -170,11 +172,33 @@ export const Settings: FC = () => {
     }
   };
 
+  const loadBacklogGames = async () => {
+    await logToBackend('info', 'loadBacklogGames called');
+    try {
+      setLoadingBacklog(true);
+      const result = await call<[], { success: boolean; games: TaggedGame[] }>('get_backlog_games');
+      await logToBackend('info', `loadBacklogGames result: success=${result.success}, games=${result.games?.length || 0}`);
+      if (result.success && result.games) {
+        setBacklogGames(result.games);
+      }
+    } catch (err) {
+      await logToBackend('error', `loadBacklogGames error: ${err}`);
+    } finally {
+      setLoadingBacklog(false);
+    }
+  };
+
   const toggleSection = (tagType: string) => {
+    const willExpand = !expandedSections[tagType];
     setExpandedSections(prev => ({
       ...prev,
-      [tagType]: !prev[tagType],
+      [tagType]: willExpand,
     }));
+
+    // Load backlog games when expanding backlog section (and not already loaded)
+    if (tagType === 'backlog' && willExpand && backlogGames.length === 0) {
+      loadBacklogGames();
+    }
   };
 
   const navigateToGame = (appid: string) => {
@@ -324,19 +348,16 @@ export const Settings: FC = () => {
           <div style={styles.taggedListContainer}>
             {(['completed', 'in_progress', 'backlog', 'mastered'] as TagType[]).map((tagType) => {
               if (!tagType) return null;
-              const games = groupedGames[tagType] || [];
+              const isBacklog = tagType === 'backlog';
+              const games = isBacklog ? backlogGames : (groupedGames[tagType] || []);
               const count = getCategoryCount(tagType);
               const isExpanded = expandedSections[tagType];
-              const isBacklog = tagType === 'backlog';
 
               return (
                 <div key={tagType} style={styles.tagSection}>
                   <button
-                    onClick={() => !isBacklog && toggleSection(tagType)}
-                    style={{
-                      ...styles.tagSectionHeader,
-                      cursor: isBacklog ? 'default' : 'pointer',
-                    }}
+                    onClick={() => toggleSection(tagType)}
+                    style={styles.tagSectionHeader}
                   >
                     <div style={styles.tagSectionLeft}>
                       <TagIcon type={tagType} size={18} />
@@ -346,15 +367,17 @@ export const Settings: FC = () => {
                       <span style={{ ...styles.tagCount, color: TAG_COLORS[tagType] }}>
                         {count}
                       </span>
-                      {!isBacklog && (
-                        <span style={styles.expandIcon}>
-                          {isExpanded ? '−' : '+'}
-                        </span>
-                      )}
+                      <span style={styles.expandIcon}>
+                        {isExpanded ? '−' : '+'}
+                      </span>
                     </div>
                   </button>
 
-                  {!isBacklog && isExpanded && games.length > 0 && (
+                  {isExpanded && isBacklog && loadingBacklog && (
+                    <div style={styles.emptySection}>Loading backlog games...</div>
+                  )}
+
+                  {isExpanded && games.length > 0 && (
                     <div style={styles.gameList}>
                       {games.map((game) => (
                         <div
@@ -377,7 +400,7 @@ export const Settings: FC = () => {
                     </div>
                   )}
 
-                  {!isBacklog && isExpanded && games.length === 0 && (
+                  {isExpanded && games.length === 0 && !loadingBacklog && (
                     <div style={styles.emptySection}>No games with this tag</div>
                   )}
                 </div>
