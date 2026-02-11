@@ -1,4 +1,4 @@
-const manifest = {"name":"Game Progress Tracker","author":"Maron","version":"1.1.14","api_version":1,"flags":["_root"],"publish":{"tags":["library","achievements","statistics","enhancement"],"description":"Automatic game tagging based on achievements, playtime, and completion time. Track your progress with visual badges in the Steam library.","image":"https://opengraph.githubassets.com/1/SteamDeckHomebrew/decky-loader"}};
+const manifest = {"name":"Game Progress Tracker","author":"Maron","version":"1.1.15","api_version":1,"flags":["_root"],"publish":{"tags":["library","achievements","statistics","enhancement"],"description":"Automatic game tagging based on achievements, playtime, and completion time. Track your progress with visual badges in the Steam library.","image":"https://opengraph.githubassets.com/1/SteamDeckHomebrew/decky-loader"}};
 const API_VERSION = 2;
 if (!manifest?.name) {
     throw new Error('[@decky/api]: Failed to find plugin manifest.');
@@ -176,13 +176,15 @@ const Settings = () => {
     const [message, setMessage] = SP_REACT.useState(null);
     // Tagged games list state
     const [taggedGames, setTaggedGames] = SP_REACT.useState([]);
+    const [backlogGames, setBacklogGames] = SP_REACT.useState([]);
     const [expandedSections, setExpandedSections] = SP_REACT.useState({
-        completed: true,
-        in_progress: true,
+        completed: false,
+        in_progress: false,
         backlog: false,
-        mastered: true,
+        mastered: false,
     });
     const [loadingGames, setLoadingGames] = SP_REACT.useState(false);
+    const [loadingBacklog, setLoadingBacklog] = SP_REACT.useState(false);
     // Settings section state
     const [showSettings, setShowSettings] = SP_REACT.useState(false);
     SP_REACT.useEffect(() => {
@@ -231,11 +233,33 @@ const Settings = () => {
             setLoadingGames(false);
         }
     };
+    const loadBacklogGames = async () => {
+        await logToBackend('info', 'loadBacklogGames called');
+        try {
+            setLoadingBacklog(true);
+            const result = await call('get_backlog_games');
+            await logToBackend('info', `loadBacklogGames result: success=${result.success}, games=${result.games?.length || 0}`);
+            if (result.success && result.games) {
+                setBacklogGames(result.games);
+            }
+        }
+        catch (err) {
+            await logToBackend('error', `loadBacklogGames error: ${err}`);
+        }
+        finally {
+            setLoadingBacklog(false);
+        }
+    };
     const toggleSection = (tagType) => {
+        const willExpand = !expandedSections[tagType];
         setExpandedSections(prev => ({
             ...prev,
-            [tagType]: !prev[tagType],
+            [tagType]: willExpand,
         }));
+        // Load backlog games when expanding backlog section (and not already loaded)
+        if (tagType === 'backlog' && willExpand && backlogGames.length === 0) {
+            loadBacklogGames();
+        }
     };
     const navigateToGame = (appid) => {
         DFL.Navigation.Navigate(`/library/app/${appid}`);
@@ -255,7 +279,7 @@ const Settings = () => {
     };
     const syncLibrary = async () => {
         await logToBackend('info', '========================================');
-        await logToBackend('info', `syncLibrary button clicked - v${"1.1.14"}`);
+        await logToBackend('info', `syncLibrary button clicked - v${"1.1.15"}`);
         await logToBackend('info', '========================================');
         try {
             setSyncing(true);
@@ -357,29 +381,27 @@ const Settings = () => {
             loadingGames ? (SP_REACT.createElement("div", { style: styles$1.loadingText }, "Loading games...")) : totalGames === 0 ? (SP_REACT.createElement("div", { style: styles$1.loadingText }, "No games synced yet. Click \"Sync Entire Library\" to tag your games based on playtime and achievements.")) : (SP_REACT.createElement("div", { style: styles$1.taggedListContainer }, ['completed', 'in_progress', 'backlog', 'mastered'].map((tagType) => {
                 if (!tagType)
                     return null;
-                const games = groupedGames[tagType] || [];
+                const isBacklog = tagType === 'backlog';
+                const games = isBacklog ? backlogGames : (groupedGames[tagType] || []);
                 const count = getCategoryCount(tagType);
                 const isExpanded = expandedSections[tagType];
-                const isBacklog = tagType === 'backlog';
                 return (SP_REACT.createElement("div", { key: tagType, style: styles$1.tagSection },
-                    SP_REACT.createElement("button", { onClick: () => !isBacklog && toggleSection(tagType), style: {
-                            ...styles$1.tagSectionHeader,
-                            cursor: isBacklog ? 'default' : 'pointer',
-                        } },
+                    SP_REACT.createElement("button", { onClick: () => toggleSection(tagType), style: styles$1.tagSectionHeader },
                         SP_REACT.createElement("div", { style: styles$1.tagSectionLeft },
                             SP_REACT.createElement(TagIcon, { type: tagType, size: 18 }),
                             SP_REACT.createElement("span", { style: styles$1.tagSectionTitle }, tagLabels[tagType])),
                         SP_REACT.createElement("div", { style: styles$1.tagSectionRight },
                             SP_REACT.createElement("span", { style: { ...styles$1.tagCount, color: TAG_COLORS[tagType] } }, count),
-                            !isBacklog && (SP_REACT.createElement("span", { style: styles$1.expandIcon }, isExpanded ? '−' : '+')))),
-                    !isBacklog && isExpanded && games.length > 0 && (SP_REACT.createElement("div", { style: styles$1.gameList }, games.map((game) => (SP_REACT.createElement("div", { key: game.appid, style: styles$1.gameItem, onClick: () => navigateToGame(game.appid) },
+                            SP_REACT.createElement("span", { style: styles$1.expandIcon }, isExpanded ? '−' : '+'))),
+                    isExpanded && isBacklog && loadingBacklog && (SP_REACT.createElement("div", { style: styles$1.emptySection }, "Loading backlog games...")),
+                    isExpanded && games.length > 0 && (SP_REACT.createElement("div", { style: styles$1.gameList }, games.map((game) => (SP_REACT.createElement("div", { key: game.appid, style: styles$1.gameItem, onClick: () => navigateToGame(game.appid) },
                         SP_REACT.createElement("span", { style: {
                                 ...styles$1.smallDot,
                                 backgroundColor: TAG_COLORS[game.tag],
                             } }),
                         SP_REACT.createElement("span", { style: styles$1.gameName }, game.game_name),
                         game.is_manual && (SP_REACT.createElement("span", { style: styles$1.manualBadge }, "manual"))))))),
-                    !isBacklog && isExpanded && games.length === 0 && (SP_REACT.createElement("div", { style: styles$1.emptySection }, "No games with this tag"))));
+                    isExpanded && games.length === 0 && !loadingBacklog && (SP_REACT.createElement("div", { style: styles$1.emptySection }, "No games with this tag"))));
             })))),
         SP_REACT.createElement("div", { style: styles$1.section },
             SP_REACT.createElement("button", { onClick: syncLibrary, disabled: syncing || loading, style: syncing ? styles$1.buttonDisabled : styles$1.button }, syncing ? 'Syncing...' : 'Sync Entire Library'),
@@ -438,7 +460,7 @@ const Settings = () => {
             SP_REACT.createElement("div", { style: styles$1.about },
                 SP_REACT.createElement("p", null,
                     "Game Progress Tracker v",
-                    "1.1.14"),
+                    "1.1.15"),
                 SP_REACT.createElement("p", null, "Automatic game tagging based on achievements, playtime, and completion time."),
                 SP_REACT.createElement("p", { style: styles$1.smallText }, "Data from HowLongToBeat \u2022 Steam achievement system")))));
 };

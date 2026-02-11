@@ -704,3 +704,48 @@ class Plugin:
             import traceback
             logger.error(traceback.format_exc())
             return {'success': False, 'error': str(e)}
+
+    async def get_backlog_games(self) -> Dict[str, Any]:
+        """Get all games without a tag (backlog games)"""
+        logger.info("=== get_backlog_games called ===")
+        try:
+            # Get all tagged appids
+            all_tags = await self.db.get_all_tags()
+            tagged_appids = set(tag['appid'] for tag in all_tags) if all_tags else set()
+            logger.info(f"[get_backlog_games] tagged_appids count: {len(tagged_appids)}")
+
+            # Get all games from stats
+            all_game_stats = await self.db.get_all_game_stats()
+            logger.info(f"[get_backlog_games] all_game_stats count: {len(all_game_stats) if all_game_stats else 0}")
+
+            result = []
+            for game in all_game_stats:
+                appid = game['appid']
+                if appid not in tagged_appids:
+                    # Get game name
+                    stats = await self.db.get_game_stats(appid)
+                    game_name = stats.get('game_name') if stats else None
+
+                    # If no name in stats, try to get from Steam/shortcuts
+                    if not game_name or game_name.startswith('Unknown Game') or game_name.startswith('Game '):
+                        game_name = await self.steam_service.get_game_name(appid)
+
+                    result.append({
+                        'appid': appid,
+                        'game_name': game_name or f'Game {appid}',
+                        'tag': 'backlog',
+                        'is_manual': False
+                    })
+
+            # Sort by name
+            result.sort(key=lambda x: x['game_name'].lower())
+
+            logger.info(f"[get_backlog_games] returning {len(result)} games")
+            if result:
+                logger.info(f"[get_backlog_games] result sample (first 3): {result[:3]}")
+            return {'success': True, 'games': result}
+        except Exception as e:
+            logger.error(f"Error getting backlog games: {e}")
+            import traceback
+            logger.error(traceback.format_exc())
+            return {'success': False, 'error': str(e)}
