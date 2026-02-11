@@ -570,33 +570,16 @@ class Plugin:
         try:
             logger.info(f"=== Starting sync with {len(playtime_data)} playtime entries ===")
 
-            # Get game sources from settings (same logic as get_all_games)
-            settings = await self.db.get_all_settings()
-            source_installed = settings.get('source_installed', True)
-            source_non_steam = settings.get('source_non_steam', False)
-
-            games = []
-
-            # Get installed Steam games
-            if source_installed:
-                installed_games = await self.steam_service.get_all_games()
-                games.extend(installed_games)
-                logger.info(f"Sync: Added {len(installed_games)} installed Steam games")
-
-            # Get non-Steam games
-            if source_non_steam:
-                non_steam_games = await self.steam_service.get_non_steam_games()
-                games.extend(non_steam_games)
-                logger.info(f"Sync: Added {len(non_steam_games)} non-Steam games")
-
-            total = len(games)
+            # Only sync games that were passed in playtime_data
+            # This prevents single-game syncs from overwriting all other games with zeros
+            appids_to_sync = list(playtime_data.keys())
+            total = len(appids_to_sync)
             synced = 0
             errors = 0
             error_list = []
 
-            for i, game in enumerate(games):
-                appid = game['appid']
-                game_name = game.get('name', f'Game {appid}')
+            for i, appid in enumerate(appids_to_sync):
+                game_name = f'Game {appid}'
 
                 # Use playtime from frontend - ensure it's an int
                 raw_playtime = playtime_data.get(appid, 0)
@@ -650,11 +633,7 @@ class Plugin:
 
         # Get current tag
         current_tag = await self.db.get_tag(appid)
-
-        # Skip if manual override
-        if current_tag and current_tag.get('is_manual'):
-            logger.debug(f"Skipping {appid} (manual override)")
-            return current_tag
+        is_manual = current_tag and current_tag.get('is_manual')
 
         # Get game name from steam service
         game_name = await self.steam_service.get_game_name(appid)
@@ -689,16 +668,19 @@ class Plugin:
         else:
             logger.info(f"  HLTB: no data")
 
-        # Calculate tag
-        new_tag = await Plugin.calculate_auto_tag(self, appid)
-        logger.info(f"  Calculated tag: {new_tag or 'none'}")
+        # Calculate tag (but don't override manual tags)
+        if is_manual:
+            logger.info(f"  Skipping tag calculation (manual override)")
+        else:
+            new_tag = await Plugin.calculate_auto_tag(self, appid)
+            logger.info(f"  Calculated tag: {new_tag or 'none'}")
 
-        # Update if changed or doesn't exist
-        if new_tag:
-            current_tag_value = current_tag.get('tag') if current_tag else None
-            if new_tag != current_tag_value:
-                await self.db.set_tag(appid, new_tag, is_manual=False)
-                logger.info(f"  -> Tag set: {new_tag}")
+            # Update if changed or doesn't exist
+            if new_tag:
+                current_tag_value = current_tag.get('tag') if current_tag else None
+                if new_tag != current_tag_value:
+                    await self.db.set_tag(appid, new_tag, is_manual=False)
+                    logger.info(f"  -> Tag set: {new_tag}")
 
         return await self.db.get_tag(appid) or {}
 
