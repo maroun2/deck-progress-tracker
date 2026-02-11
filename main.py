@@ -130,10 +130,10 @@ class Plugin:
         settings = await self.db.get_all_settings()
         in_progress_threshold = settings.get('in_progress_threshold', 30)  # Default 30 min
 
-        # Priority 1: Mastered (100% achievements)
-        if stats['total_achievements'] > 0:
-            if stats['unlocked_achievements'] >= stats['total_achievements']:
-                return "mastered"
+        # Priority 1: Mastered (>=90% achievements)
+        achievement_percentage = stats.get('achievement_percentage', 0)
+        if achievement_percentage >= 90:
+            return "mastered"
 
         # Priority 2: Completed (beat main story - playtime >= main_story)
         if hltb and hltb.get('main_story'):
@@ -602,11 +602,12 @@ class Plugin:
                 game_achievements = achievement_data.get(appid, {})
                 total_achievements = game_achievements.get('total', 0) if isinstance(game_achievements, dict) else 0
                 unlocked_achievements = game_achievements.get('unlocked', 0) if isinstance(game_achievements, dict) else 0
+                achievement_percentage = game_achievements.get('percentage', 0.0) if isinstance(game_achievements, dict) else 0.0
 
-                logger.info(f"[{i+1}/{total}] Syncing: {game_name} ({appid}), playtime={playtime_minutes}, achievements={unlocked_achievements}/{total_achievements}")
+                logger.info(f"[{i+1}/{total}] Syncing: {game_name} ({appid}), playtime={playtime_minutes}, achievements={unlocked_achievements}/{total_achievements} ({achievement_percentage:.1f}%)")
 
                 try:
-                    await Plugin.sync_game_with_playtime(self, appid, playtime_minutes, total_achievements, unlocked_achievements)
+                    await Plugin.sync_game_with_playtime(self, appid, playtime_minutes, total_achievements, unlocked_achievements, achievement_percentage)
                     synced += 1
                     logger.info(f"[{i+1}/{total}] Completed: {game_name}")
 
@@ -635,9 +636,9 @@ class Plugin:
             logger.error(traceback.format_exc())
             return {"success": False, "error": str(e)}
 
-    async def sync_game_with_playtime(self, appid: str, playtime_minutes: int, total_achievements: int = 0, unlocked_achievements: int = 0) -> Dict[str, Any]:
+    async def sync_game_with_playtime(self, appid: str, playtime_minutes: int, total_achievements: int = 0, unlocked_achievements: int = 0, achievement_percentage: float = 0.0) -> Dict[str, Any]:
         """Sync a single game using frontend-provided playtime and achievements"""
-        logger.debug(f"sync_game_with_playtime: appid={appid}, playtime_minutes={playtime_minutes}, achievements={unlocked_achievements}/{total_achievements}")
+        logger.debug(f"sync_game_with_playtime: appid={appid}, playtime_minutes={playtime_minutes}, achievements={unlocked_achievements}/{total_achievements} ({achievement_percentage:.1f}%)")
 
         # Get current tag
         current_tag = await self.db.get_tag(appid)
@@ -650,8 +651,7 @@ class Plugin:
         # Get game name from steam service
         game_name = await self.steam_service.get_game_name(appid)
 
-        # Calculate achievement percentage
-        achievement_percentage = (unlocked_achievements / total_achievements * 100) if total_achievements > 0 else 0.0
+        # Use frontend-provided percentage (more accurate than calculating from total/unlocked)
 
         # Build stats object with frontend playtime and achievements
         stats = {

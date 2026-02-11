@@ -1,4 +1,4 @@
-const manifest = {"name":"Game Progress Tracker","author":"Maron","version":"1.1.22","api_version":1,"flags":["_root"],"publish":{"tags":["library","achievements","statistics","enhancement"],"description":"Automatic game tagging based on achievements, playtime, and completion time. Track your progress with visual badges in the Steam library.","image":"https://opengraph.githubassets.com/1/SteamDeckHomebrew/decky-loader"}};
+const manifest = {"name":"Game Progress Tracker","author":"Maron","version":"1.1.23","api_version":1,"flags":["_root"],"publish":{"tags":["library","achievements","statistics","enhancement"],"description":"Automatic game tagging based on achievements, playtime, and completion time. Track your progress with visual badges in the Steam library.","image":"https://opengraph.githubassets.com/1/SteamDeckHomebrew/decky-loader"}};
 const API_VERSION = 2;
 if (!manifest?.name) {
     throw new Error('[@decky/api]: Failed to find plugin manifest.');
@@ -92,67 +92,60 @@ const log$6 = (msg, data) => {
 };
 /**
  * Get achievement data for a list of appids from Steam's frontend API
- * Uses window.appAchievementProgressCache which is Steam's internal achievement cache
+ * Uses window.appAchievementProgressCache.m_achievementProgress.mapCache for full data
  */
 const getAchievementData = async (appids) => {
     log$6(`getAchievementData called with ${appids.length} appids`);
     const achievementMap = {};
+    const defaultData = { total: 0, unlocked: 0, percentage: 0, all_unlocked: false };
     // Access Steam's global achievement progress cache
     const achievementCache = window.appAchievementProgressCache;
     log$6(`appAchievementProgressCache available: ${!!achievementCache}`);
     if (!achievementCache) {
         log$6('appAchievementProgressCache not available - cannot get achievements!');
-        // Log what global objects ARE available for debugging
-        const windowKeys = Object.keys(window).filter(k => k.toLowerCase().includes('achievement') ||
-            k.toLowerCase().includes('app') ||
-            k.toLowerCase().includes('steam'));
-        log$6(`Available window objects: ${windowKeys.slice(0, 20).join(', ')}`);
         return achievementMap;
     }
-    // Log the cache object's methods/properties
-    const cacheKeys = Object.keys(achievementCache);
-    log$6(`achievementCache keys: ${cacheKeys.join(', ')}`);
-    log$6(`GetAchievementProgress exists: ${typeof achievementCache.GetAchievementProgress}`);
+    // Access the mapCache which has the full achievement data
+    const mapCache = achievementCache.m_achievementProgress?.mapCache;
+    if (!mapCache) {
+        log$6('mapCache not available in achievementCache');
+        return achievementMap;
+    }
+    log$6(`mapCache available, size: ${mapCache.size}`);
     let successCount = 0;
-    let failCount = 0;
     let withAchievements = 0;
     const sampleLogs = [];
     for (const appid of appids) {
         try {
-            const progress = achievementCache.GetAchievementProgress(parseInt(appid));
-            // Log raw progress object for first few games
-            if (sampleLogs.length < 3 && progress) {
-                const progressKeys = Object.keys(progress);
-                log$6(`RAW progress for ${appid}: keys=${progressKeys.join(',')}, JSON=${JSON.stringify(progress).slice(0, 200)}`);
-            }
-            if (progress) {
-                // Progress object typically has nAchieved (unlocked) and nTotal (total)
-                const total = progress.nTotal || progress.total || 0;
-                const unlocked = progress.nAchieved || progress.unlocked || 0;
-                achievementMap[appid] = { total, unlocked };
+            const entry = mapCache.get(parseInt(appid));
+            if (entry) {
+                // entry has: { appid, unlocked, total, percentage, all_unlocked, cache_time, vetted }
+                achievementMap[appid] = {
+                    total: entry.total || 0,
+                    unlocked: entry.unlocked || 0,
+                    percentage: entry.percentage || 0,
+                    all_unlocked: entry.all_unlocked || false
+                };
                 successCount++;
-                if (total > 0)
+                if (entry.total > 0)
                     withAchievements++;
                 if (sampleLogs.length < 5) {
-                    sampleLogs.push(`appid ${appid}: ${unlocked}/${total} achievements`);
+                    sampleLogs.push(`appid ${appid}: ${entry.unlocked}/${entry.total} (${entry.percentage.toFixed(1)}%)`);
                 }
             }
             else {
-                // No achievement data - game might not have achievements
-                achievementMap[appid] = { total: 0, unlocked: 0 };
-                failCount++;
+                achievementMap[appid] = { ...defaultData };
             }
         }
         catch (e) {
-            achievementMap[appid] = { total: 0, unlocked: 0 };
-            failCount++;
+            achievementMap[appid] = { ...defaultData };
         }
     }
     // Log results
     for (const logMsg of sampleLogs) {
         log$6(`Achievement sample - ${logMsg}`);
     }
-    log$6(`getAchievementData results: success=${successCount}, noData=${failCount}, withAchievements=${withAchievements}`);
+    log$6(`getAchievementData: found ${successCount} entries, ${withAchievements} with achievements`);
     return achievementMap;
 };
 /**
@@ -381,7 +374,7 @@ const Settings = () => {
     };
     const syncLibrary = async () => {
         await logToBackend('info', '========================================');
-        await logToBackend('info', `syncLibrary button clicked - v${"1.1.22"}`);
+        await logToBackend('info', `syncLibrary button clicked - v${"1.1.23"}`);
         await logToBackend('info', '========================================');
         try {
             setSyncing(true);
@@ -571,7 +564,7 @@ const Settings = () => {
             SP_REACT.createElement("div", { style: styles$1.about },
                 SP_REACT.createElement("p", null,
                     "Game Progress Tracker v",
-                    "1.1.22"),
+                    "1.1.23"),
                 SP_REACT.createElement("p", null, "Automatic game tagging based on achievements, playtime, and completion time."),
                 SP_REACT.createElement("p", { style: styles$1.smallText }, "Data from HowLongToBeat \u2022 Steam achievement system")))));
 };
