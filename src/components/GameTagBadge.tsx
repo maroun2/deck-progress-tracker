@@ -38,7 +38,6 @@ const AddTagButton: FC<{ onClick: () => void }> = ({ onClick }) => {
     gap: '8px',
     userSelect: 'none',
     border: '1px dashed #666',
-    marginTop: '10px',
   };
 
   return (
@@ -93,18 +92,21 @@ export const GameTagBadge: FC<GameTagBadgeProps> = ({ appid }) => {
     refetch();
   };
 
-  // Container style - positions the badge in the header area
+  // Container style - absolute positioning to overlay on header image
   const containerStyle: React.CSSProperties = {
+    position: 'absolute',
+    top: '16px',
+    left: '16px',
+    zIndex: 10,
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'flex-start',
-    padding: '0 16px',
   };
 
   return (
     <div style={containerStyle}>
       {tag && tag.tag ? (
-        <div style={{ position: 'relative', display: 'inline-flex', marginTop: '10px' }}>
+        <div style={{ position: 'relative', display: 'inline-flex' }}>
           <GameTag tag={tag} onClick={handleClick} />
         </div>
       ) : (
