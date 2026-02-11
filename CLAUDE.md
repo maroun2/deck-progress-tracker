@@ -1,46 +1,41 @@
 # Game Progress Tracker - Decky Plugin
 
-## Build & Release
+## Release
+
+Single command to build, commit, tag, and create GitHub release:
 
 ```bash
-# Build release (updates version in plugin.json and package.json)
-./build-plugin.sh v1.0.XX
-
-# Creates: game-progress-tracker-v1.0.XX.zip with correct folder structure
+./release.sh 1.1.XX "Description of changes"
 ```
 
-## GitHub Release
+**IMPORTANT:** Version must be numbers and dots only (e.g., `1.1.14`), NOT with `v` prefix.
 
-**IMPORTANT:** Always include installation URL in release notes!
-
-```bash
-gh release create v1.0.XX game-progress-tracker-v1.0.XX.zip --title "v1.0.XX - Title" --notes "$(cat <<'EOF'
-## Game Progress Tracker v1.0.XX
-
-### Installation
-
-**Install from URL (Recommended)**
-1. Enable Developer Mode in Decky Loader settings
-2. Go to Developer tab → Install Plugin from URL
-3. Enter this URL:
-\`\`\`
-https://github.com/maroun2/steam-deck-game-tags/releases/download/v1.0.XX/game-progress-tracker-v1.0.XX.zip
-\`\`\`
-4. Click Install and wait for completion
-EOF
-)"
-```
+This script:
+1. Updates version in package.json and plugin.json
+2. Builds the frontend (`npm run build`)
+3. Creates plugin zip package
+4. Commits all changes to git
+5. Pushes to origin
+6. Creates and pushes git tag
+7. Creates GitHub release with install URL
 
 ## Testing on Steam Deck
 
-0. Create release so the zip is avaiable to download to the steam deck
-1. Install zip via Decky Loader > Developer Mode > Install from URL
-2. Logs at: `/home/deck/homebrew/plugins/game-progress-tracker/logs/message.txt`
-3. All frontend logs go to backend via `log_frontend()` - no CEF debugging needed
+1. Create release so the zip is available to download
+2. Install via Decky Loader > Developer Mode > Install from URL
+3. Use the install URL from release notes
+4. Logs at: `/home/deck/homebrew/plugins/game-progress-tracker/logs/message.txt`
+5. All frontend logs go to backend via `log_frontend()` - no CEF debugging needed
 
 ## Key Architecture
 
 - **Frontend** (Settings.tsx): Gets playtime from `window.appStore.GetAppOverviewByAppID()`
 - **Backend** (main.py): Receives playtime, fetches achievements, queries HLTB
 - **Communication**: `@decky/api` call() function
+- **Route Patching** (patchLibraryApp.tsx): Uses ProtonDB-style safe patching with `afterPatch`, `findInReactTree`, `createReactTreePatcher`
 
+## Decky API Notes
+
+- `call()` passes all parameters as a single dict to Python backend
+- Use `_extract_params()` helper in backend to unpack parameters
+- Non-Steam games have appids in shortcuts.vdf (binary format)
