@@ -6,6 +6,17 @@
 import React, { FC, useState, useEffect } from 'react';
 import { call } from '@decky/api';
 import { GameDetails } from '../types';
+import { TagIcon, TAG_ICON_COLORS } from './TagIcon';
+
+// Debug logging helper
+const log = (msg: string, data?: any) => {
+  const logMsg = `[GameProgressTracker][TagManager] ${msg}`;
+  if (data !== undefined) {
+    console.log(logMsg, data);
+  } else {
+    console.log(logMsg);
+  }
+};
 
 interface TagManagerProps {
   appid: string;
@@ -17,20 +28,26 @@ export const TagManager: FC<TagManagerProps> = ({ appid, onClose }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  log(`TagManager mounted for appid=${appid}`);
+
   useEffect(() => {
+    log(`TagManager useEffect: fetching details for appid=${appid}`);
     fetchDetails();
   }, [appid]);
 
   const fetchDetails = async () => {
     try {
+      log(`fetchDetails: calling get_game_details for appid=${appid}`);
       setLoading(true);
       setError(null);
 
       const result = await call<[{ appid: string }], GameDetails>('get_game_details', { appid });
+      log(`fetchDetails: result for appid=${appid}:`, result);
       setDetails(result);
     } catch (err: any) {
-      setError(err?.message || 'Failed to load game details');
-      console.error('Error fetching game details:', err);
+      const errorMsg = err?.message || 'Failed to load game details';
+      setError(errorMsg);
+      log(`fetchDetails: error for appid=${appid}: ${errorMsg}`, err);
     } finally {
       setLoading(false);
     }
@@ -38,31 +55,40 @@ export const TagManager: FC<TagManagerProps> = ({ appid, onClose }) => {
 
   const setTag = async (tag: string) => {
     try {
-      await call<[{ appid: string; tag: string }], void>('set_manual_tag', { appid, tag });
+      log(`setTag: calling set_manual_tag for appid=${appid}, tag=${tag}`);
+      const result = await call<[{ appid: string; tag: string }], { success: boolean; error?: string }>('set_manual_tag', { appid, tag });
+      log(`setTag: result for appid=${appid}:`, result);
       await fetchDetails();
     } catch (err: any) {
-      setError(err?.message || 'Failed to set tag');
-      console.error('Error setting tag:', err);
+      const errorMsg = err?.message || 'Failed to set tag';
+      setError(errorMsg);
+      log(`setTag: error for appid=${appid}: ${errorMsg}`, err);
     }
   };
 
   const resetToAuto = async () => {
     try {
-      await call<[{ appid: string }], void>('reset_to_auto_tag', { appid });
+      log(`resetToAuto: calling reset_to_auto_tag for appid=${appid}`);
+      const result = await call<[{ appid: string }], { success: boolean; error?: string }>('reset_to_auto_tag', { appid });
+      log(`resetToAuto: result for appid=${appid}:`, result);
       await fetchDetails();
     } catch (err: any) {
-      setError(err?.message || 'Failed to reset tag');
-      console.error('Error resetting tag:', err);
+      const errorMsg = err?.message || 'Failed to reset tag';
+      setError(errorMsg);
+      log(`resetToAuto: error for appid=${appid}: ${errorMsg}`, err);
     }
   };
 
   const removeTag = async () => {
     try {
-      await call<[{ appid: string }], void>('remove_tag', { appid });
+      log(`removeTag: calling remove_tag for appid=${appid}`);
+      const result = await call<[{ appid: string }], { success: boolean; error?: string }>('remove_tag', { appid });
+      log(`removeTag: result for appid=${appid}:`, result);
       await fetchDetails();
     } catch (err: any) {
-      setError(err?.message || 'Failed to remove tag');
-      console.error('Error removing tag:', err);
+      const errorMsg = err?.message || 'Failed to remove tag';
+      setError(errorMsg);
+      log(`removeTag: error for appid=${appid}: ${errorMsg}`, err);
     }
   };
 
@@ -128,29 +154,46 @@ export const TagManager: FC<TagManagerProps> = ({ appid, onClose }) => {
 
         <div style={styles.section}>
           <h3 style={styles.sectionTitle}>Current Tag</h3>
-          <div style={styles.statRow}>
+          <div style={styles.currentTag}>
             {tag?.tag ? (
-              <span>
-                {tag.tag.replace('_', ' ').toUpperCase()}
-                {tag.is_manual ? ' (Manual)' : ' (Automatic)'}
-              </span>
+              <>
+                <TagIcon type={tag.tag as any} size={24} />
+                <span style={{ color: TAG_ICON_COLORS[tag.tag as keyof typeof TAG_ICON_COLORS] }}>
+                  {tag.tag.replace('_', ' ').toUpperCase()}
+                </span>
+                <span style={styles.tagType}>
+                  {tag.is_manual ? '(Manual)' : '(Automatic)'}
+                </span>
+              </>
             ) : (
-              <span>No tag assigned</span>
+              <span style={styles.noTag}>No tag assigned</span>
             )}
           </div>
         </div>
 
         <div style={styles.section}>
           <h3 style={styles.sectionTitle}>Set Tag</h3>
-          <div style={styles.buttonGroup}>
-            <button onClick={() => setTag('completed')} style={styles.tagButton}>
-              Completed
+          <div style={styles.tagButtonGroup}>
+            <button
+              onClick={() => setTag('mastered')}
+              style={{ ...styles.tagButton, backgroundColor: TAG_ICON_COLORS.mastered }}
+            >
+              <TagIcon type="mastered" size={20} />
+              <span>Mastered</span>
             </button>
-            <button onClick={() => setTag('in_progress')} style={styles.tagButton}>
-              In Progress
+            <button
+              onClick={() => setTag('completed')}
+              style={{ ...styles.tagButton, backgroundColor: TAG_ICON_COLORS.completed }}
+            >
+              <TagIcon type="completed" size={20} />
+              <span>Completed</span>
             </button>
-            <button onClick={() => setTag('mastered')} style={styles.tagButton}>
-              Mastered
+            <button
+              onClick={() => setTag('in_progress')}
+              style={{ ...styles.tagButton, backgroundColor: TAG_ICON_COLORS.in_progress }}
+            >
+              <TagIcon type="in_progress" size={20} />
+              <span>In Progress</span>
             </button>
           </div>
           <div style={styles.buttonGroup}>
@@ -214,23 +257,50 @@ const styles: Record<string, React.CSSProperties> = {
     padding: '8px 0',
     fontSize: '14px',
   },
+  currentTag: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '12px',
+    padding: '12px',
+    backgroundColor: '#252525',
+    borderRadius: '6px',
+    fontSize: '16px',
+    fontWeight: 'bold',
+  },
+  tagType: {
+    fontSize: '12px',
+    color: '#888',
+    fontWeight: 'normal',
+  },
+  noTag: {
+    color: '#888',
+    fontStyle: 'italic',
+  },
   buttonGroup: {
     display: 'flex',
     gap: '8px',
     marginBottom: '8px',
     flexWrap: 'wrap',
   },
+  tagButtonGroup: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '8px',
+    marginBottom: '12px',
+  },
   tagButton: {
-    flex: 1,
-    padding: '12px',
-    backgroundColor: '#667eea',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '10px',
+    padding: '14px',
     border: 'none',
-    borderRadius: '4px',
+    borderRadius: '6px',
     color: 'white',
-    fontSize: '14px',
+    fontSize: '15px',
     fontWeight: 'bold',
     cursor: 'pointer',
-    transition: 'background-color 0.2s',
+    transition: 'opacity 0.2s',
   },
   secondaryButton: {
     flex: 1,
