@@ -1,4 +1,4 @@
-const manifest = {"name":"Game Progress Tracker","author":"Maron","version":"1.1.18","api_version":1,"flags":["_root"],"publish":{"tags":["library","achievements","statistics","enhancement"],"description":"Automatic game tagging based on achievements, playtime, and completion time. Track your progress with visual badges in the Steam library.","image":"https://opengraph.githubassets.com/1/SteamDeckHomebrew/decky-loader"}};
+const manifest = {"name":"Game Progress Tracker","author":"Maron","version":"1.1.19","api_version":1,"flags":["_root"],"publish":{"tags":["library","achievements","statistics","enhancement"],"description":"Automatic game tagging based on achievements, playtime, and completion time. Track your progress with visual badges in the Steam library.","image":"https://opengraph.githubassets.com/1/SteamDeckHomebrew/decky-loader"}};
 const API_VERSION = 2;
 if (!manifest?.name) {
     throw new Error('[@decky/api]: Failed to find plugin manifest.');
@@ -279,7 +279,7 @@ const Settings = () => {
     };
     const syncLibrary = async () => {
         await logToBackend('info', '========================================');
-        await logToBackend('info', `syncLibrary button clicked - v${"1.1.18"}`);
+        await logToBackend('info', `syncLibrary button clicked - v${"1.1.19"}`);
         await logToBackend('info', '========================================');
         try {
             setSyncing(true);
@@ -378,7 +378,7 @@ const Settings = () => {
                 "Library (",
                 totalGames,
                 " games)"),
-            loadingGames ? (SP_REACT.createElement("div", { style: styles$1.loadingText }, "Loading games...")) : totalGames === 0 ? (SP_REACT.createElement("div", { style: styles$1.loadingText }, "No games synced yet. Click \"Sync Entire Library\" to tag your games based on playtime and achievements.")) : (SP_REACT.createElement("div", { style: styles$1.taggedListContainer }, ['completed', 'in_progress', 'backlog', 'mastered'].map((tagType) => {
+            loadingGames ? (SP_REACT.createElement("div", { style: styles$1.loadingText }, "Loading games...")) : totalGames === 0 ? (SP_REACT.createElement("div", { style: styles$1.loadingText }, "No games synced yet. Click \"Sync Entire Library\" to tag your games based on playtime and achievements.")) : (SP_REACT.createElement("div", { style: styles$1.taggedListContainer }, ['in_progress', 'completed', 'mastered', 'backlog'].map((tagType) => {
                 if (!tagType)
                     return null;
                 const isBacklog = tagType === 'backlog';
@@ -460,7 +460,7 @@ const Settings = () => {
             SP_REACT.createElement("div", { style: styles$1.about },
                 SP_REACT.createElement("p", null,
                     "Game Progress Tracker v",
-                    "1.1.18"),
+                    "1.1.19"),
                 SP_REACT.createElement("p", null, "Automatic game tagging based on achievements, playtime, and completion time."),
                 SP_REACT.createElement("p", { style: styles$1.smallText }, "Data from HowLongToBeat \u2022 Steam achievement system")))));
 };
@@ -1343,7 +1343,7 @@ const GameTagBadge = ({ appid }) => {
     // Position on top-right (opposite side from ProtonDB's default top-left)
     const containerStyle = {
         position: 'absolute',
-        top: '40px',
+        top: '50px',
         right: '20px',
         zIndex: 10,
     };
