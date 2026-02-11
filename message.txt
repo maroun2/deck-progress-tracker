@@ -1,679 +1,306 @@
-names] stats: {'appid': '1449690', 'game_name': 'The Walking Dead: The Telltale Definitive Series', 'playtime_minutes': 0, 'total_achievements': 0, 'unlocked_achievements': 0, 'last_sync': '2026-02-11 19:30:57'}
-[2026-02-11 20:31:28,996][INFO]: [get_all_tags_with_names] game_name: The Walking Dead: The Telltale Definitive Series
-[2026-02-11 20:31:28,996][INFO]: [get_all_tags_with_names] tag_entry: {'appid': '380', 'tag': 'completed', 'is_manual': False, 'last_updated': '2026-02-10 16:42:55'}
-[2026-02-11 20:31:28,997][INFO]: [get_all_tags_with_names] stats: {'appid': '380', 'game_name': 'Half-Life 2: Episode One', 'playtime_minutes': 0, 'total_achievements': 0, 'unlocked_achievements': 0, 'last_sync': '2026-02-11 19:31:05'}
-[2026-02-11 20:31:28,997][INFO]: [get_all_tags_with_names] game_name: Half-Life 2: Episode One
-[2026-02-11 20:31:28,997][INFO]: [get_all_tags_with_names] tag_entry: {'appid': '1225570', 'tag': 'in_progress', 'is_manual': False, 'last_updated': '2026-02-10 14:59:16'}
-[2026-02-11 20:31:28,997][INFO]: [get_all_tags_with_names] stats: {'appid': '1225570', 'game_name': 'Unravel Two', 'playtime_minutes': 0, 'total_achievements': 0, 'unlocked_achievements': 0, 'last_sync': '2026-02-11 19:31:08'}
-[2026-02-11 20:31:28,997][INFO]: [get_all_tags_with_names] game_name: Unravel Two
-[2026-02-11 20:31:28,998][INFO]: [get_all_tags_with_names] tag_entry: {'appid': '220', 'tag': 'in_progress', 'is_manual': False, 'last_updated': '2026-02-10 14:59:18'}
-[2026-02-11 20:31:28,998][INFO]: [get_all_tags_with_names] stats: {'appid': '220', 'game_name': 'Half-Life 2', 'playtime_minutes': 0, 'total_achievements': 0, 'unlocked_achievements': 0, 'last_sync': '2026-02-11 19:31:10'}
-[2026-02-11 20:31:28,998][INFO]: [get_all_tags_with_names] game_name: Half-Life 2
-[2026-02-11 20:31:28,998][INFO]: [get_all_tags_with_names] tag_entry: {'appid': '379430', 'tag': 'completed', 'is_manual': False, 'last_updated': '2026-02-10 16:43:02'}
-[2026-02-11 20:31:28,999][INFO]: [get_all_tags_with_names] stats: {'appid': '379430', 'game_name': 'Kingdom Come: Deliverance', 'playtime_minutes': 0, 'total_achievements': 0, 'unlocked_achievements': 0, 'last_sync': '2026-02-11 19:31:12'}
-[2026-02-11 20:31:28,999][INFO]: [get_all_tags_with_names] game_name: Kingdom Come: Deliverance
-[2026-02-11 20:31:28,999][INFO]: [get_all_tags_with_names] tag_entry: {'appid': '2225070', 'tag': 'completed', 'is_manual': False, 'last_updated': '2026-02-10 16:43:06'}
-[2026-02-11 20:31:29,001][INFO]: [get_all_tags_with_names] stats: {'appid': '2225070', 'game_name': 'Trackmania', 'playtime_minutes': 0, 'total_achievements': 0, 'unlocked_achievements': 0, 'last_sync': '2026-02-11 19:31:16'}
-[2026-02-11 20:31:29,001][INFO]: [get_all_tags_with_names] game_name: Trackmania
-[2026-02-11 20:31:29,001][INFO]: [get_all_tags_with_names] tag_entry: {'appid': '200210', 'tag': 'completed', 'is_manual': False, 'last_updated': '2026-02-10 16:43:07'}
-[2026-02-11 20:31:29,002][INFO]: [get_all_tags_with_names] stats: {'appid': '200210', 'game_name': 'Realm of the Mad God Exalt', 'playtime_minutes': 0, 'total_achievements': 0, 'unlocked_achievements': 0, 'last_sync': '2026-02-11 19:31:17'}
-[2026-02-11 20:31:29,002][INFO]: [get_all_tags_with_names] game_name: Realm of the Mad God Exalt
-[2026-02-11 20:31:29,002][INFO]: [get_all_tags_with_names] tag_entry: {'appid': '238960', 'tag': 'in_progress', 'is_manual': False, 'last_updated': '2026-02-10 14:59:30'}
-[2026-02-11 20:31:29,003][INFO]: [get_all_tags_with_names] stats: {'appid': '238960', 'game_name': 'Path of Exile', 'playtime_minutes': 0, 'total_achievements': 0, 'unlocked_achievements': 0, 'last_sync': '2026-02-11 19:31:22'}
-[2026-02-11 20:31:29,003][INFO]: [get_all_tags_with_names] game_name: Path of Exile
-[2026-02-11 20:31:29,003][INFO]: [get_all_tags_with_names] tag_entry: {'appid': '458710', 'tag': 'in_progress', 'is_manual': False, 'last_updated': '2026-02-10 14:59:32'}
-[2026-02-11 20:31:29,003][INFO]: [get_all_tags_with_names] stats: {'appid': '458710', 'game_name': 'Kingdom Rush Frontiers', 'playtime_minutes': 0, 'total_achievements': 0, 'unlocked_achievements': 0, 'last_sync': '2026-02-11 19:31:24'}
-[2026-02-11 20:31:29,004][INFO]: [get_all_tags_with_names] game_name: Kingdom Rush Frontiers
-[2026-02-11 20:31:29,004][INFO]: [get_all_tags_with_names] tag_entry: {'appid': '373420', 'tag': 'in_progress', 'is_manual': False, 'last_updated': '2026-02-10 17:07:06'}
-[2026-02-11 20:31:29,004][INFO]: [get_all_tags_with_names] stats: {'appid': '373420', 'game_name': 'Divinity: Original Sin Enhanced Edition', 'playtime_minutes': 0, 'total_achievements': 0, 'unlocked_achievements': 0, 'last_sync': '2026-02-11 19:31:04'}
-[2026-02-11 20:31:29,004][INFO]: [get_all_tags_with_names] game_name: Divinity: Original Sin Enhanced Edition
-[2026-02-11 20:31:29,004][INFO]: [get_all_tags_with_names] tag_entry: {'appid': '4007057898', 'tag': 'mastered', 'is_manual': True, 'last_updated': '2026-02-11 11:35:14'}
-[2026-02-11 20:31:29,005][INFO]: [get_all_tags_with_names] stats: {'appid': '4007057898', 'game_name': 'Unknown Game (4007057898)', 'playtime_minutes': 0, 'total_achievements': 0, 'unlocked_achievements': 0, 'last_sync': '2026-02-11 08:48:45'}
-[2026-02-11 20:31:29,005][INFO]: [get_all_tags_with_names] game_name: Unknown Game (4007057898)
-[2026-02-11 20:31:29,006][INFO]: === get_non_steam_games called ===
-[2026-02-11 20:31:29,006][INFO]: [get_non_steam_games] user_id=99048608, steam_path=/home/deck/.steam/steam
-[2026-02-11 20:31:29,006][INFO]: [get_non_steam_games] shortcuts_path=/home/deck/.steam/steam/userdata/99048608/config/shortcuts.vdf, exists=True
-[2026-02-11 20:31:29,006][INFO]: [get_non_steam_games] read 13605 bytes from shortcuts.vdf
-[2026-02-11 20:31:29,006][INFO]: [_parse_shortcuts_binary] Parsed 22 games
-[2026-02-11 20:31:29,007][INFO]: [get_non_steam_games] parsed 22 non-Steam games
-[2026-02-11 20:31:29,007][INFO]: [get_non_steam_games] sample: [{'appid': '2780787571', 'name': 'NFS Underground 2', 'playtime_minutes': 0, 'is_non_steam': True}, {'appid': '4003736873', 'name': 'Google Chrome', 'playtime_minutes': 0, 'is_non_steam': True}, {'appid': '3367525719', 'name': 'Epic Games', 'playtime_minutes': 0, 'is_non_steam': True}]
-[2026-02-11 20:31:29,007][INFO]: [get_all_tags_with_names] returning 16 games
-[2026-02-11 20:31:29,007][INFO]: [get_all_tags_with_names] result sample (first 3): [{'appid': '380', 'game_name': 'Half-Life 2: Episode One', 'tag': 'completed', 'is_manual': False}, {'appid': '379430', 'game_name': 'Kingdom Come: Deliverance', 'tag': 'completed', 'is_manual': False}, {'appid': '200210', 'game_name': 'Realm of the Mad God Exalt', 'tag': 'completed', 'is_manual': False}]
-[2026-02-11 20:31:29,073][INFO]: [77/96] Syncing: Epic Games (3367525719), playtime=0, achievements=0/0
-[2026-02-11 20:31:29,074][INFO]: === get_non_steam_games called ===
-[2026-02-11 20:31:29,074][INFO]: [get_non_steam_games] user_id=99048608, steam_path=/home/deck/.steam/steam
-[2026-02-11 20:31:29,074][INFO]: [get_non_steam_games] shortcuts_path=/home/deck/.steam/steam/userdata/99048608/config/shortcuts.vdf, exists=True
-[2026-02-11 20:31:29,074][INFO]: [get_non_steam_games] read 13605 bytes from shortcuts.vdf
-[2026-02-11 20:31:29,074][INFO]: [_parse_shortcuts_binary] Parsed 22 games
-[2026-02-11 20:31:29,074][INFO]: [get_non_steam_games] parsed 22 non-Steam games
-[2026-02-11 20:31:29,075][INFO]: [get_non_steam_games] sample: [{'appid': '2780787571', 'name': 'NFS Underground 2', 'playtime_minutes': 0, 'is_non_steam': True}, {'appid': '4003736873', 'name': 'Google Chrome', 'playtime_minutes': 0, 'is_non_steam': True}, {'appid': '3367525719', 'name': 'Epic Games', 'playtime_minutes': 0, 'is_non_steam': True}]
-[2026-02-11 20:31:29,079][INFO]:   Stats: playtime=0min, achievements=0/0
-[2026-02-11 20:31:29,631][INFO]: [76/96] Syncing: Google Chrome (4003736873), playtime=0, achievements=0/0
-[2026-02-11 20:31:29,632][INFO]: === get_non_steam_games called ===
-[2026-02-11 20:31:29,632][INFO]: [get_non_steam_games] user_id=99048608, steam_path=/home/deck/.steam/steam
-[2026-02-11 20:31:29,632][INFO]: [get_non_steam_games] shortcuts_path=/home/deck/.steam/steam/userdata/99048608/config/shortcuts.vdf, exists=True
-[2026-02-11 20:31:29,633][INFO]: [get_non_steam_games] read 13605 bytes from shortcuts.vdf
-[2026-02-11 20:31:29,633][INFO]: [_parse_shortcuts_binary] Parsed 22 games
-[2026-02-11 20:31:29,633][INFO]: [get_non_steam_games] parsed 22 non-Steam games
-[2026-02-11 20:31:29,633][INFO]: [get_non_steam_games] sample: [{'appid': '2780787571', 'name': 'NFS Underground 2', 'playtime_minutes': 0, 'is_non_steam': True}, {'appid': '4003736873', 'name': 'Google Chrome', 'playtime_minutes': 0, 'is_non_steam': True}, {'appid': '3367525719', 'name': 'Epic Games', 'playtime_minutes': 0, 'is_non_steam': True}]
-[2026-02-11 20:31:29,637][INFO]:   Stats: playtime=0min, achievements=0/0
-[2026-02-11 20:31:30,063][INFO]:   HLTB: no data
-[2026-02-11 20:31:30,064][INFO]:   Calculated tag: none
-[2026-02-11 20:31:30,064][INFO]: [76/96] Completed: Google Chrome
-[2026-02-11 20:31:30,184][INFO]:   HLTB: no data
-[2026-02-11 20:31:30,185][INFO]:   Calculated tag: none
-[2026-02-11 20:31:30,185][INFO]: [77/96] Completed: Epic Games
-[2026-02-11 20:31:31,066][INFO]: [77/96] Syncing: Epic Games (3367525719), playtime=0, achievements=0/0
-[2026-02-11 20:31:31,067][INFO]: === get_non_steam_games called ===
-[2026-02-11 20:31:31,067][INFO]: [get_non_steam_games] user_id=99048608, steam_path=/home/deck/.steam/steam
-[2026-02-11 20:31:31,067][INFO]: [get_non_steam_games] shortcuts_path=/home/deck/.steam/steam/userdata/99048608/config/shortcuts.vdf, exists=True
-[2026-02-11 20:31:31,068][INFO]: [get_non_steam_games] read 13605 bytes from shortcuts.vdf
-[2026-02-11 20:31:31,068][INFO]: [_parse_shortcuts_binary] Parsed 22 games
-[2026-02-11 20:31:31,068][INFO]: [get_non_steam_games] parsed 22 non-Steam games
-[2026-02-11 20:31:31,068][INFO]: [get_non_steam_games] sample: [{'appid': '2780787571', 'name': 'NFS Underground 2', 'playtime_minutes': 0, 'is_non_steam': True}, {'appid': '4003736873', 'name': 'Google Chrome', 'playtime_minutes': 0, 'is_non_steam': True}, {'appid': '3367525719', 'name': 'Epic Games', 'playtime_minutes': 0, 'is_non_steam': True}]
-[2026-02-11 20:31:31,072][INFO]:   Stats: playtime=0min, achievements=0/0
-[2026-02-11 20:31:31,186][INFO]: [78/96] Syncing: Battle.net (4159773992), playtime=0, achievements=0/0
-[2026-02-11 20:31:31,188][INFO]: === get_non_steam_games called ===
-[2026-02-11 20:31:31,188][INFO]: [get_non_steam_games] user_id=99048608, steam_path=/home/deck/.steam/steam
-[2026-02-11 20:31:31,188][INFO]: [get_non_steam_games] shortcuts_path=/home/deck/.steam/steam/userdata/99048608/config/shortcuts.vdf, exists=True
-[2026-02-11 20:31:31,188][INFO]: [get_non_steam_games] read 13605 bytes from shortcuts.vdf
-[2026-02-11 20:31:31,188][INFO]: [_parse_shortcuts_binary] Parsed 22 games
-[2026-02-11 20:31:31,188][INFO]: [get_non_steam_games] parsed 22 non-Steam games
-[2026-02-11 20:31:31,188][INFO]: [get_non_steam_games] sample: [{'appid': '2780787571', 'name': 'NFS Underground 2', 'playtime_minutes': 0, 'is_non_steam': True}, {'appid': '4003736873', 'name': 'Google Chrome', 'playtime_minutes': 0, 'is_non_steam': True}, {'appid': '3367525719', 'name': 'Epic Games', 'playtime_minutes': 0, 'is_non_steam': True}]
-[2026-02-11 20:31:31,192][INFO]:   Stats: playtime=0min, achievements=0/0
-[2026-02-11 20:31:31,803][INFO]:   HLTB: no data
-[2026-02-11 20:31:31,804][INFO]:   Calculated tag: none
-[2026-02-11 20:31:31,804][INFO]: [77/96] Completed: Epic Games
-[2026-02-11 20:31:32,315][INFO]:   HLTB: no data
-[2026-02-11 20:31:32,316][INFO]:   Calculated tag: none
-[2026-02-11 20:31:32,316][INFO]: [78/96] Completed: Battle.net
-[2026-02-11 20:31:32,806][INFO]: [78/96] Syncing: Battle.net (4159773992), playtime=0, achievements=0/0
-[2026-02-11 20:31:32,807][INFO]: === get_non_steam_games called ===
-[2026-02-11 20:31:32,807][INFO]: [get_non_steam_games] user_id=99048608, steam_path=/home/deck/.steam/steam
-[2026-02-11 20:31:32,807][INFO]: [get_non_steam_games] shortcuts_path=/home/deck/.steam/steam/userdata/99048608/config/shortcuts.vdf, exists=True
-[2026-02-11 20:31:32,807][INFO]: [get_non_steam_games] read 13605 bytes from shortcuts.vdf
-[2026-02-11 20:31:32,807][INFO]: [_parse_shortcuts_binary] Parsed 22 games
-[2026-02-11 20:31:32,807][INFO]: [get_non_steam_games] parsed 22 non-Steam games
-[2026-02-11 20:31:32,807][INFO]: [get_non_steam_games] sample: [{'appid': '2780787571', 'name': 'NFS Underground 2', 'playtime_minutes': 0, 'is_non_steam': True}, {'appid': '4003736873', 'name': 'Google Chrome', 'playtime_minutes': 0, 'is_non_steam': True}, {'appid': '3367525719', 'name': 'Epic Games', 'playtime_minutes': 0, 'is_non_steam': True}]
-[2026-02-11 20:31:32,811][INFO]:   Stats: playtime=0min, achievements=0/0
-[2026-02-11 20:31:33,317][INFO]: [79/96] Syncing: Hogwarts Legacy (3227839963), playtime=0, achievements=0/0
-[2026-02-11 20:31:33,318][INFO]: === get_non_steam_games called ===
-[2026-02-11 20:31:33,318][INFO]: [get_non_steam_games] user_id=99048608, steam_path=/home/deck/.steam/steam
-[2026-02-11 20:31:33,319][INFO]: [get_non_steam_games] shortcuts_path=/home/deck/.steam/steam/userdata/99048608/config/shortcuts.vdf, exists=True
-[2026-02-11 20:31:33,319][INFO]: [get_non_steam_games] read 13605 bytes from shortcuts.vdf
-[2026-02-11 20:31:33,319][INFO]: [_parse_shortcuts_binary] Parsed 22 games
-[2026-02-11 20:31:33,319][INFO]: [get_non_steam_games] parsed 22 non-Steam games
-[2026-02-11 20:31:33,319][INFO]: [get_non_steam_games] sample: [{'appid': '2780787571', 'name': 'NFS Underground 2', 'playtime_minutes': 0, 'is_non_steam': True}, {'appid': '4003736873', 'name': 'Google Chrome', 'playtime_minutes': 0, 'is_non_steam': True}, {'appid': '3367525719', 'name': 'Epic Games', 'playtime_minutes': 0, 'is_non_steam': True}]
-[2026-02-11 20:31:33,323][INFO]:   Stats: playtime=0min, achievements=0/0
-[2026-02-11 20:31:33,851][INFO]:   HLTB: no data
-[2026-02-11 20:31:33,852][INFO]:   Calculated tag: none
-[2026-02-11 20:31:33,852][INFO]: [78/96] Completed: Battle.net
-[2026-02-11 20:31:34,364][INFO]: Found HLTB match: Hogwarts Legacy (similarity: 1.00)
-[2026-02-11 20:31:34,370][INFO]:   HLTB: main=26.7h, extra=45.2h
-[2026-02-11 20:31:34,371][INFO]:   Calculated tag: none
-[2026-02-11 20:31:34,371][INFO]: [79/96] Completed: Hogwarts Legacy
-[2026-02-11 20:31:34,854][INFO]: [79/96] Syncing: Hogwarts Legacy (3227839963), playtime=0, achievements=0/0
-[2026-02-11 20:31:34,855][INFO]: === get_non_steam_games called ===
-[2026-02-11 20:31:34,855][INFO]: [get_non_steam_games] user_id=99048608, steam_path=/home/deck/.steam/steam
-[2026-02-11 20:31:34,855][INFO]: [get_non_steam_games] shortcuts_path=/home/deck/.steam/steam/userdata/99048608/config/shortcuts.vdf, exists=True
-[2026-02-11 20:31:34,855][INFO]: [get_non_steam_games] read 13605 bytes from shortcuts.vdf
-[2026-02-11 20:31:34,856][INFO]: [_parse_shortcuts_binary] Parsed 22 games
-[2026-02-11 20:31:34,856][INFO]: [get_non_steam_games] parsed 22 non-Steam games
-[2026-02-11 20:31:34,856][INFO]: [get_non_steam_games] sample: [{'appid': '2780787571', 'name': 'NFS Underground 2', 'playtime_minutes': 0, 'is_non_steam': True}, {'appid': '4003736873', 'name': 'Google Chrome', 'playtime_minutes': 0, 'is_non_steam': True}, {'appid': '3367525719', 'name': 'Epic Games', 'playtime_minutes': 0, 'is_non_steam': True}]
-[2026-02-11 20:31:34,860][INFO]:   Stats: playtime=0min, achievements=0/0
-[2026-02-11 20:31:34,860][INFO]:   HLTB: main=26.7h, extra=45.2h
-[2026-02-11 20:31:34,861][INFO]:   Calculated tag: none
-[2026-02-11 20:31:34,862][INFO]: [79/96] Completed: Hogwarts Legacy
-[2026-02-11 20:31:35,187][INFO]: === get_game_tag called: appid=1794680 ===
-[2026-02-11 20:31:35,188][INFO]: [get_game_tag] appid=1794680, tag={'appid': '1794680', 'tag': 'completed', 'is_manual': False, 'last_updated': '2026-02-10 16:42:39'}
-[2026-02-11 20:31:35,372][INFO]: [80/96] Syncing: Grand Theft Auto V (3991013285), playtime=0, achievements=0/0
-[2026-02-11 20:31:35,374][INFO]: === get_non_steam_games called ===
-[2026-02-11 20:31:35,374][INFO]: [get_non_steam_games] user_id=99048608, steam_path=/home/deck/.steam/steam
-[2026-02-11 20:31:35,374][INFO]: [get_non_steam_games] shortcuts_path=/home/deck/.steam/steam/userdata/99048608/config/shortcuts.vdf, exists=True
-[2026-02-11 20:31:35,374][INFO]: [get_non_steam_games] read 13605 bytes from shortcuts.vdf
-[2026-02-11 20:31:35,374][INFO]: [_parse_shortcuts_binary] Parsed 22 games
-[2026-02-11 20:31:35,374][INFO]: [get_non_steam_games] parsed 22 non-Steam games
-[2026-02-11 20:31:35,374][INFO]: [get_non_steam_games] sample: [{'appid': '2780787571', 'name': 'NFS Underground 2', 'playtime_minutes': 0, 'is_non_steam': True}, {'appid': '4003736873', 'name': 'Google Chrome', 'playtime_minutes': 0, 'is_non_steam': True}, {'appid': '3367525719', 'name': 'Epic Games', 'playtime_minutes': 0, 'is_non_steam': True}]
-[2026-02-11 20:31:35,378][INFO]:   Stats: playtime=0min, achievements=0/0
-[2026-02-11 20:31:35,801][INFO]: Found HLTB match: Grand Theft Auto V (similarity: 1.00)
-[2026-02-11 20:31:35,805][INFO]:   HLTB: main=32.1h, extra=51.3h
-[2026-02-11 20:31:35,805][INFO]:   Calculated tag: none
-[2026-02-11 20:31:35,806][INFO]: [80/96] Completed: Grand Theft Auto V
-[2026-02-11 20:31:35,862][INFO]: [80/96] Syncing: Grand Theft Auto V (3991013285), playtime=0, achievements=0/0
-[2026-02-11 20:31:35,863][INFO]: === get_non_steam_games called ===
-[2026-02-11 20:31:35,863][INFO]: [get_non_steam_games] user_id=99048608, steam_path=/home/deck/.steam/steam
-[2026-02-11 20:31:35,863][INFO]: [get_non_steam_games] shortcuts_path=/home/deck/.steam/steam/userdata/99048608/config/shortcuts.vdf, exists=True
-[2026-02-11 20:31:35,863][INFO]: [get_non_steam_games] read 13605 bytes from shortcuts.vdf
-[2026-02-11 20:31:35,863][INFO]: [_parse_shortcuts_binary] Parsed 22 games
-[2026-02-11 20:31:35,863][INFO]: [get_non_steam_games] parsed 22 non-Steam games
-[2026-02-11 20:31:35,863][INFO]: [get_non_steam_games] sample: [{'appid': '2780787571', 'name': 'NFS Underground 2', 'playtime_minutes': 0, 'is_non_steam': True}, {'appid': '4003736873', 'name': 'Google Chrome', 'playtime_minutes': 0, 'is_non_steam': True}, {'appid': '3367525719', 'name': 'Epic Games', 'playtime_minutes': 0, 'is_non_steam': True}]
-[2026-02-11 20:31:35,864][INFO]:   Stats: playtime=0min, achievements=0/0
-[2026-02-11 20:31:35,864][INFO]:   HLTB: main=32.1h, extra=51.3h
-[2026-02-11 20:31:35,865][INFO]:   Calculated tag: none
-[2026-02-11 20:31:35,865][INFO]: [80/96] Completed: Grand Theft Auto V
-[2026-02-11 20:31:36,808][INFO]: [81/96] Syncing: Heroic Games Launcher (2806828113), playtime=0, achievements=0/0
-[2026-02-11 20:31:36,809][INFO]: === get_non_steam_games called ===
-[2026-02-11 20:31:36,809][INFO]: [get_non_steam_games] user_id=99048608, steam_path=/home/deck/.steam/steam
-[2026-02-11 20:31:36,809][INFO]: [get_non_steam_games] shortcuts_path=/home/deck/.steam/steam/userdata/99048608/config/shortcuts.vdf, exists=True
-[2026-02-11 20:31:36,809][INFO]: [get_non_steam_games] read 13605 bytes from shortcuts.vdf
-[2026-02-11 20:31:36,809][INFO]: [_parse_shortcuts_binary] Parsed 22 games
-[2026-02-11 20:31:36,809][INFO]: [get_non_steam_games] parsed 22 non-Steam games
-[2026-02-11 20:31:36,809][INFO]: [get_non_steam_games] sample: [{'appid': '2780787571', 'name': 'NFS Underground 2', 'playtime_minutes': 0, 'is_non_steam': True}, {'appid': '4003736873', 'name': 'Google Chrome', 'playtime_minutes': 0, 'is_non_steam': True}, {'appid': '3367525719', 'name': 'Epic Games', 'playtime_minutes': 0, 'is_non_steam': True}]
-[2026-02-11 20:31:36,813][INFO]:   Stats: playtime=0min, achievements=0/0
-[2026-02-11 20:31:36,867][INFO]: [81/96] Syncing: Heroic Games Launcher (2806828113), playtime=0, achievements=0/0
-[2026-02-11 20:31:36,868][INFO]: === get_non_steam_games called ===
-[2026-02-11 20:31:36,868][INFO]: [get_non_steam_games] user_id=99048608, steam_path=/home/deck/.steam/steam
-[2026-02-11 20:31:36,868][INFO]: [get_non_steam_games] shortcuts_path=/home/deck/.steam/steam/userdata/99048608/config/shortcuts.vdf, exists=True
-[2026-02-11 20:31:36,868][INFO]: [get_non_steam_games] read 13605 bytes from shortcuts.vdf
-[2026-02-11 20:31:36,868][INFO]: [_parse_shortcuts_binary] Parsed 22 games
-[2026-02-11 20:31:36,868][INFO]: [get_non_steam_games] parsed 22 non-Steam games
-[2026-02-11 20:31:36,868][INFO]: [get_non_steam_games] sample: [{'appid': '2780787571', 'name': 'NFS Underground 2', 'playtime_minutes': 0, 'is_non_steam': True}, {'appid': '4003736873', 'name': 'Google Chrome', 'playtime_minutes': 0, 'is_non_steam': True}, {'appid': '3367525719', 'name': 'Epic Games', 'playtime_minutes': 0, 'is_non_steam': True}]
-[2026-02-11 20:31:36,868][INFO]:   Stats: playtime=0min, achievements=0/0
-[2026-02-11 20:31:37,993][INFO]:   HLTB: no data
-[2026-02-11 20:31:37,994][INFO]:   Calculated tag: none
-[2026-02-11 20:31:37,995][INFO]: [81/96] Completed: Heroic Games Launcher
-[2026-02-11 20:31:38,164][INFO]:   HLTB: no data
-[2026-02-11 20:31:38,165][INFO]:   Calculated tag: none
-[2026-02-11 20:31:38,166][INFO]: [81/96] Completed: Heroic Games Launcher
-[2026-02-11 20:31:38,997][INFO]: [82/96] Syncing: Curseforge (4073574590), playtime=0, achievements=0/0
-[2026-02-11 20:31:38,998][INFO]: === get_non_steam_games called ===
-[2026-02-11 20:31:38,998][INFO]: [get_non_steam_games] user_id=99048608, steam_path=/home/deck/.steam/steam
-[2026-02-11 20:31:38,998][INFO]: [get_non_steam_games] shortcuts_path=/home/deck/.steam/steam/userdata/99048608/config/shortcuts.vdf, exists=True
-[2026-02-11 20:31:38,998][INFO]: [get_non_steam_games] read 13605 bytes from shortcuts.vdf
-[2026-02-11 20:31:38,998][INFO]: [_parse_shortcuts_binary] Parsed 22 games
-[2026-02-11 20:31:38,999][INFO]: [get_non_steam_games] parsed 22 non-Steam games
-[2026-02-11 20:31:38,999][INFO]: [get_non_steam_games] sample: [{'appid': '2780787571', 'name': 'NFS Underground 2', 'playtime_minutes': 0, 'is_non_steam': True}, {'appid': '4003736873', 'name': 'Google Chrome', 'playtime_minutes': 0, 'is_non_steam': True}, {'appid': '3367525719', 'name': 'Epic Games', 'playtime_minutes': 0, 'is_non_steam': True}]
-[2026-02-11 20:31:39,003][INFO]:   Stats: playtime=0min, achievements=0/0
-[2026-02-11 20:31:39,166][INFO]: [82/96] Syncing: Curseforge (4073574590), playtime=0, achievements=0/0
-[2026-02-11 20:31:39,167][INFO]: === get_non_steam_games called ===
-[2026-02-11 20:31:39,167][INFO]: [get_non_steam_games] user_id=99048608, steam_path=/home/deck/.steam/steam
-[2026-02-11 20:31:39,168][INFO]: [get_non_steam_games] shortcuts_path=/home/deck/.steam/steam/userdata/99048608/config/shortcuts.vdf, exists=True
-[2026-02-11 20:31:39,168][INFO]: [get_non_steam_games] read 13605 bytes from shortcuts.vdf
-[2026-02-11 20:31:39,168][INFO]: [_parse_shortcuts_binary] Parsed 22 games
-[2026-02-11 20:31:39,168][INFO]: [get_non_steam_games] parsed 22 non-Steam games
-[2026-02-11 20:31:39,168][INFO]: [get_non_steam_games] sample: [{'appid': '2780787571', 'name': 'NFS Underground 2', 'playtime_minutes': 0, 'is_non_steam': True}, {'appid': '4003736873', 'name': 'Google Chrome', 'playtime_minutes': 0, 'is_non_steam': True}, {'appid': '3367525719', 'name': 'Epic Games', 'playtime_minutes': 0, 'is_non_steam': True}]
-[2026-02-11 20:31:39,172][INFO]:   Stats: playtime=0min, achievements=0/0
-[2026-02-11 20:31:39,752][INFO]:   HLTB: no data
-[2026-02-11 20:31:39,753][INFO]:   Calculated tag: none
-[2026-02-11 20:31:39,754][INFO]: [82/96] Completed: Curseforge
-[2026-02-11 20:31:40,303][INFO]:   HLTB: no data
-[2026-02-11 20:31:40,304][INFO]:   Calculated tag: none
-[2026-02-11 20:31:40,305][INFO]: [82/96] Completed: Curseforge
-[2026-02-11 20:31:40,754][INFO]: [83/96] Syncing: NFS Undergroud (2307977279), playtime=0, achievements=0/0
-[2026-02-11 20:31:40,756][INFO]: === get_non_steam_games called ===
-[2026-02-11 20:31:40,756][INFO]: [get_non_steam_games] user_id=99048608, steam_path=/home/deck/.steam/steam
-[2026-02-11 20:31:40,756][INFO]: [get_non_steam_games] shortcuts_path=/home/deck/.steam/steam/userdata/99048608/config/shortcuts.vdf, exists=True
-[2026-02-11 20:31:40,756][INFO]: [get_non_steam_games] read 13605 bytes from shortcuts.vdf
-[2026-02-11 20:31:40,756][INFO]: [_parse_shortcuts_binary] Parsed 22 games
-[2026-02-11 20:31:40,756][INFO]: [get_non_steam_games] parsed 22 non-Steam games
-[2026-02-11 20:31:40,756][INFO]: [get_non_steam_games] sample: [{'appid': '2780787571', 'name': 'NFS Underground 2', 'playtime_minutes': 0, 'is_non_steam': True}, {'appid': '4003736873', 'name': 'Google Chrome', 'playtime_minutes': 0, 'is_non_steam': True}, {'appid': '3367525719', 'name': 'Epic Games', 'playtime_minutes': 0, 'is_non_steam': True}]
-[2026-02-11 20:31:40,761][INFO]:   Stats: playtime=0min, achievements=0/0
-[2026-02-11 20:31:40,889][INFO]: === get_game_details called: appid=1794680 ===
-[2026-02-11 20:31:40,889][INFO]: [get_game_details] stats from db: {'appid': '1794680', 'game_name': 'Vampire Survivors', 'playtime_minutes': 0, 'total_achievements': 0, 'unlocked_achievements': 0, 'last_sync': '2026-02-11 19:30:49'}
-[2026-02-11 20:31:40,890][INFO]: [get_game_details] tag: {'appid': '1794680', 'tag': 'completed', 'is_manual': False, 'last_updated': '2026-02-10 16:42:39'}
-[2026-02-11 20:31:40,890][INFO]: [get_game_details] hltb_data: {'appid': '1794680', 'game_name': 'Vampire Survivors', 'matched_name': 'Vampire Survivors', 'similarity': 1.0, 'main_story': 15.0, 'main_extra': 27.9, 'completionist': 52.7, 'all_styles': 35.9, 'hltb_url': 'https://howlongtobeat.com/game/102750'}
-[2026-02-11 20:31:40,890][INFO]: [get_game_details] returning: success=True
-[2026-02-11 20:31:41,307][INFO]: [83/96] Syncing: NFS Undergroud (2307977279), playtime=0, achievements=0/0
-[2026-02-11 20:31:41,308][INFO]: === get_non_steam_games called ===
-[2026-02-11 20:31:41,309][INFO]: [get_non_steam_games] user_id=99048608, steam_path=/home/deck/.steam/steam
-[2026-02-11 20:31:41,309][INFO]: [get_non_steam_games] shortcuts_path=/home/deck/.steam/steam/userdata/99048608/config/shortcuts.vdf, exists=True
-[2026-02-11 20:31:41,309][INFO]: [get_non_steam_games] read 13605 bytes from shortcuts.vdf
-[2026-02-11 20:31:41,309][INFO]: [_parse_shortcuts_binary] Parsed 22 games
-[2026-02-11 20:31:41,309][INFO]: [get_non_steam_games] parsed 22 non-Steam games
-[2026-02-11 20:31:41,309][INFO]: [get_non_steam_games] sample: [{'appid': '2780787571', 'name': 'NFS Underground 2', 'playtime_minutes': 0, 'is_non_steam': True}, {'appid': '4003736873', 'name': 'Google Chrome', 'playtime_minutes': 0, 'is_non_steam': True}, {'appid': '3367525719', 'name': 'Epic Games', 'playtime_minutes': 0, 'is_non_steam': True}]
-[2026-02-11 20:31:41,313][INFO]:   Stats: playtime=0min, achievements=0/0
-[2026-02-11 20:31:41,941][INFO]:   HLTB: no data
-[2026-02-11 20:31:41,942][INFO]:   Calculated tag: none
-[2026-02-11 20:31:41,942][INFO]: [83/96] Completed: NFS Undergroud
-[2026-02-11 20:31:42,145][INFO]:   HLTB: no data
-[2026-02-11 20:31:42,147][INFO]:   Calculated tag: none
-[2026-02-11 20:31:42,147][INFO]: [83/96] Completed: NFS Undergroud
-[2026-02-11 20:31:42,943][INFO]: [84/96] Syncing: NFS Carbon (2776349308), playtime=0, achievements=0/0
-[2026-02-11 20:31:42,944][INFO]: === get_non_steam_games called ===
-[2026-02-11 20:31:42,944][INFO]: [get_non_steam_games] user_id=99048608, steam_path=/home/deck/.steam/steam
-[2026-02-11 20:31:42,944][INFO]: [get_non_steam_games] shortcuts_path=/home/deck/.steam/steam/userdata/99048608/config/shortcuts.vdf, exists=True
-[2026-02-11 20:31:42,944][INFO]: [get_non_steam_games] read 13605 bytes from shortcuts.vdf
-[2026-02-11 20:31:42,944][INFO]: [_parse_shortcuts_binary] Parsed 22 games
-[2026-02-11 20:31:42,944][INFO]: [get_non_steam_games] parsed 22 non-Steam games
-[2026-02-11 20:31:42,944][INFO]: [get_non_steam_games] sample: [{'appid': '2780787571', 'name': 'NFS Underground 2', 'playtime_minutes': 0, 'is_non_steam': True}, {'appid': '4003736873', 'name': 'Google Chrome', 'playtime_minutes': 0, 'is_non_steam': True}, {'appid': '3367525719', 'name': 'Epic Games', 'playtime_minutes': 0, 'is_non_steam': True}]
-[2026-02-11 20:31:42,948][INFO]:   Stats: playtime=0min, achievements=0/0
-[2026-02-11 20:31:43,148][INFO]: [84/96] Syncing: NFS Carbon (2776349308), playtime=0, achievements=0/0
-[2026-02-11 20:31:43,150][INFO]: === get_non_steam_games called ===
-[2026-02-11 20:31:43,150][INFO]: [get_non_steam_games] user_id=99048608, steam_path=/home/deck/.steam/steam
-[2026-02-11 20:31:43,150][INFO]: [get_non_steam_games] shortcuts_path=/home/deck/.steam/steam/userdata/99048608/config/shortcuts.vdf, exists=True
-[2026-02-11 20:31:43,151][INFO]: [get_non_steam_games] read 13605 bytes from shortcuts.vdf
-[2026-02-11 20:31:43,151][INFO]: [_parse_shortcuts_binary] Parsed 22 games
-[2026-02-11 20:31:43,151][INFO]: [get_non_steam_games] parsed 22 non-Steam games
-[2026-02-11 20:31:43,151][INFO]: [get_non_steam_games] sample: [{'appid': '2780787571', 'name': 'NFS Underground 2', 'playtime_minutes': 0, 'is_non_steam': True}, {'appid': '4003736873', 'name': 'Google Chrome', 'playtime_minutes': 0, 'is_non_steam': True}, {'appid': '3367525719', 'name': 'Epic Games', 'playtime_minutes': 0, 'is_non_steam': True}]
-[2026-02-11 20:31:43,155][INFO]:   Stats: playtime=0min, achievements=0/0
-[2026-02-11 20:31:43,785][INFO]:   HLTB: no data
-[2026-02-11 20:31:43,786][INFO]:   Calculated tag: none
-[2026-02-11 20:31:43,787][INFO]: [84/96] Completed: NFS Carbon
-[2026-02-11 20:31:43,989][INFO]:   HLTB: no data
-[2026-02-11 20:31:43,990][INFO]:   Calculated tag: none
-[2026-02-11 20:31:43,991][INFO]: [84/96] Completed: NFS Carbon
-[2026-02-11 20:31:44,601][INFO]: === get_tag_statistics called ===
-[2026-02-11 20:31:44,602][INFO]: [get_tag_statistics] all_tags count: 16
-[2026-02-11 20:31:44,602][INFO]: [get_tag_statistics] all_tags sample (first 3): [{'appid': '1794680', 'tag': 'completed', 'is_manual': False, 'last_updated': '2026-02-10 16:42:39'}, {'appid': '204360', 'tag': 'in_progress', 'is_manual': True, 'last_updated': '2026-02-11 08:01:16'}, {'appid': '275850', 'tag': 'in_progress', 'is_manual': True, 'last_updated': '2026-02-11 13:55:19'}]
-[2026-02-11 20:31:44,602][INFO]: === get_all_tags_with_names called ===
-[2026-02-11 20:31:44,603][INFO]: [get_tag_statistics] total_library (all_games count): 49
-[2026-02-11 20:31:44,604][INFO]: [get_tag_statistics] returning: {'success': True, 'stats': {'completed': 5, 'in_progress': 10, 'mastered': 1, 'backlog': 33, 'total': 49}}
-[2026-02-11 20:31:44,604][INFO]: [get_all_tags_with_names] all_tags count: 16
-[2026-02-11 20:31:44,604][INFO]: [get_all_tags_with_names] all_tags sample (first 3): [{'appid': '1794680', 'tag': 'completed', 'is_manual': False, 'last_updated': '2026-02-10 16:42:39'}, {'appid': '204360', 'tag': 'in_progress', 'is_manual': True, 'last_updated': '2026-02-11 08:01:16'}, {'appid': '275850', 'tag': 'in_progress', 'is_manual': True, 'last_updated': '2026-02-11 13:55:19'}]
-[2026-02-11 20:31:44,604][INFO]: [get_all_tags_with_names] tag_entry: {'appid': '1794680', 'tag': 'completed', 'is_manual': False, 'last_updated': '2026-02-10 16:42:39'}
-[2026-02-11 20:31:44,605][INFO]: [get_all_tags_with_names] stats: {'appid': '1794680', 'game_name': 'Vampire Survivors', 'playtime_minutes': 0, 'total_achievements': 0, 'unlocked_achievements': 0, 'last_sync': '2026-02-11 19:30:49'}
-[2026-02-11 20:31:44,605][INFO]: [get_all_tags_with_names] game_name: Vampire Survivors
-[2026-02-11 20:31:44,605][INFO]: [get_all_tags_with_names] tag_entry: {'appid': '204360', 'tag': 'in_progress', 'is_manual': True, 'last_updated': '2026-02-11 08:01:16'}
-[2026-02-11 20:31:44,605][INFO]: [get_all_tags_with_names] stats: {'appid': '204360', 'game_name': 'Castle Crashers', 'playtime_minutes': 759, 'total_achievements': 0, 'unlocked_achievements': 0, 'last_sync': '2026-02-11 08:01:06'}
-[2026-02-11 20:31:44,605][INFO]: [get_all_tags_with_names] game_name: Castle Crashers
-[2026-02-11 20:31:44,606][INFO]: [get_all_tags_with_names] tag_entry: {'appid': '275850', 'tag': 'in_progress', 'is_manual': True, 'last_updated': '2026-02-11 13:55:19'}
-[2026-02-11 20:31:44,606][INFO]: [get_all_tags_with_names] stats: {'appid': '275850', 'game_name': "No Man's Sky", 'playtime_minutes': 3015, 'total_achievements': 0, 'unlocked_achievements': 0, 'last_sync': '2026-02-11 13:54:38'}
-[2026-02-11 20:31:44,606][INFO]: [get_all_tags_with_names] game_name: No Man's Sky
-[2026-02-11 20:31:44,606][INFO]: [get_all_tags_with_names] tag_entry: {'appid': '12750', 'tag': 'in_progress', 'is_manual': False, 'last_updated': '2026-02-10 14:59:01'}
-[2026-02-11 20:31:44,607][INFO]: [get_all_tags_with_names] stats: {'appid': '12750', 'game_name': 'GRID', 'playtime_minutes': 0, 'total_achievements': 0, 'unlocked_achievements': 0, 'last_sync': '2026-02-11 19:30:54'}
-[2026-02-11 20:31:44,607][INFO]: [get_all_tags_with_names] game_name: GRID
-[2026-02-11 20:31:44,607][INFO]: [get_all_tags_with_names] tag_entry: {'appid': '22600', 'tag': 'in_progress', 'is_manual': False, 'last_updated': '2026-02-10 14:59:02'}
-[2026-02-11 20:31:44,608][INFO]: [get_all_tags_with_names] stats: {'appid': '22600', 'game_name': 'Worms Reloaded', 'playtime_minutes': 0, 'total_achievements': 0, 'unlocked_achievements': 0, 'last_sync': '2026-02-11 19:30:55'}
-[2026-02-11 20:31:44,608][INFO]: [get_all_tags_with_names] game_name: Worms Reloaded
-[2026-02-11 20:31:44,608][INFO]: [get_all_tags_with_names] tag_entry: {'appid': '1449690', 'tag': 'in_progress', 'is_manual': False, 'last_updated': '2026-02-10 14:59:05'}
-[2026-02-11 20:31:44,608][INFO]: [get_all_tags_with_names] stats: {'appid': '1449690', 'game_name': 'The Walking Dead: The Telltale Definitive Series', 'playtime_minutes': 0, 'total_achievements': 0, 'unlocked_achievements': 0, 'last_sync': '2026-02-11 19:30:57'}
-[2026-02-11 20:31:44,608][INFO]: [get_all_tags_with_names] game_name: The Walking Dead: The Telltale Definitive Series
-[2026-02-11 20:31:44,608][INFO]: [get_all_tags_with_names] tag_entry: {'appid': '380', 'tag': 'completed', 'is_manual': False, 'last_updated': '2026-02-10 16:42:55'}
-[2026-02-11 20:31:44,609][INFO]: [get_all_tags_with_names] stats: {'appid': '380', 'game_name': 'Half-Life 2: Episode One', 'playtime_minutes': 0, 'total_achievements': 0, 'unlocked_achievements': 0, 'last_sync': '2026-02-11 19:31:05'}
-[2026-02-11 20:31:44,609][INFO]: [get_all_tags_with_names] game_name: Half-Life 2: Episode One
-[2026-02-11 20:31:44,609][INFO]: [get_all_tags_with_names] tag_entry: {'appid': '1225570', 'tag': 'in_progress', 'is_manual': False, 'last_updated': '2026-02-10 14:59:16'}
-[2026-02-11 20:31:44,610][INFO]: [get_all_tags_with_names] stats: {'appid': '1225570', 'game_name': 'Unravel Two', 'playtime_minutes': 0, 'total_achievements': 0, 'unlocked_achievements': 0, 'last_sync': '2026-02-11 19:31:08'}
-[2026-02-11 20:31:44,610][INFO]: [get_all_tags_with_names] game_name: Unravel Two
-[2026-02-11 20:31:44,610][INFO]: [get_all_tags_with_names] tag_entry: {'appid': '220', 'tag': 'in_progress', 'is_manual': False, 'last_updated': '2026-02-10 14:59:18'}
-[2026-02-11 20:31:44,610][INFO]: [get_all_tags_with_names] stats: {'appid': '220', 'game_name': 'Half-Life 2', 'playtime_minutes': 0, 'total_achievements': 0, 'unlocked_achievements': 0, 'last_sync': '2026-02-11 19:31:10'}
-[2026-02-11 20:31:44,610][INFO]: [get_all_tags_with_names] game_name: Half-Life 2
-[2026-02-11 20:31:44,610][INFO]: [get_all_tags_with_names] tag_entry: {'appid': '379430', 'tag': 'completed', 'is_manual': False, 'last_updated': '2026-02-10 16:43:02'}
-[2026-02-11 20:31:44,611][INFO]: [get_all_tags_with_names] stats: {'appid': '379430', 'game_name': 'Kingdom Come: Deliverance', 'playtime_minutes': 0, 'total_achievements': 0, 'unlocked_achievements': 0, 'last_sync': '2026-02-11 19:31:12'}
-[2026-02-11 20:31:44,611][INFO]: [get_all_tags_with_names] game_name: Kingdom Come: Deliverance
-[2026-02-11 20:31:44,611][INFO]: [get_all_tags_with_names] tag_entry: {'appid': '2225070', 'tag': 'completed', 'is_manual': False, 'last_updated': '2026-02-10 16:43:06'}
-[2026-02-11 20:31:44,612][INFO]: [get_all_tags_with_names] stats: {'appid': '2225070', 'game_name': 'Trackmania', 'playtime_minutes': 0, 'total_achievements': 0, 'unlocked_achievements': 0, 'last_sync': '2026-02-11 19:31:16'}
-[2026-02-11 20:31:44,612][INFO]: [get_all_tags_with_names] game_name: Trackmania
-[2026-02-11 20:31:44,612][INFO]: [get_all_tags_with_names] tag_entry: {'appid': '200210', 'tag': 'completed', 'is_manual': False, 'last_updated': '2026-02-10 16:43:07'}
-[2026-02-11 20:31:44,612][INFO]: [get_all_tags_with_names] stats: {'appid': '200210', 'game_name': 'Realm of the Mad God Exalt', 'playtime_minutes': 0, 'total_achievements': 0, 'unlocked_achievements': 0, 'last_sync': '2026-02-11 19:31:17'}
-[2026-02-11 20:31:44,613][INFO]: [get_all_tags_with_names] game_name: Realm of the Mad God Exalt
-[2026-02-11 20:31:44,613][INFO]: [get_all_tags_with_names] tag_entry: {'appid': '238960', 'tag': 'in_progress', 'is_manual': False, 'last_updated': '2026-02-10 14:59:30'}
-[2026-02-11 20:31:44,613][INFO]: [get_all_tags_with_names] stats: {'appid': '238960', 'game_name': 'Path of Exile', 'playtime_minutes': 0, 'total_achievements': 0, 'unlocked_achievements': 0, 'last_sync': '2026-02-11 19:31:22'}
-[2026-02-11 20:31:44,613][INFO]: [get_all_tags_with_names] game_name: Path of Exile
-[2026-02-11 20:31:44,614][INFO]: [get_all_tags_with_names] tag_entry: {'appid': '458710', 'tag': 'in_progress', 'is_manual': False, 'last_updated': '2026-02-10 14:59:32'}
-[2026-02-11 20:31:44,614][INFO]: [get_all_tags_with_names] stats: {'appid': '458710', 'game_name': 'Kingdom Rush Frontiers', 'playtime_minutes': 0, 'total_achievements': 0, 'unlocked_achievements': 0, 'last_sync': '2026-02-11 19:31:24'}
-[2026-02-11 20:31:44,614][INFO]: [get_all_tags_with_names] game_name: Kingdom Rush Frontiers
-[2026-02-11 20:31:44,614][INFO]: [get_all_tags_with_names] tag_entry: {'appid': '373420', 'tag': 'in_progress', 'is_manual': False, 'last_updated': '2026-02-10 17:07:06'}
-[2026-02-11 20:31:44,615][INFO]: [get_all_tags_with_names] stats: {'appid': '373420', 'game_name': 'Divinity: Original Sin Enhanced Edition', 'playtime_minutes': 0, 'total_achievements': 0, 'unlocked_achievements': 0, 'last_sync': '2026-02-11 19:31:04'}
-[2026-02-11 20:31:44,615][INFO]: [get_all_tags_with_names] game_name: Divinity: Original Sin Enhanced Edition
-[2026-02-11 20:31:44,615][INFO]: [get_all_tags_with_names] tag_entry: {'appid': '4007057898', 'tag': 'mastered', 'is_manual': True, 'last_updated': '2026-02-11 11:35:14'}
-[2026-02-11 20:31:44,616][INFO]: [get_all_tags_with_names] stats: {'appid': '4007057898', 'game_name': 'Unknown Game (4007057898)', 'playtime_minutes': 0, 'total_achievements': 0, 'unlocked_achievements': 0, 'last_sync': '2026-02-11 08:48:45'}
-[2026-02-11 20:31:44,616][INFO]: [get_all_tags_with_names] game_name: Unknown Game (4007057898)
-[2026-02-11 20:31:44,617][INFO]: === get_non_steam_games called ===
-[2026-02-11 20:31:44,617][INFO]: [get_non_steam_games] user_id=99048608, steam_path=/home/deck/.steam/steam
-[2026-02-11 20:31:44,617][INFO]: [get_non_steam_games] shortcuts_path=/home/deck/.steam/steam/userdata/99048608/config/shortcuts.vdf, exists=True
-[2026-02-11 20:31:44,617][INFO]: [get_non_steam_games] read 13605 bytes from shortcuts.vdf
-[2026-02-11 20:31:44,618][INFO]: [_parse_shortcuts_binary] Parsed 22 games
-[2026-02-11 20:31:44,618][INFO]: [get_non_steam_games] parsed 22 non-Steam games
-[2026-02-11 20:31:44,618][INFO]: [get_non_steam_games] sample: [{'appid': '2780787571', 'name': 'NFS Underground 2', 'playtime_minutes': 0, 'is_non_steam': True}, {'appid': '4003736873', 'name': 'Google Chrome', 'playtime_minutes': 0, 'is_non_steam': True}, {'appid': '3367525719', 'name': 'Epic Games', 'playtime_minutes': 0, 'is_non_steam': True}]
-[2026-02-11 20:31:44,618][INFO]: [get_all_tags_with_names] returning 16 games
-[2026-02-11 20:31:44,618][INFO]: [get_all_tags_with_names] result sample (first 3): [{'appid': '380', 'game_name': 'Half-Life 2: Episode One', 'tag': 'completed', 'is_manual': False}, {'appid': '379430', 'game_name': 'Kingdom Come: Deliverance', 'tag': 'completed', 'is_manual': False}, {'appid': '200210', 'game_name': 'Realm of the Mad God Exalt', 'tag': 'completed', 'is_manual': False}]
-[2026-02-11 20:31:44,788][INFO]: [85/96] Syncing: NVIDIA GeForce NOW (2179649233), playtime=0, achievements=0/0
-[2026-02-11 20:31:44,789][INFO]: === get_non_steam_games called ===
-[2026-02-11 20:31:44,789][INFO]: [get_non_steam_games] user_id=99048608, steam_path=/home/deck/.steam/steam
-[2026-02-11 20:31:44,789][INFO]: [get_non_steam_games] shortcuts_path=/home/deck/.steam/steam/userdata/99048608/config/shortcuts.vdf, exists=True
-[2026-02-11 20:31:44,789][INFO]: [get_non_steam_games] read 13605 bytes from shortcuts.vdf
-[2026-02-11 20:31:44,789][INFO]: [_parse_shortcuts_binary] Parsed 22 games
-[2026-02-11 20:31:44,789][INFO]: [get_non_steam_games] parsed 22 non-Steam games
-[2026-02-11 20:31:44,789][INFO]: [get_non_steam_games] sample: [{'appid': '2780787571', 'name': 'NFS Underground 2', 'playtime_minutes': 0, 'is_non_steam': True}, {'appid': '4003736873', 'name': 'Google Chrome', 'playtime_minutes': 0, 'is_non_steam': True}, {'appid': '3367525719', 'name': 'Epic Games', 'playtime_minutes': 0, 'is_non_steam': True}]
-[2026-02-11 20:31:44,794][INFO]:   Stats: playtime=0min, achievements=0/0
-[2026-02-11 20:31:44,992][INFO]: [85/96] Syncing: NVIDIA GeForce NOW (2179649233), playtime=0, achievements=0/0
-[2026-02-11 20:31:44,993][INFO]: === get_non_steam_games called ===
-[2026-02-11 20:31:44,993][INFO]: [get_non_steam_games] user_id=99048608, steam_path=/home/deck/.steam/steam
-[2026-02-11 20:31:44,993][INFO]: [get_non_steam_games] shortcuts_path=/home/deck/.steam/steam/userdata/99048608/config/shortcuts.vdf, exists=True
-[2026-02-11 20:31:44,993][INFO]: [get_non_steam_games] read 13605 bytes from shortcuts.vdf
-[2026-02-11 20:31:44,993][INFO]: [_parse_shortcuts_binary] Parsed 22 games
-[2026-02-11 20:31:44,993][INFO]: [get_non_steam_games] parsed 22 non-Steam games
-[2026-02-11 20:31:44,993][INFO]: [get_non_steam_games] sample: [{'appid': '2780787571', 'name': 'NFS Underground 2', 'playtime_minutes': 0, 'is_non_steam': True}, {'appid': '4003736873', 'name': 'Google Chrome', 'playtime_minutes': 0, 'is_non_steam': True}, {'appid': '3367525719', 'name': 'Epic Games', 'playtime_minutes': 0, 'is_non_steam': True}]
-[2026-02-11 20:31:44,994][INFO]:   Stats: playtime=0min, achievements=0/0
-[2026-02-11 20:31:45,628][INFO]:   HLTB: no data
-[2026-02-11 20:31:45,629][INFO]:   Calculated tag: none
-[2026-02-11 20:31:45,629][INFO]: [85/96] Completed: NVIDIA GeForce NOW
-[2026-02-11 20:31:46,140][INFO]:   HLTB: no data
-[2026-02-11 20:31:46,141][INFO]:   Calculated tag: none
-[2026-02-11 20:31:46,142][INFO]: [85/96] Completed: NVIDIA GeForce NOW
-[2026-02-11 20:31:46,630][INFO]: [86/96] Syncing: Discord (3262759475), playtime=0, achievements=0/0
-[2026-02-11 20:31:46,632][INFO]: === get_non_steam_games called ===
-[2026-02-11 20:31:46,632][INFO]: [get_non_steam_games] user_id=99048608, steam_path=/home/deck/.steam/steam
-[2026-02-11 20:31:46,632][INFO]: [get_non_steam_games] shortcuts_path=/home/deck/.steam/steam/userdata/99048608/config/shortcuts.vdf, exists=True
-[2026-02-11 20:31:46,632][INFO]: [get_non_steam_games] read 13605 bytes from shortcuts.vdf
-[2026-02-11 20:31:46,632][INFO]: [_parse_shortcuts_binary] Parsed 22 games
-[2026-02-11 20:31:46,632][INFO]: [get_non_steam_games] parsed 22 non-Steam games
-[2026-02-11 20:31:46,632][INFO]: [get_non_steam_games] sample: [{'appid': '2780787571', 'name': 'NFS Underground 2', 'playtime_minutes': 0, 'is_non_steam': True}, {'appid': '4003736873', 'name': 'Google Chrome', 'playtime_minutes': 0, 'is_non_steam': True}, {'appid': '3367525719', 'name': 'Epic Games', 'playtime_minutes': 0, 'is_non_steam': True}]
-[2026-02-11 20:31:46,637][INFO]:   Stats: playtime=0min, achievements=0/0
-[2026-02-11 20:31:47,143][INFO]: [86/96] Syncing: Discord (3262759475), playtime=0, achievements=0/0
-[2026-02-11 20:31:47,144][INFO]: === get_non_steam_games called ===
-[2026-02-11 20:31:47,144][INFO]: [get_non_steam_games] user_id=99048608, steam_path=/home/deck/.steam/steam
-[2026-02-11 20:31:47,144][INFO]: [get_non_steam_games] shortcuts_path=/home/deck/.steam/steam/userdata/99048608/config/shortcuts.vdf, exists=True
-[2026-02-11 20:31:47,144][INFO]: [get_non_steam_games] read 13605 bytes from shortcuts.vdf
-[2026-02-11 20:31:47,145][INFO]: [_parse_shortcuts_binary] Parsed 22 games
-[2026-02-11 20:31:47,145][INFO]: [get_non_steam_games] parsed 22 non-Steam games
-[2026-02-11 20:31:47,145][INFO]: [get_non_steam_games] sample: [{'appid': '2780787571', 'name': 'NFS Underground 2', 'playtime_minutes': 0, 'is_non_steam': True}, {'appid': '4003736873', 'name': 'Google Chrome', 'playtime_minutes': 0, 'is_non_steam': True}, {'appid': '3367525719', 'name': 'Epic Games', 'playtime_minutes': 0, 'is_non_steam': True}]
-[2026-02-11 20:31:47,149][INFO]:   Stats: playtime=0min, achievements=0/0
-[2026-02-11 20:31:47,881][INFO]:   HLTB: no data
-[2026-02-11 20:31:47,882][INFO]:   Calculated tag: none
-[2026-02-11 20:31:47,882][INFO]: [86/96] Completed: Discord
-[2026-02-11 20:31:48,292][INFO]:   HLTB: no data
-[2026-02-11 20:31:48,293][INFO]:   Calculated tag: none
-[2026-02-11 20:31:48,293][INFO]: [86/96] Completed: Discord
-[2026-02-11 20:31:48,884][INFO]: [87/96] Syncing: EmulationStationDE (3086049890), playtime=0, achievements=0/0
-[2026-02-11 20:31:48,886][INFO]: === get_non_steam_games called ===
-[2026-02-11 20:31:48,886][INFO]: [get_non_steam_games] user_id=99048608, steam_path=/home/deck/.steam/steam
-[2026-02-11 20:31:48,886][INFO]: [get_non_steam_games] shortcuts_path=/home/deck/.steam/steam/userdata/99048608/config/shortcuts.vdf, exists=True
-[2026-02-11 20:31:48,886][INFO]: [get_non_steam_games] read 13605 bytes from shortcuts.vdf
-[2026-02-11 20:31:48,886][INFO]: [_parse_shortcuts_binary] Parsed 22 games
-[2026-02-11 20:31:48,887][INFO]: [get_non_steam_games] parsed 22 non-Steam games
-[2026-02-11 20:31:48,887][INFO]: [get_non_steam_games] sample: [{'appid': '2780787571', 'name': 'NFS Underground 2', 'playtime_minutes': 0, 'is_non_steam': True}, {'appid': '4003736873', 'name': 'Google Chrome', 'playtime_minutes': 0, 'is_non_steam': True}, {'appid': '3367525719', 'name': 'Epic Games', 'playtime_minutes': 0, 'is_non_steam': True}]
-[2026-02-11 20:31:48,891][INFO]:   Stats: playtime=0min, achievements=0/0
-[2026-02-11 20:31:49,295][INFO]: [87/96] Syncing: EmulationStationDE (3086049890), playtime=0, achievements=0/0
-[2026-02-11 20:31:49,296][INFO]: === get_non_steam_games called ===
-[2026-02-11 20:31:49,296][INFO]: [get_non_steam_games] user_id=99048608, steam_path=/home/deck/.steam/steam
-[2026-02-11 20:31:49,296][INFO]: [get_non_steam_games] shortcuts_path=/home/deck/.steam/steam/userdata/99048608/config/shortcuts.vdf, exists=True
-[2026-02-11 20:31:49,297][INFO]: [get_non_steam_games] read 13605 bytes from shortcuts.vdf
-[2026-02-11 20:31:49,297][INFO]: [_parse_shortcuts_binary] Parsed 22 games
-[2026-02-11 20:31:49,297][INFO]: [get_non_steam_games] parsed 22 non-Steam games
-[2026-02-11 20:31:49,297][INFO]: [get_non_steam_games] sample: [{'appid': '2780787571', 'name': 'NFS Underground 2', 'playtime_minutes': 0, 'is_non_steam': True}, {'appid': '4003736873', 'name': 'Google Chrome', 'playtime_minutes': 0, 'is_non_steam': True}, {'appid': '3367525719', 'name': 'Epic Games', 'playtime_minutes': 0, 'is_non_steam': True}]
-[2026-02-11 20:31:49,301][INFO]:   Stats: playtime=0min, achievements=0/0
-[2026-02-11 20:31:49,724][INFO]:   HLTB: no data
-[2026-02-11 20:31:49,725][INFO]:   Calculated tag: none
-[2026-02-11 20:31:49,725][INFO]: [87/96] Completed: EmulationStationDE
-[2026-02-11 20:31:50,441][INFO]:   HLTB: no data
-[2026-02-11 20:31:50,442][INFO]:   Calculated tag: none
-[2026-02-11 20:31:50,442][INFO]: [87/96] Completed: EmulationStationDE
-[2026-02-11 20:31:50,726][INFO]: [88/96] Syncing: Diablo III (2334648540), playtime=0, achievements=0/0
-[2026-02-11 20:31:50,727][INFO]: === get_non_steam_games called ===
-[2026-02-11 20:31:50,727][INFO]: [get_non_steam_games] user_id=99048608, steam_path=/home/deck/.steam/steam
-[2026-02-11 20:31:50,727][INFO]: [get_non_steam_games] shortcuts_path=/home/deck/.steam/steam/userdata/99048608/config/shortcuts.vdf, exists=True
-[2026-02-11 20:31:50,727][INFO]: [get_non_steam_games] read 13605 bytes from shortcuts.vdf
-[2026-02-11 20:31:50,728][INFO]: [_parse_shortcuts_binary] Parsed 22 games
-[2026-02-11 20:31:50,728][INFO]: [get_non_steam_games] parsed 22 non-Steam games
-[2026-02-11 20:31:50,728][INFO]: [get_non_steam_games] sample: [{'appid': '2780787571', 'name': 'NFS Underground 2', 'playtime_minutes': 0, 'is_non_steam': True}, {'appid': '4003736873', 'name': 'Google Chrome', 'playtime_minutes': 0, 'is_non_steam': True}, {'appid': '3367525719', 'name': 'Epic Games', 'playtime_minutes': 0, 'is_non_steam': True}]
-[2026-02-11 20:31:50,732][INFO]:   Stats: playtime=0min, achievements=0/0
-[2026-02-11 20:31:51,443][INFO]: [88/96] Syncing: Diablo III (2334648540), playtime=0, achievements=0/0
-[2026-02-11 20:31:51,445][INFO]: === get_non_steam_games called ===
-[2026-02-11 20:31:51,445][INFO]: [get_non_steam_games] user_id=99048608, steam_path=/home/deck/.steam/steam
-[2026-02-11 20:31:51,445][INFO]: [get_non_steam_games] shortcuts_path=/home/deck/.steam/steam/userdata/99048608/config/shortcuts.vdf, exists=True
-[2026-02-11 20:31:51,445][INFO]: [get_non_steam_games] read 13605 bytes from shortcuts.vdf
-[2026-02-11 20:31:51,445][INFO]: [_parse_shortcuts_binary] Parsed 22 games
-[2026-02-11 20:31:51,445][INFO]: [get_non_steam_games] parsed 22 non-Steam games
-[2026-02-11 20:31:51,445][INFO]: [get_non_steam_games] sample: [{'appid': '2780787571', 'name': 'NFS Underground 2', 'playtime_minutes': 0, 'is_non_steam': True}, {'appid': '4003736873', 'name': 'Google Chrome', 'playtime_minutes': 0, 'is_non_steam': True}, {'appid': '3367525719', 'name': 'Epic Games', 'playtime_minutes': 0, 'is_non_steam': True}]
-[2026-02-11 20:31:51,449][INFO]:   Stats: playtime=0min, achievements=0/0
-[2026-02-11 20:31:52,080][INFO]: Found HLTB match: Diablo III (similarity: 1.00)
-[2026-02-11 20:31:52,084][INFO]:   HLTB: main=18.2h, extra=45.1h
-[2026-02-11 20:31:52,085][INFO]:   Calculated tag: none
-[2026-02-11 20:31:52,085][INFO]: [88/96] Completed: Diablo III
-[2026-02-11 20:31:52,285][INFO]: Found HLTB match: Diablo III (similarity: 1.00)
-[2026-02-11 20:31:52,289][INFO]:   HLTB: main=18.2h, extra=45.1h
-[2026-02-11 20:31:52,290][INFO]:   Calculated tag: none
-[2026-02-11 20:31:52,291][INFO]: [88/96] Completed: Diablo III
-[2026-02-11 20:31:53,087][INFO]: [89/96] Syncing: Trine Enchanted Edition (2575332372), playtime=0, achievements=0/0
-[2026-02-11 20:31:53,088][INFO]: === get_non_steam_games called ===
-[2026-02-11 20:31:53,088][INFO]: [get_non_steam_games] user_id=99048608, steam_path=/home/deck/.steam/steam
-[2026-02-11 20:31:53,088][INFO]: [get_non_steam_games] shortcuts_path=/home/deck/.steam/steam/userdata/99048608/config/shortcuts.vdf, exists=True
-[2026-02-11 20:31:53,088][INFO]: [get_non_steam_games] read 13605 bytes from shortcuts.vdf
-[2026-02-11 20:31:53,089][INFO]: [_parse_shortcuts_binary] Parsed 22 games
-[2026-02-11 20:31:53,089][INFO]: [get_non_steam_games] parsed 22 non-Steam games
-[2026-02-11 20:31:53,089][INFO]: [get_non_steam_games] sample: [{'appid': '2780787571', 'name': 'NFS Underground 2', 'playtime_minutes': 0, 'is_non_steam': True}, {'appid': '4003736873', 'name': 'Google Chrome', 'playtime_minutes': 0, 'is_non_steam': True}, {'appid': '3367525719', 'name': 'Epic Games', 'playtime_minutes': 0, 'is_non_steam': True}]
-[2026-02-11 20:31:53,093][INFO]:   Stats: playtime=0min, achievements=0/0
-[2026-02-11 20:31:53,291][INFO]: [89/96] Syncing: Trine Enchanted Edition (2575332372), playtime=0, achievements=0/0
-[2026-02-11 20:31:53,292][INFO]: === get_non_steam_games called ===
-[2026-02-11 20:31:53,292][INFO]: [get_non_steam_games] user_id=99048608, steam_path=/home/deck/.steam/steam
-[2026-02-11 20:31:53,293][INFO]: [get_non_steam_games] shortcuts_path=/home/deck/.steam/steam/userdata/99048608/config/shortcuts.vdf, exists=True
-[2026-02-11 20:31:53,293][INFO]: [get_non_steam_games] read 13605 bytes from shortcuts.vdf
-[2026-02-11 20:31:53,293][INFO]: [_parse_shortcuts_binary] Parsed 22 games
-[2026-02-11 20:31:53,293][INFO]: [get_non_steam_games] parsed 22 non-Steam games
-[2026-02-11 20:31:53,293][INFO]: [get_non_steam_games] sample: [{'appid': '2780787571', 'name': 'NFS Underground 2', 'playtime_minutes': 0, 'is_non_steam': True}, {'appid': '4003736873', 'name': 'Google Chrome', 'playtime_minutes': 0, 'is_non_steam': True}, {'appid': '3367525719', 'name': 'Epic Games', 'playtime_minutes': 0, 'is_non_steam': True}]
-[2026-02-11 20:31:53,294][INFO]:   Stats: playtime=0min, achievements=0/0
-[2026-02-11 20:31:54,127][INFO]: Found HLTB match: Trine: Enchanted Edition (similarity: 0.98)
-[2026-02-11 20:31:54,131][INFO]:   HLTB: main=5.2h, extra=6.4h
-[2026-02-11 20:31:54,132][INFO]:   Calculated tag: none
-[2026-02-11 20:31:54,133][INFO]: [89/96] Completed: Trine Enchanted Edition
-[2026-02-11 20:31:54,332][INFO]: Found HLTB match: Trine: Enchanted Edition (similarity: 0.98)
-[2026-02-11 20:31:54,336][INFO]:   HLTB: main=5.2h, extra=6.4h
-[2026-02-11 20:31:54,337][INFO]:   Calculated tag: none
-[2026-02-11 20:31:54,337][INFO]: [89/96] Completed: Trine Enchanted Edition
-[2026-02-11 20:31:55,134][INFO]: [90/96] Syncing: Youtube (2940665000), playtime=0, achievements=0/0
-[2026-02-11 20:31:55,135][INFO]: === get_non_steam_games called ===
-[2026-02-11 20:31:55,135][INFO]: [get_non_steam_games] user_id=99048608, steam_path=/home/deck/.steam/steam
-[2026-02-11 20:31:55,135][INFO]: [get_non_steam_games] shortcuts_path=/home/deck/.steam/steam/userdata/99048608/config/shortcuts.vdf, exists=True
-[2026-02-11 20:31:55,135][INFO]: [get_non_steam_games] read 13605 bytes from shortcuts.vdf
-[2026-02-11 20:31:55,136][INFO]: [_parse_shortcuts_binary] Parsed 22 games
-[2026-02-11 20:31:55,136][INFO]: [get_non_steam_games] parsed 22 non-Steam games
-[2026-02-11 20:31:55,136][INFO]: [get_non_steam_games] sample: [{'appid': '2780787571', 'name': 'NFS Underground 2', 'playtime_minutes': 0, 'is_non_steam': True}, {'appid': '4003736873', 'name': 'Google Chrome', 'playtime_minutes': 0, 'is_non_steam': True}, {'appid': '3367525719', 'name': 'Epic Games', 'playtime_minutes': 0, 'is_non_steam': True}]
-[2026-02-11 20:31:55,140][INFO]:   Stats: playtime=0min, achievements=0/0
-[2026-02-11 20:31:55,338][INFO]: [90/96] Syncing: Youtube (2940665000), playtime=0, achievements=0/0
-[2026-02-11 20:31:55,339][INFO]: === get_non_steam_games called ===
-[2026-02-11 20:31:55,339][INFO]: [get_non_steam_games] user_id=99048608, steam_path=/home/deck/.steam/steam
-[2026-02-11 20:31:55,339][INFO]: [get_non_steam_games] shortcuts_path=/home/deck/.steam/steam/userdata/99048608/config/shortcuts.vdf, exists=True
-[2026-02-11 20:31:55,339][INFO]: [get_non_steam_games] read 13605 bytes from shortcuts.vdf
-[2026-02-11 20:31:55,339][INFO]: [_parse_shortcuts_binary] Parsed 22 games
-[2026-02-11 20:31:55,339][INFO]: [get_non_steam_games] parsed 22 non-Steam games
-[2026-02-11 20:31:55,339][INFO]: [get_non_steam_games] sample: [{'appid': '2780787571', 'name': 'NFS Underground 2', 'playtime_minutes': 0, 'is_non_steam': True}, {'appid': '4003736873', 'name': 'Google Chrome', 'playtime_minutes': 0, 'is_non_steam': True}, {'appid': '3367525719', 'name': 'Epic Games', 'playtime_minutes': 0, 'is_non_steam': True}]
-[2026-02-11 20:31:55,340][INFO]:   Stats: playtime=0min, achievements=0/0
-[2026-02-11 20:31:56,177][INFO]:   HLTB: no data
-[2026-02-11 20:31:56,178][INFO]:   Calculated tag: none
-[2026-02-11 20:31:56,178][INFO]: [90/96] Completed: Youtube
-[2026-02-11 20:31:56,225][INFO]:   HLTB: no data
-[2026-02-11 20:31:56,226][INFO]:   Calculated tag: none
-[2026-02-11 20:31:56,226][INFO]: [90/96] Completed: Youtube
-[2026-02-11 20:31:57,180][INFO]: [91/96] Syncing: NFS Most Wanted (3053305457), playtime=0, achievements=0/0
-[2026-02-11 20:31:57,181][INFO]: === get_non_steam_games called ===
-[2026-02-11 20:31:57,182][INFO]: [get_non_steam_games] user_id=99048608, steam_path=/home/deck/.steam/steam
-[2026-02-11 20:31:57,182][INFO]: [get_non_steam_games] shortcuts_path=/home/deck/.steam/steam/userdata/99048608/config/shortcuts.vdf, exists=True
-[2026-02-11 20:31:57,182][INFO]: [get_non_steam_games] read 13605 bytes from shortcuts.vdf
-[2026-02-11 20:31:57,182][INFO]: [_parse_shortcuts_binary] Parsed 22 games
-[2026-02-11 20:31:57,182][INFO]: [get_non_steam_games] parsed 22 non-Steam games
-[2026-02-11 20:31:57,182][INFO]: [get_non_steam_games] sample: [{'appid': '2780787571', 'name': 'NFS Underground 2', 'playtime_minutes': 0, 'is_non_steam': True}, {'appid': '4003736873', 'name': 'Google Chrome', 'playtime_minutes': 0, 'is_non_steam': True}, {'appid': '3367525719', 'name': 'Epic Games', 'playtime_minutes': 0, 'is_non_steam': True}]
-[2026-02-11 20:31:57,186][INFO]:   Stats: playtime=0min, achievements=0/0
-[2026-02-11 20:31:57,227][INFO]: [91/96] Syncing: NFS Most Wanted (3053305457), playtime=0, achievements=0/0
-[2026-02-11 20:31:57,228][INFO]: === get_non_steam_games called ===
-[2026-02-11 20:31:57,228][INFO]: [get_non_steam_games] user_id=99048608, steam_path=/home/deck/.steam/steam
-[2026-02-11 20:31:57,229][INFO]: [get_non_steam_games] shortcuts_path=/home/deck/.steam/steam/userdata/99048608/config/shortcuts.vdf, exists=True
-[2026-02-11 20:31:57,229][INFO]: [get_non_steam_games] read 13605 bytes from shortcuts.vdf
-[2026-02-11 20:31:57,229][INFO]: [_parse_shortcuts_binary] Parsed 22 games
-[2026-02-11 20:31:57,229][INFO]: [get_non_steam_games] parsed 22 non-Steam games
-[2026-02-11 20:31:57,229][INFO]: [get_non_steam_games] sample: [{'appid': '2780787571', 'name': 'NFS Underground 2', 'playtime_minutes': 0, 'is_non_steam': True}, {'appid': '4003736873', 'name': 'Google Chrome', 'playtime_minutes': 0, 'is_non_steam': True}, {'appid': '3367525719', 'name': 'Epic Games', 'playtime_minutes': 0, 'is_non_steam': True}]
-[2026-02-11 20:31:57,229][INFO]:   Stats: playtime=0min, achievements=0/0
-[2026-02-11 20:31:58,327][INFO]:   HLTB: no data
-[2026-02-11 20:31:58,328][INFO]:   HLTB: no data
-[2026-02-11 20:31:58,329][INFO]:   Calculated tag: none
-[2026-02-11 20:31:58,329][INFO]:   Calculated tag: none
-[2026-02-11 20:31:58,329][INFO]: [91/96] Completed: NFS Most Wanted
-[2026-02-11 20:31:58,330][INFO]: [91/96] Completed: NFS Most Wanted
-[2026-02-11 20:31:59,060][INFO]: === get_game_tag called: appid=1794680 ===
-[2026-02-11 20:31:59,060][INFO]: [get_game_tag] appid=1794680, tag={'appid': '1794680', 'tag': 'completed', 'is_manual': False, 'last_updated': '2026-02-10 16:42:39'}
-[2026-02-11 20:31:59,331][INFO]: [92/96] Syncing: Diablo III (4007057898), playtime=0, achievements=0/0
-[2026-02-11 20:31:59,331][INFO]: [92/96] Syncing: Diablo III (4007057898), playtime=0, achievements=0/0
-[2026-02-11 20:31:59,332][INFO]: [92/96] Completed: Diablo III
-[2026-02-11 20:31:59,333][INFO]: [92/96] Completed: Diablo III
-[2026-02-11 20:32:00,334][INFO]: [93/96] Syncing: chess.com (3455051667), playtime=0, achievements=0/0
-[2026-02-11 20:32:00,334][INFO]: [93/96] Syncing: chess.com (3455051667), playtime=0, achievements=0/0
-[2026-02-11 20:32:00,335][INFO]: === get_non_steam_games called ===
-[2026-02-11 20:32:00,335][INFO]: [get_non_steam_games] user_id=99048608, steam_path=/home/deck/.steam/steam
-[2026-02-11 20:32:00,336][INFO]: [get_non_steam_games] shortcuts_path=/home/deck/.steam/steam/userdata/99048608/config/shortcuts.vdf, exists=True
-[2026-02-11 20:32:00,336][INFO]: [get_non_steam_games] read 13605 bytes from shortcuts.vdf
-[2026-02-11 20:32:00,336][INFO]: [_parse_shortcuts_binary] Parsed 22 games
-[2026-02-11 20:32:00,336][INFO]: [get_non_steam_games] parsed 22 non-Steam games
-[2026-02-11 20:32:00,336][INFO]: [get_non_steam_games] sample: [{'appid': '2780787571', 'name': 'NFS Underground 2', 'playtime_minutes': 0, 'is_non_steam': True}, {'appid': '4003736873', 'name': 'Google Chrome', 'playtime_minutes': 0, 'is_non_steam': True}, {'appid': '3367525719', 'name': 'Epic Games', 'playtime_minutes': 0, 'is_non_steam': True}]
-[2026-02-11 20:32:00,337][INFO]: === get_non_steam_games called ===
-[2026-02-11 20:32:00,337][INFO]: [get_non_steam_games] user_id=99048608, steam_path=/home/deck/.steam/steam
-[2026-02-11 20:32:00,337][INFO]: [get_non_steam_games] shortcuts_path=/home/deck/.steam/steam/userdata/99048608/config/shortcuts.vdf, exists=True
-[2026-02-11 20:32:00,337][INFO]: [get_non_steam_games] read 13605 bytes from shortcuts.vdf
-[2026-02-11 20:32:00,337][INFO]: [_parse_shortcuts_binary] Parsed 22 games
-[2026-02-11 20:32:00,337][INFO]: [get_non_steam_games] parsed 22 non-Steam games
-[2026-02-11 20:32:00,337][INFO]: [get_non_steam_games] sample: [{'appid': '2780787571', 'name': 'NFS Underground 2', 'playtime_minutes': 0, 'is_non_steam': True}, {'appid': '4003736873', 'name': 'Google Chrome', 'playtime_minutes': 0, 'is_non_steam': True}, {'appid': '3367525719', 'name': 'Epic Games', 'playtime_minutes': 0, 'is_non_steam': True}]
-[2026-02-11 20:32:00,340][INFO]:   Stats: playtime=0min, achievements=0/0
-[2026-02-11 20:32:00,340][INFO]:   Stats: playtime=0min, achievements=0/0
-[2026-02-11 20:32:01,398][INFO]: Found HLTB match: Chess.com (similarity: 1.00)
-[2026-02-11 20:32:01,398][INFO]: Found HLTB match: Chess.com (similarity: 1.00)
-[2026-02-11 20:32:01,403][INFO]:   HLTB: main=10.2h, extra=Noneh
-[2026-02-11 20:32:01,406][INFO]:   HLTB: main=10.2h, extra=Noneh
-[2026-02-11 20:32:01,407][INFO]:   Calculated tag: none
-[2026-02-11 20:32:01,408][INFO]: [93/96] Completed: chess.com
-[2026-02-11 20:32:01,408][INFO]:   Calculated tag: none
-[2026-02-11 20:32:01,408][INFO]: [93/96] Completed: chess.com
-[2026-02-11 20:32:01,642][INFO]: === get_game_details called: appid=1794680 ===
-[2026-02-11 20:32:01,643][INFO]: [get_game_details] stats from db: {'appid': '1794680', 'game_name': 'Vampire Survivors', 'playtime_minutes': 0, 'total_achievements': 0, 'unlocked_achievements': 0, 'last_sync': '2026-02-11 19:30:49'}
-[2026-02-11 20:32:01,643][INFO]: [get_game_details] tag: {'appid': '1794680', 'tag': 'completed', 'is_manual': False, 'last_updated': '2026-02-10 16:42:39'}
-[2026-02-11 20:32:01,644][INFO]: [get_game_details] hltb_data: {'appid': '1794680', 'game_name': 'Vampire Survivors', 'matched_name': 'Vampire Survivors', 'similarity': 1.0, 'main_story': 15.0, 'main_extra': 27.9, 'completionist': 52.7, 'all_styles': 35.9, 'hltb_url': 'https://howlongtobeat.com/game/102750'}
-[2026-02-11 20:32:01,644][INFO]: [get_game_details] returning: success=True
-[2026-02-11 20:32:02,409][INFO]: [94/96] Syncing: Nested Desktop (2524151518), playtime=0, achievements=0/0
-[2026-02-11 20:32:02,410][INFO]: [94/96] Syncing: Nested Desktop (2524151518), playtime=0, achievements=0/0
-[2026-02-11 20:32:02,411][INFO]: === get_non_steam_games called ===
-[2026-02-11 20:32:02,411][INFO]: [get_non_steam_games] user_id=99048608, steam_path=/home/deck/.steam/steam
-[2026-02-11 20:32:02,411][INFO]: [get_non_steam_games] shortcuts_path=/home/deck/.steam/steam/userdata/99048608/config/shortcuts.vdf, exists=True
-[2026-02-11 20:32:02,411][INFO]: [get_non_steam_games] read 13605 bytes from shortcuts.vdf
-[2026-02-11 20:32:02,411][INFO]: [_parse_shortcuts_binary] Parsed 22 games
-[2026-02-11 20:32:02,411][INFO]: [get_non_steam_games] parsed 22 non-Steam games
-[2026-02-11 20:32:02,411][INFO]: [get_non_steam_games] sample: [{'appid': '2780787571', 'name': 'NFS Underground 2', 'playtime_minutes': 0, 'is_non_steam': True}, {'appid': '4003736873', 'name': 'Google Chrome', 'playtime_minutes': 0, 'is_non_steam': True}, {'appid': '3367525719', 'name': 'Epic Games', 'playtime_minutes': 0, 'is_non_steam': True}]
-[2026-02-11 20:32:02,412][INFO]: === get_non_steam_games called ===
-[2026-02-11 20:32:02,412][INFO]: [get_non_steam_games] user_id=99048608, steam_path=/home/deck/.steam/steam
-[2026-02-11 20:32:02,412][INFO]: [get_non_steam_games] shortcuts_path=/home/deck/.steam/steam/userdata/99048608/config/shortcuts.vdf, exists=True
-[2026-02-11 20:32:02,412][INFO]: [get_non_steam_games] read 13605 bytes from shortcuts.vdf
-[2026-02-11 20:32:02,413][INFO]: [_parse_shortcuts_binary] Parsed 22 games
-[2026-02-11 20:32:02,413][INFO]: [get_non_steam_games] parsed 22 non-Steam games
-[2026-02-11 20:32:02,413][INFO]: [get_non_steam_games] sample: [{'appid': '2780787571', 'name': 'NFS Underground 2', 'playtime_minutes': 0, 'is_non_steam': True}, {'appid': '4003736873', 'name': 'Google Chrome', 'playtime_minutes': 0, 'is_non_steam': True}, {'appid': '3367525719', 'name': 'Epic Games', 'playtime_minutes': 0, 'is_non_steam': True}]
-[2026-02-11 20:32:02,416][INFO]:   Stats: playtime=0min, achievements=0/0
-[2026-02-11 20:32:02,417][INFO]:   Stats: playtime=0min, achievements=0/0
-[2026-02-11 20:32:03,502][INFO]:   HLTB: no data
-[2026-02-11 20:32:03,503][INFO]:   Calculated tag: none
-[2026-02-11 20:32:03,503][INFO]: [94/96] Completed: Nested Desktop
-[2026-02-11 20:32:04,008][INFO]: === get_game_tag called: appid=1794680 ===
-[2026-02-11 20:32:04,009][INFO]: [get_game_tag] appid=1794680, tag={'appid': '1794680', 'tag': 'completed', 'is_manual': False, 'last_updated': '2026-02-10 16:42:39'}
-[2026-02-11 20:32:04,505][INFO]: [95/96] Syncing: The Legend of Zelda: Breath of the Wild (3137256104), playtime=0, achievements=0/0
-[2026-02-11 20:32:04,506][INFO]: === get_non_steam_games called ===
-[2026-02-11 20:32:04,506][INFO]: [get_non_steam_games] user_id=99048608, steam_path=/home/deck/.steam/steam
-[2026-02-11 20:32:04,506][INFO]: [get_non_steam_games] shortcuts_path=/home/deck/.steam/steam/userdata/99048608/config/shortcuts.vdf, exists=True
-[2026-02-11 20:32:04,507][INFO]: [get_non_steam_games] read 13605 bytes from shortcuts.vdf
-[2026-02-11 20:32:04,507][INFO]: [_parse_shortcuts_binary] Parsed 22 games
-[2026-02-11 20:32:04,507][INFO]: [get_non_steam_games] parsed 22 non-Steam games
-[2026-02-11 20:32:04,507][INFO]: [get_non_steam_games] sample: [{'appid': '2780787571', 'name': 'NFS Underground 2', 'playtime_minutes': 0, 'is_non_steam': True}, {'appid': '4003736873', 'name': 'Google Chrome', 'playtime_minutes': 0, 'is_non_steam': True}, {'appid': '3367525719', 'name': 'Epic Games', 'playtime_minutes': 0, 'is_non_steam': True}]
-[2026-02-11 20:32:04,511][INFO]:   Stats: playtime=0min, achievements=0/0
-[2026-02-11 20:32:04,670][INFO]:   HLTB: no data
-[2026-02-11 20:32:04,671][INFO]:   Calculated tag: none
-[2026-02-11 20:32:04,671][INFO]: [94/96] Completed: Nested Desktop
-[2026-02-11 20:32:05,672][INFO]: [95/96] Syncing: The Legend of Zelda: Breath of the Wild (3137256104), playtime=0, achievements=0/0
-[2026-02-11 20:32:05,673][INFO]: === get_non_steam_games called ===
-[2026-02-11 20:32:05,673][INFO]: [get_non_steam_games] user_id=99048608, steam_path=/home/deck/.steam/steam
-[2026-02-11 20:32:05,674][INFO]: [get_non_steam_games] shortcuts_path=/home/deck/.steam/steam/userdata/99048608/config/shortcuts.vdf, exists=True
-[2026-02-11 20:32:05,674][INFO]: [get_non_steam_games] read 13605 bytes from shortcuts.vdf
-[2026-02-11 20:32:05,674][INFO]: [_parse_shortcuts_binary] Parsed 22 games
-[2026-02-11 20:32:05,674][INFO]: [get_non_steam_games] parsed 22 non-Steam games
-[2026-02-11 20:32:05,674][INFO]: [get_non_steam_games] sample: [{'appid': '2780787571', 'name': 'NFS Underground 2', 'playtime_minutes': 0, 'is_non_steam': True}, {'appid': '4003736873', 'name': 'Google Chrome', 'playtime_minutes': 0, 'is_non_steam': True}, {'appid': '3367525719', 'name': 'Epic Games', 'playtime_minutes': 0, 'is_non_steam': True}]
-[2026-02-11 20:32:05,678][INFO]:   Stats: playtime=0min, achievements=0/0
-[2026-02-11 20:32:05,716][INFO]: Found HLTB match: The Legend of Zelda: Breath of the Wild (similarity: 1.00)
-[2026-02-11 20:32:05,720][INFO]:   HLTB: main=50.3h, extra=98.3h
-[2026-02-11 20:32:05,721][INFO]:   Calculated tag: none
-[2026-02-11 20:32:05,721][INFO]: [95/96] Completed: The Legend of Zelda: Breath of the Wild
-[2026-02-11 20:32:06,410][INFO]: === get_game_details called: appid=1794680 ===
-[2026-02-11 20:32:06,410][INFO]: [get_game_details] stats from db: {'appid': '1794680', 'game_name': 'Vampire Survivors', 'playtime_minutes': 0, 'total_achievements': 0, 'unlocked_achievements': 0, 'last_sync': '2026-02-11 19:30:49'}
-[2026-02-11 20:32:06,411][INFO]: [get_game_details] tag: {'appid': '1794680', 'tag': 'completed', 'is_manual': False, 'last_updated': '2026-02-10 16:42:39'}
-[2026-02-11 20:32:06,411][INFO]: [get_game_details] hltb_data: {'appid': '1794680', 'game_name': 'Vampire Survivors', 'matched_name': 'Vampire Survivors', 'similarity': 1.0, 'main_story': 15.0, 'main_extra': 27.9, 'completionist': 52.7, 'all_styles': 35.9, 'hltb_url': 'https://howlongtobeat.com/game/102750'}
-[2026-02-11 20:32:06,411][INFO]: [get_game_details] returning: success=True
-[2026-02-11 20:32:06,496][INFO]: Found HLTB match: The Legend of Zelda: Breath of the Wild (similarity: 1.00)
-[2026-02-11 20:32:06,500][INFO]:   HLTB: main=50.3h, extra=98.3h
-[2026-02-11 20:32:06,501][INFO]:   Calculated tag: none
-[2026-02-11 20:32:06,501][INFO]: [95/96] Completed: The Legend of Zelda: Breath of the Wild
-[2026-02-11 20:32:06,722][INFO]: [96/96] Syncing: Grand Theft Auto V (3527305077), playtime=0, achievements=0/0
-[2026-02-11 20:32:06,723][INFO]: === get_non_steam_games called ===
-[2026-02-11 20:32:06,723][INFO]: [get_non_steam_games] user_id=99048608, steam_path=/home/deck/.steam/steam
-[2026-02-11 20:32:06,723][INFO]: [get_non_steam_games] shortcuts_path=/home/deck/.steam/steam/userdata/99048608/config/shortcuts.vdf, exists=True
-[2026-02-11 20:32:06,723][INFO]: [get_non_steam_games] read 13605 bytes from shortcuts.vdf
-[2026-02-11 20:32:06,723][INFO]: [_parse_shortcuts_binary] Parsed 22 games
-[2026-02-11 20:32:06,724][INFO]: [get_non_steam_games] parsed 22 non-Steam games
-[2026-02-11 20:32:06,724][INFO]: [get_non_steam_games] sample: [{'appid': '2780787571', 'name': 'NFS Underground 2', 'playtime_minutes': 0, 'is_non_steam': True}, {'appid': '4003736873', 'name': 'Google Chrome', 'playtime_minutes': 0, 'is_non_steam': True}, {'appid': '3367525719', 'name': 'Epic Games', 'playtime_minutes': 0, 'is_non_steam': True}]
-[2026-02-11 20:32:06,728][INFO]:   Stats: playtime=0min, achievements=0/0
-[2026-02-11 20:32:07,140][INFO]: Found HLTB match: Grand Theft Auto V (similarity: 1.00)
-[2026-02-11 20:32:07,144][INFO]:   HLTB: main=32.1h, extra=51.3h
-[2026-02-11 20:32:07,145][INFO]:   Calculated tag: none
-[2026-02-11 20:32:07,145][INFO]: [96/96] Completed: Grand Theft Auto V
-[2026-02-11 20:32:07,145][INFO]: Library sync completed: 96/96 synced, 0 errors
-[2026-02-11 20:32:07,154][INFO]: === get_tag_statistics called ===
-[2026-02-11 20:32:07,155][INFO]: [get_tag_statistics] all_tags count: 16
-[2026-02-11 20:32:07,155][INFO]: [get_tag_statistics] all_tags sample (first 3): [{'appid': '1794680', 'tag': 'completed', 'is_manual': False, 'last_updated': '2026-02-10 16:42:39'}, {'appid': '204360', 'tag': 'in_progress', 'is_manual': True, 'last_updated': '2026-02-11 08:01:16'}, {'appid': '275850', 'tag': 'in_progress', 'is_manual': True, 'last_updated': '2026-02-11 13:55:19'}]
-[2026-02-11 20:32:07,155][INFO]: [get_tag_statistics] total_library (all_games count): 59
-[2026-02-11 20:32:07,155][INFO]: [get_tag_statistics] returning: {'success': True, 'stats': {'completed': 5, 'in_progress': 10, 'mastered': 1, 'backlog': 43, 'total': 59}}
-[2026-02-11 20:32:07,163][INFO]: === get_all_tags_with_names called ===
-[2026-02-11 20:32:07,164][INFO]: [get_all_tags_with_names] all_tags count: 16
-[2026-02-11 20:32:07,164][INFO]: [get_all_tags_with_names] all_tags sample (first 3): [{'appid': '1794680', 'tag': 'completed', 'is_manual': False, 'last_updated': '2026-02-10 16:42:39'}, {'appid': '204360', 'tag': 'in_progress', 'is_manual': True, 'last_updated': '2026-02-11 08:01:16'}, {'appid': '275850', 'tag': 'in_progress', 'is_manual': True, 'last_updated': '2026-02-11 13:55:19'}]
-[2026-02-11 20:32:07,164][INFO]: [get_all_tags_with_names] tag_entry: {'appid': '1794680', 'tag': 'completed', 'is_manual': False, 'last_updated': '2026-02-10 16:42:39'}
-[2026-02-11 20:32:07,165][INFO]: [get_all_tags_with_names] stats: {'appid': '1794680', 'game_name': 'Vampire Survivors', 'playtime_minutes': 0, 'total_achievements': 0, 'unlocked_achievements': 0, 'last_sync': '2026-02-11 19:30:49'}
-[2026-02-11 20:32:07,165][INFO]: [get_all_tags_with_names] game_name: Vampire Survivors
-[2026-02-11 20:32:07,165][INFO]: [get_all_tags_with_names] tag_entry: {'appid': '204360', 'tag': 'in_progress', 'is_manual': True, 'last_updated': '2026-02-11 08:01:16'}
-[2026-02-11 20:32:07,165][INFO]: [get_all_tags_with_names] stats: {'appid': '204360', 'game_name': 'Castle Crashers', 'playtime_minutes': 759, 'total_achievements': 0, 'unlocked_achievements': 0, 'last_sync': '2026-02-11 08:01:06'}
-[2026-02-11 20:32:07,165][INFO]: [get_all_tags_with_names] game_name: Castle Crashers
-[2026-02-11 20:32:07,165][INFO]: [get_all_tags_with_names] tag_entry: {'appid': '275850', 'tag': 'in_progress', 'is_manual': True, 'last_updated': '2026-02-11 13:55:19'}
-[2026-02-11 20:32:07,166][INFO]: [get_all_tags_with_names] stats: {'appid': '275850', 'game_name': "No Man's Sky", 'playtime_minutes': 3015, 'total_achievements': 0, 'unlocked_achievements': 0, 'last_sync': '2026-02-11 13:54:38'}
-[2026-02-11 20:32:07,166][INFO]: [get_all_tags_with_names] game_name: No Man's Sky
-[2026-02-11 20:32:07,166][INFO]: [get_all_tags_with_names] tag_entry: {'appid': '12750', 'tag': 'in_progress', 'is_manual': False, 'last_updated': '2026-02-10 14:59:01'}
-[2026-02-11 20:32:07,166][INFO]: [get_all_tags_with_names] stats: {'appid': '12750', 'game_name': 'GRID', 'playtime_minutes': 0, 'total_achievements': 0, 'unlocked_achievements': 0, 'last_sync': '2026-02-11 19:30:54'}
-[2026-02-11 20:32:07,166][INFO]: [get_all_tags_with_names] game_name: GRID
-[2026-02-11 20:32:07,166][INFO]: [get_all_tags_with_names] tag_entry: {'appid': '22600', 'tag': 'in_progress', 'is_manual': False, 'last_updated': '2026-02-10 14:59:02'}
-[2026-02-11 20:32:07,167][INFO]: [get_all_tags_with_names] stats: {'appid': '22600', 'game_name': 'Worms Reloaded', 'playtime_minutes': 0, 'total_achievements': 0, 'unlocked_achievements': 0, 'last_sync': '2026-02-11 19:30:55'}
-[2026-02-11 20:32:07,167][INFO]: [get_all_tags_with_names] game_name: Worms Reloaded
-[2026-02-11 20:32:07,167][INFO]: [get_all_tags_with_names] tag_entry: {'appid': '1449690', 'tag': 'in_progress', 'is_manual': False, 'last_updated': '2026-02-10 14:59:05'}
-[2026-02-11 20:32:07,167][INFO]: [get_all_tags_with_names] stats: {'appid': '1449690', 'game_name': 'The Walking Dead: The Telltale Definitive Series', 'playtime_minutes': 0, 'total_achievements': 0, 'unlocked_achievements': 0, 'last_sync': '2026-02-11 19:30:57'}
-[2026-02-11 20:32:07,167][INFO]: [get_all_tags_with_names] game_name: The Walking Dead: The Telltale Definitive Series
-[2026-02-11 20:32:07,167][INFO]: [get_all_tags_with_names] tag_entry: {'appid': '380', 'tag': 'completed', 'is_manual': False, 'last_updated': '2026-02-10 16:42:55'}
-[2026-02-11 20:32:07,167][INFO]: [get_all_tags_with_names] stats: {'appid': '380', 'game_name': 'Half-Life 2: Episode One', 'playtime_minutes': 0, 'total_achievements': 0, 'unlocked_achievements': 0, 'last_sync': '2026-02-11 19:31:05'}
-[2026-02-11 20:32:07,167][INFO]: [get_all_tags_with_names] game_name: Half-Life 2: Episode One
-[2026-02-11 20:32:07,168][INFO]: [get_all_tags_with_names] tag_entry: {'appid': '1225570', 'tag': 'in_progress', 'is_manual': False, 'last_updated': '2026-02-10 14:59:16'}
-[2026-02-11 20:32:07,168][INFO]: [get_all_tags_with_names] stats: {'appid': '1225570', 'game_name': 'Unravel Two', 'playtime_minutes': 0, 'total_achievements': 0, 'unlocked_achievements': 0, 'last_sync': '2026-02-11 19:31:08'}
-[2026-02-11 20:32:07,168][INFO]: [get_all_tags_with_names] game_name: Unravel Two
-[2026-02-11 20:32:07,168][INFO]: [get_all_tags_with_names] tag_entry: {'appid': '220', 'tag': 'in_progress', 'is_manual': False, 'last_updated': '2026-02-10 14:59:18'}
-[2026-02-11 20:32:07,168][INFO]: [get_all_tags_with_names] stats: {'appid': '220', 'game_name': 'Half-Life 2', 'playtime_minutes': 0, 'total_achievements': 0, 'unlocked_achievements': 0, 'last_sync': '2026-02-11 19:31:10'}
-[2026-02-11 20:32:07,168][INFO]: [get_all_tags_with_names] game_name: Half-Life 2
-[2026-02-11 20:32:07,168][INFO]: [get_all_tags_with_names] tag_entry: {'appid': '379430', 'tag': 'completed', 'is_manual': False, 'last_updated': '2026-02-10 16:43:02'}
-[2026-02-11 20:32:07,169][INFO]: [get_all_tags_with_names] stats: {'appid': '379430', 'game_name': 'Kingdom Come: Deliverance', 'playtime_minutes': 0, 'total_achievements': 0, 'unlocked_achievements': 0, 'last_sync': '2026-02-11 19:31:12'}
-[2026-02-11 20:32:07,169][INFO]: [get_all_tags_with_names] game_name: Kingdom Come: Deliverance
-[2026-02-11 20:32:07,169][INFO]: [get_all_tags_with_names] tag_entry: {'appid': '2225070', 'tag': 'completed', 'is_manual': False, 'last_updated': '2026-02-10 16:43:06'}
-[2026-02-11 20:32:07,169][INFO]: [get_all_tags_with_names] stats: {'appid': '2225070', 'game_name': 'Trackmania', 'playtime_minutes': 0, 'total_achievements': 0, 'unlocked_achievements': 0, 'last_sync': '2026-02-11 19:31:16'}
-[2026-02-11 20:32:07,169][INFO]: [get_all_tags_with_names] game_name: Trackmania
-[2026-02-11 20:32:07,169][INFO]: [get_all_tags_with_names] tag_entry: {'appid': '200210', 'tag': 'completed', 'is_manual': False, 'last_updated': '2026-02-10 16:43:07'}
-[2026-02-11 20:32:07,170][INFO]: [get_all_tags_with_names] stats: {'appid': '200210', 'game_name': 'Realm of the Mad God Exalt', 'playtime_minutes': 0, 'total_achievements': 0, 'unlocked_achievements': 0, 'last_sync': '2026-02-11 19:31:17'}
-[2026-02-11 20:32:07,170][INFO]: [get_all_tags_with_names] game_name: Realm of the Mad God Exalt
-[2026-02-11 20:32:07,170][INFO]: [get_all_tags_with_names] tag_entry: {'appid': '238960', 'tag': 'in_progress', 'is_manual': False, 'last_updated': '2026-02-10 14:59:30'}
-[2026-02-11 20:32:07,170][INFO]: [get_all_tags_with_names] stats: {'appid': '238960', 'game_name': 'Path of Exile', 'playtime_minutes': 0, 'total_achievements': 0, 'unlocked_achievements': 0, 'last_sync': '2026-02-11 19:31:22'}
-[2026-02-11 20:32:07,170][INFO]: [get_all_tags_with_names] game_name: Path of Exile
-[2026-02-11 20:32:07,170][INFO]: [get_all_tags_with_names] tag_entry: {'appid': '458710', 'tag': 'in_progress', 'is_manual': False, 'last_updated': '2026-02-10 14:59:32'}
-[2026-02-11 20:32:07,171][INFO]: [get_all_tags_with_names] stats: {'appid': '458710', 'game_name': 'Kingdom Rush Frontiers', 'playtime_minutes': 0, 'total_achievements': 0, 'unlocked_achievements': 0, 'last_sync': '2026-02-11 19:31:24'}
-[2026-02-11 20:32:07,171][INFO]: [get_all_tags_with_names] game_name: Kingdom Rush Frontiers
-[2026-02-11 20:32:07,171][INFO]: [get_all_tags_with_names] tag_entry: {'appid': '373420', 'tag': 'in_progress', 'is_manual': False, 'last_updated': '2026-02-10 17:07:06'}
-[2026-02-11 20:32:07,171][INFO]: [get_all_tags_with_names] stats: {'appid': '373420', 'game_name': 'Divinity: Original Sin Enhanced Edition', 'playtime_minutes': 0, 'total_achievements': 0, 'unlocked_achievements': 0, 'last_sync': '2026-02-11 19:31:04'}
-[2026-02-11 20:32:07,171][INFO]: [get_all_tags_with_names] game_name: Divinity: Original Sin Enhanced Edition
-[2026-02-11 20:32:07,171][INFO]: [get_all_tags_with_names] tag_entry: {'appid': '4007057898', 'tag': 'mastered', 'is_manual': True, 'last_updated': '2026-02-11 11:35:14'}
-[2026-02-11 20:32:07,171][INFO]: [get_all_tags_with_names] stats: {'appid': '4007057898', 'game_name': 'Unknown Game (4007057898)', 'playtime_minutes': 0, 'total_achievements': 0, 'unlocked_achievements': 0, 'last_sync': '2026-02-11 08:48:45'}
-[2026-02-11 20:32:07,171][INFO]: [get_all_tags_with_names] game_name: Unknown Game (4007057898)
-[2026-02-11 20:32:07,172][INFO]: === get_non_steam_games called ===
-[2026-02-11 20:32:07,172][INFO]: [get_non_steam_games] user_id=99048608, steam_path=/home/deck/.steam/steam
-[2026-02-11 20:32:07,172][INFO]: [get_non_steam_games] shortcuts_path=/home/deck/.steam/steam/userdata/99048608/config/shortcuts.vdf, exists=True
-[2026-02-11 20:32:07,172][INFO]: [get_non_steam_games] read 13605 bytes from shortcuts.vdf
-[2026-02-11 20:32:07,172][INFO]: [_parse_shortcuts_binary] Parsed 22 games
-[2026-02-11 20:32:07,172][INFO]: [get_non_steam_games] parsed 22 non-Steam games
-[2026-02-11 20:32:07,172][INFO]: [get_non_steam_games] sample: [{'appid': '2780787571', 'name': 'NFS Underground 2', 'playtime_minutes': 0, 'is_non_steam': True}, {'appid': '4003736873', 'name': 'Google Chrome', 'playtime_minutes': 0, 'is_non_steam': True}, {'appid': '3367525719', 'name': 'Epic Games', 'playtime_minutes': 0, 'is_non_steam': True}]
-[2026-02-11 20:32:07,173][INFO]: [get_all_tags_with_names] returning 16 games
-[2026-02-11 20:32:07,173][INFO]: [get_all_tags_with_names] result sample (first 3): [{'appid': '380', 'game_name': 'Half-Life 2: Episode One', 'tag': 'completed', 'is_manual': False}, {'appid': '379430', 'game_name': 'Kingdom Come: Deliverance', 'tag': 'completed', 'is_manual': False}, {'appid': '200210', 'game_name': 'Realm of the Mad God Exalt', 'tag': 'completed', 'is_manual': False}]
-[2026-02-11 20:32:07,503][INFO]: [96/96] Syncing: Grand Theft Auto V (3527305077), playtime=0, achievements=0/0
-[2026-02-11 20:32:07,504][INFO]: === get_non_steam_games called ===
-[2026-02-11 20:32:07,504][INFO]: [get_non_steam_games] user_id=99048608, steam_path=/home/deck/.steam/steam
-[2026-02-11 20:32:07,504][INFO]: [get_non_steam_games] shortcuts_path=/home/deck/.steam/steam/userdata/99048608/config/shortcuts.vdf, exists=True
-[2026-02-11 20:32:07,504][INFO]: [get_non_steam_games] read 13605 bytes from shortcuts.vdf
-[2026-02-11 20:32:07,504][INFO]: [_parse_shortcuts_binary] Parsed 22 games
-[2026-02-11 20:32:07,505][INFO]: [get_non_steam_games] parsed 22 non-Steam games
-[2026-02-11 20:32:07,505][INFO]: [get_non_steam_games] sample: [{'appid': '2780787571', 'name': 'NFS Underground 2', 'playtime_minutes': 0, 'is_non_steam': True}, {'appid': '4003736873', 'name': 'Google Chrome', 'playtime_minutes': 0, 'is_non_steam': True}, {'appid': '3367525719', 'name': 'Epic Games', 'playtime_minutes': 0, 'is_non_steam': True}]
-[2026-02-11 20:32:07,509][INFO]:   Stats: playtime=0min, achievements=0/0
-[2026-02-11 20:32:07,510][INFO]:   HLTB: main=32.1h, extra=51.3h
-[2026-02-11 20:32:07,511][INFO]:   Calculated tag: none
-[2026-02-11 20:32:07,511][INFO]: [96/96] Completed: Grand Theft Auto V
-[2026-02-11 20:32:07,511][INFO]: Library sync completed: 96/96 synced, 0 errors
-[2026-02-11 20:32:11,258][INFO]: === get_game_tag called: appid=1794680 ===
-[2026-02-11 20:32:11,258][INFO]: [get_game_tag] appid=1794680, tag={'appid': '1794680', 'tag': 'completed', 'is_manual': False, 'last_updated': '2026-02-10 16:42:39'}
+[2026-02-11 21:15:33,643][INFO]: === Game Progress Tracker v1.1.23 starting ===
+[2026-02-11 21:15:33,644][INFO]: Plugin dir: /home/deck/homebrew/plugins/game-progress-tracker
+[2026-02-11 21:15:33,644][INFO]: Backend src: /home/deck/homebrew/plugins/game-progress-tracker/backend/src exists=True
+[2026-02-11 21:15:33,644][INFO]: Added to sys.path: /home/deck/homebrew/plugins/game-progress-tracker/backend/src
+[2026-02-11 21:15:33,644][INFO]: backend/src/ contains 4 items:
+[2026-02-11 21:15:33,644][INFO]:   - database.py
+[2026-02-11 21:15:33,644][INFO]:   - steam_data.py
+[2026-02-11 21:15:33,644][INFO]:   - hltb_service.py
+[2026-02-11 21:15:33,644][INFO]:   - __init__.py
+[2026-02-11 21:15:33,644][INFO]: sys.path: ['/home/deck/homebrew/plugins/game-progress-tracker/backend/src', '/tmp/_MEI5gj0TL/base_library.zip', '/tmp/_MEI5gj0TL/lib-dynload', '/tmp/_MEI5gj0TL', '/tmp/_MEI5gj0TL/setuptools/_vendor']...
+[2026-02-11 21:15:33,665][INFO]: Backend modules imported successfully
+[2026-02-11 21:15:33,666][INFO]: Game Progress Tracker plugin starting...
+[2026-02-11 21:15:33,667][INFO]: Connected to database: /home/deck/homebrew/data/game-progress-tracker/game_tracker.db
+[2026-02-11 21:15:33,668][INFO]: Database schema initialized
+[2026-02-11 21:15:33,669][INFO]: Found Steam path: /home/deck/.steam/steam
+[2026-02-11 21:15:33,669][INFO]: Plugin initialized successfully
+[2026-02-11 21:15:33,669][INFO]: Plugin ready. Sync will be triggered by frontend with real-time data.
+[2026-02-11 21:15:35,615][INFO]: === get_all_games called (frontend requesting game list) ===
+[2026-02-11 21:15:35,616][INFO]: Game sources: installed=True, non_steam=True
+[2026-02-11 21:15:35,617][INFO]: Using Steam user ID: 99048608
+[2026-02-11 21:15:35,769][ERROR]: Failed to parse /home/deck/.steam/steam/steamapps/appmanifest_990080.acf: 'str' object has no attribute 'get'
+[2026-02-11 21:15:35,811][ERROR]: Failed to parse /home/deck/.steam/steam/steamapps/appmanifest_35700.acf: 'str' object has no attribute 'get'
+[2026-02-11 21:15:35,964][ERROR]: Failed to parse /home/deck/.local/share/Steam/steamapps/appmanifest_990080.acf: 'str' object has no attribute 'get'
+[2026-02-11 21:15:36,006][ERROR]: Failed to parse /home/deck/.local/share/Steam/steamapps/appmanifest_35700.acf: 'str' object has no attribute 'get'
+[2026-02-11 21:15:36,006][INFO]: Found 74 games in library
+[2026-02-11 21:15:36,006][INFO]: Added 74 installed games
+[2026-02-11 21:15:36,006][INFO]: === get_non_steam_games called ===
+[2026-02-11 21:15:36,006][INFO]: [get_non_steam_games] user_id=99048608, steam_path=/home/deck/.steam/steam
+[2026-02-11 21:15:36,006][INFO]: [get_non_steam_games] shortcuts_path=/home/deck/.steam/steam/userdata/99048608/config/shortcuts.vdf, exists=True
+[2026-02-11 21:15:36,007][INFO]: [get_non_steam_games] read 13605 bytes from shortcuts.vdf
+[2026-02-11 21:15:36,007][INFO]: [_parse_shortcuts_binary] Parsed 22 games
+[2026-02-11 21:15:36,007][INFO]: [get_non_steam_games] parsed 22 non-Steam games
+[2026-02-11 21:15:36,007][INFO]: [get_non_steam_games] sample: [{'appid': '2780787571', 'name': 'NFS Underground 2', 'playtime_minutes': 0, 'is_non_steam': True}, {'appid': '4003736873', 'name': 'Google Chrome', 'playtime_minutes': 0, 'is_non_steam': True}, {'appid': '3367525719', 'name': 'Epic Games', 'playtime_minutes': 0, 'is_non_steam': True}]
+[2026-02-11 21:15:36,007][INFO]: Added 22 non-Steam games
+[2026-02-11 21:15:36,007][INFO]: get_all_games: returning 96 total games to frontend
+[2026-02-11 21:15:36,016][INFO]: === sync_library_with_playtime called ===
+[2026-02-11 21:15:36,016][INFO]: Received playtime_data type: <class 'dict'>
+[2026-02-11 21:15:36,016][INFO]: Received playtime_data: {'playtime_data': {'220': 110, '340': 0, '380': 274, '420': 0, '12750': 872, '12900': 14, '22600': 98, '44350': 57, '105600': 6, '200210': 4503, '204360': 759, '207690': 0, '221380': 0, '228980': 0, '233550': 17, '238960': 65, '275850': 3016, '286690': 0, '373420': 43, '379430': 6276, '424840': 0, '458710': 77, '956030': 0, '1070560': 0, '1213700': 24, '1225560': 4, '1225570': 80, '1391110': 0, '1449690': 168, '1493710': 0, '1628350': 0, '1794680': 1006, '2001120': 3, '2225070': 5848, '2805730':
+[2026-02-11 21:15:36,016][INFO]: Received achievement_data type: <class 'NoneType'>
+[2026-02-11 21:15:36,016][INFO]: Received playtime_data keys count: 2
+[2026-02-11 21:15:36,016][INFO]: Sample playtime data (first 5): [('playtime_data', {'220': 110, '340': 0, '380': 274, '420': 0, '12750': 872, '12900': 14, '22600': 98, '44350': 57, '105600': 6, '200210': 4503, '204360': 759, '207690': 0, '221380': 0, '228980': 0, '233550': 17, '238960': 65, '275850': 3016, '286690': 0, '373420': 43, '379430': 6276, '424840': 0, '458710': 77, '956030': 0, '1070560': 0, '1213700': 24, '1225560': 4, '1225570': 80, '1391110': 0, '1449690': 168, '1493710': 0, '1628350': 0, '1794680': 1006, '2001120': 3, '2225070': 5848, '2805730': 0, '3658110': 0, '4241850': 9, '2179649233': 11, '2307977279': 3029, '2334648540': 2, '2524151518': 1647, '2575332372': 230, '2776349308': 1486, '2780787571': 7453, '2806828113': 0, '2940665000': 5691, '3053305457': 1, '3086049890': 2965, '3137256104': 3409, '3227839963': 7129, '3262759475': 18549, '3367525719': 502, '3455051667': 374, '3527305077': 0, '3991013285': 44, '4003736873': 3114, '4007057898': 657, '4073574590': 0, '4159773992': 4790}), ('achievement_data', {'220': {'total': 69, 'unlocked': 3, 'percentage': 4.34782600402832, 'all_unlocked': False}, '340': {'total': 0, 'unlocked': 0, 'percentage': 0, 'all_unlocked': False}, '380': {'total': 13, 'unlocked': 4, 'percentage': 30.769229888916016, 'all_unlocked': False}, '420': {'total': 23, 'unlocked': 0, 'percentage': 0, 'all_unlocked': False}, '12750': {'total': 0, 'unlocked': 0, 'percentage': 0, 'all_unlocked': False}, '12900': {'total': 19, 'unlocked': 3, 'percentage': 15.789473533630371, 'all_unlocked': False}, '22600': {'total': 61, 'unlocked': 1, 'percentage': 1.6393442153930664, 'all_unlocked': False}, '44350': {'total': 60, 'unlocked': 2, 'percentage': 3.3333332538604736, 'all_unlocked': False}, '105600': {'total': 137, 'unlocked': 1, 'percentage': 0.7299270033836365, 'all_unlocked': False}, '200210': {'total': 31, 'unlocked': 13, 'percentage': 41.935482025146484, 'all_unlocked': False}, '204360': {'total': 12, 'unlocked': 1, 'percentage': 8.333333015441895, 'all_unlocked': False}, '207690': {'total': 53, 'unlocked': 0, 'percentage': 0, 'all_unlocked': False}, '221380': {'total': 294, 'unlocked': 0, 'percentage': 0, 'all_unlocked': False}, '228980': {'total': 0, 'unlocked': 0, 'percentage': 0, 'all_unlocked': False}, '233550': {'total': 13, 'unlocked': 1, 'percentage': 7.692307472229004, 'all_unlocked': False}, '238960': {'total': 127, 'unlocked': 0, 'percentage': 0, 'all_unlocked': False}, '275850': {'total': 27, 'unlocked': 10, 'percentage': 37.03703689575195, 'all_unlocked': False}, '286690': {'total': 49, 'unlocked': 0, 'percentage': 0, 'all_unlocked': False}, '373420': {'total': 54, 'unlocked': 0, 'percentage': 0, 'all_unlocked': False}, '379430': {'total': 82, 'unlocked': 11, 'percentage': 13.414633750915527, 'all_unlocked': False}, '424840': {'total': 22, 'unlocked': 0, 'percentage': 0, 'all_unlocked': False}, '458710': {'total': 87, 'unlocked': 12, 'percentage': 13.793103218078613, 'all_unlocked': False}, '956030': {'total': 28, 'unlocked': 0, 'percentage': 0, 'all_unlocked': False}, '1070560': {'total': 0, 'unlocked': 0, 'percentage': 0, 'all_unlocked': False}, '1213700': {'total': 24, 'unlocked': 1, 'percentage': 4.166666507720947, 'all_unlocked': False}, '1225560': {'total': 26, 'unlocked': 0, 'percentage': 0, 'all_unlocked': False}, '1225570': {'total': 28, 'unlocked': 0, 'percentage': 0, 'all_unlocked': False}, '1391110': {'total': 0, 'unlocked': 0, 'percentage': 0, 'all_unlocked': False}, '1449690': {'total': 23, 'unlocked': 1, 'percentage': 4.34782600402832, 'all_unlocked': False}, '1493710': {'total': 0, 'unlocked': 0, 'percentage': 0, 'all_unlocked': False}, '1628350': {'total': 0, 'unlocked': 0, 'percentage': 0, 'all_unlocked': False}, '1794680': {'total': 243, 'unlocked': 66, 'percentage': 27.160493850708008, 'all_unlocked': False}, '2001120': {'total': 20, 'unlocked': 0, 'percentage': 0, 'all_unlocked': False}, '2225070': {'total': 0, 'unlocked': 0, 'percentage': 0, 'all_unlocked': False}, '2805730': {'total': 0, 'unlocked': 0, 'percentage': 0, 'all_unlocked': False}, '3658110': {'total': 0, 'unlocked': 0, 'percentage': 0, 'all_unlocked': False}, '4241850': {'total': 0, 'unlocked': 0, 'percentage': 0, 'all_unlocked': False}, '2179649233': {'total': 0, 'unlocked': 0, 'percentage': 0, 'all_unlocked': False}, '2307977279': {'total': 0, 'unlocked': 0, 'percentage': 0, 'all_unlocked': False}, '2334648540': {'total': 0, 'unlocked': 0, 'percentage': 0, 'all_unlocked': False}, '2524151518': {'total': 0, 'unlocked': 0, 'percentage': 0, 'all_unlocked': False}, '2575332372': {'total': 0, 'unlocked': 0, 'percentage': 0, 'all_unlocked': False}, '2776349308': {'total': 0, 'unlocked': 0, 'percentage': 0, 'all_unlocked': False}, '2780787571': {'total': 0, 'unlocked': 0, 'percentage': 0, 'all_unlocked': False}, '2806828113': {'total': 0, 'unlocked': 0, 'percentage': 0, 'all_unlocked': False}, '2940665000': {'total': 0, 'unlocked': 0, 'percentage': 0, 'all_unlocked': False}, '3053305457': {'total': 0, 'unlocked': 0, 'percentage': 0, 'all_unlocked': False}, '3086049890': {'total': 0, 'unlocked': 0, 'percentage': 0, 'all_unlocked': False}, '3137256104': {'total': 0, 'unlocked': 0, 'percentage': 0, 'all_unlocked': False}, '3227839963': {'total': 0, 'unlocked': 0, 'percentage': 0, 'all_unlocked': False}, '3262759475': {'total': 0, 'unlocked': 0, 'percentage': 0, 'all_unlocked': False}, '3367525719': {'total': 0, 'unlocked': 0, 'percentage': 0, 'all_unlocked': False}, '3455051667': {'total': 0, 'unlocked': 0, 'percentage': 0, 'all_unlocked': False}, '3527305077': {'total': 0, 'unlocked': 0, 'percentage': 0, 'all_unlocked': False}, '3991013285': {'total': 0, 'unlocked': 0, 'percentage': 0, 'all_unlocked': False}, '4003736873': {'total': 0, 'unlocked': 0, 'percentage': 0, 'all_unlocked': False}, '4007057898': {'total': 0, 'unlocked': 0, 'percentage': 0, 'all_unlocked': False}, '4073574590': {'total': 0, 'unlocked': 0, 'percentage': 0, 'all_unlocked': False}, '4159773992': {'total': 0, 'unlocked': 0, 'percentage': 0, 'all_unlocked': False}})]
+[2026-02-11 21:15:36,016][INFO]: Games with playtime > 0: 0/2
+[2026-02-11 21:15:36,016][INFO]: Received achievement_data keys count: 0
+[2026-02-11 21:15:36,016][INFO]: Games with achievements > 0: 0/0
+[2026-02-11 21:15:36,016][INFO]: === Starting sync with 2 playtime entries ===
+[2026-02-11 21:15:36,153][ERROR]: Failed to parse /home/deck/.steam/steam/steamapps/appmanifest_990080.acf: 'str' object has no attribute 'get'
+[2026-02-11 21:15:36,188][ERROR]: Failed to parse /home/deck/.steam/steam/steamapps/appmanifest_35700.acf: 'str' object has no attribute 'get'
+[2026-02-11 21:15:36,307][ERROR]: Failed to parse /home/deck/.local/share/Steam/steamapps/appmanifest_990080.acf: 'str' object has no attribute 'get'
+[2026-02-11 21:15:36,339][ERROR]: Failed to parse /home/deck/.local/share/Steam/steamapps/appmanifest_35700.acf: 'str' object has no attribute 'get'
+[2026-02-11 21:15:36,340][INFO]: Found 74 games in library
+[2026-02-11 21:15:36,340][INFO]: Sync: Added 74 installed Steam games
+[2026-02-11 21:15:36,340][INFO]: === get_non_steam_games called ===
+[2026-02-11 21:15:36,340][INFO]: [get_non_steam_games] user_id=99048608, steam_path=/home/deck/.steam/steam
+[2026-02-11 21:15:36,340][INFO]: [get_non_steam_games] shortcuts_path=/home/deck/.steam/steam/userdata/99048608/config/shortcuts.vdf, exists=True
+[2026-02-11 21:15:36,340][INFO]: [get_non_steam_games] read 13605 bytes from shortcuts.vdf
+[2026-02-11 21:15:36,340][INFO]: [_parse_shortcuts_binary] Parsed 22 games
+[2026-02-11 21:15:36,340][INFO]: [get_non_steam_games] parsed 22 non-Steam games
+[2026-02-11 21:15:36,340][INFO]: [get_non_steam_games] sample: [{'appid': '2780787571', 'name': 'NFS Underground 2', 'playtime_minutes': 0, 'is_non_steam': True}, {'appid': '4003736873', 'name': 'Google Chrome', 'playtime_minutes': 0, 'is_non_steam': True}, {'appid': '3367525719', 'name': 'Epic Games', 'playtime_minutes': 0, 'is_non_steam': True}]
+[2026-02-11 21:15:36,340][INFO]: Sync: Added 22 non-Steam games
+[2026-02-11 21:15:36,340][INFO]: [1/96] Syncing: Vampire Survivors (1794680), playtime=0, achievements=0/0 (0.0%)
+[2026-02-11 21:15:36,345][INFO]:   Stats: playtime=0min, achievements=0/0
+[2026-02-11 21:15:36,346][INFO]:   HLTB: main=15.0h, extra=27.9h
+[2026-02-11 21:15:36,347][INFO]:   Calculated tag: none
+[2026-02-11 21:15:36,347][INFO]: [1/96] Completed: Vampire Survivors
+[2026-02-11 21:15:37,349][INFO]: [2/96] Syncing: Castle Crashers (204360), playtime=0, achievements=0/0 (0.0%)
+[2026-02-11 21:15:37,349][INFO]: [2/96] Completed: Castle Crashers
+[2026-02-11 21:15:37,835][INFO]: === get_tag_statistics called ===
+[2026-02-11 21:15:37,836][INFO]: [get_tag_statistics] all_tags count: 16
+[2026-02-11 21:15:37,836][INFO]: [get_tag_statistics] all_tags sample (first 3): [{'appid': '1794680', 'tag': 'completed', 'is_manual': False, 'last_updated': '2026-02-10 16:42:39'}, {'appid': '204360', 'tag': 'in_progress', 'is_manual': True, 'last_updated': '2026-02-11 08:01:16'}, {'appid': '275850', 'tag': 'in_progress', 'is_manual': True, 'last_updated': '2026-02-11 13:55:19'}]
+[2026-02-11 21:15:37,836][INFO]: === get_all_tags_with_names called ===
+[2026-02-11 21:15:37,837][INFO]: [get_all_tags_with_names] all_tags count: 16
+[2026-02-11 21:15:37,838][INFO]: [get_all_tags_with_names] all_tags sample (first 3): [{'appid': '1794680', 'tag': 'completed', 'is_manual': False, 'last_updated': '2026-02-10 16:42:39'}, {'appid': '204360', 'tag': 'in_progress', 'is_manual': True, 'last_updated': '2026-02-11 08:01:16'}, {'appid': '275850', 'tag': 'in_progress', 'is_manual': True, 'last_updated': '2026-02-11 13:55:19'}]
+[2026-02-11 21:15:37,838][INFO]: [get_all_tags_with_names] tag_entry: {'appid': '1794680', 'tag': 'completed', 'is_manual': False, 'last_updated': '2026-02-10 16:42:39'}
+[2026-02-11 21:15:37,838][INFO]: [get_tag_statistics] total_library (all_games count): 59
+[2026-02-11 21:15:37,838][INFO]: [get_tag_statistics] returning: {'success': True, 'stats': {'completed': 5, 'in_progress': 10, 'mastered': 1, 'backlog': 43, 'total': 59}}
+[2026-02-11 21:15:37,839][INFO]: [get_all_tags_with_names] stats: {'appid': '1794680', 'game_name': 'Vampire Survivors', 'playtime_minutes': 0, 'total_achievements': 0, 'unlocked_achievements': 0, 'last_sync': '2026-02-11 20:15:36'}
+[2026-02-11 21:15:37,839][INFO]: [get_all_tags_with_names] game_name: Vampire Survivors
+[2026-02-11 21:15:37,839][INFO]: [get_all_tags_with_names] tag_entry: {'appid': '204360', 'tag': 'in_progress', 'is_manual': True, 'last_updated': '2026-02-11 08:01:16'}
+[2026-02-11 21:15:37,839][INFO]: [get_all_tags_with_names] stats: {'appid': '204360', 'game_name': 'Castle Crashers', 'playtime_minutes': 759, 'total_achievements': 0, 'unlocked_achievements': 0, 'last_sync': '2026-02-11 08:01:06'}
+[2026-02-11 21:15:37,839][INFO]: [get_all_tags_with_names] game_name: Castle Crashers
+[2026-02-11 21:15:37,839][INFO]: [get_all_tags_with_names] tag_entry: {'appid': '275850', 'tag': 'in_progress', 'is_manual': True, 'last_updated': '2026-02-11 13:55:19'}
+[2026-02-11 21:15:37,840][INFO]: [get_all_tags_with_names] stats: {'appid': '275850', 'game_name': "No Man's Sky", 'playtime_minutes': 3015, 'total_achievements': 0, 'unlocked_achievements': 0, 'last_sync': '2026-02-11 13:54:38'}
+[2026-02-11 21:15:37,840][INFO]: [get_all_tags_with_names] game_name: No Man's Sky
+[2026-02-11 21:15:37,840][INFO]: [get_all_tags_with_names] tag_entry: {'appid': '12750', 'tag': 'in_progress', 'is_manual': False, 'last_updated': '2026-02-10 14:59:01'}
+[2026-02-11 21:15:37,841][INFO]: [get_all_tags_with_names] stats: {'appid': '12750', 'game_name': 'GRID', 'playtime_minutes': 0, 'total_achievements': 0, 'unlocked_achievements': 0, 'last_sync': '2026-02-11 19:30:54'}
+[2026-02-11 21:15:37,841][INFO]: [get_all_tags_with_names] game_name: GRID
+[2026-02-11 21:15:37,841][INFO]: [get_all_tags_with_names] tag_entry: {'appid': '22600', 'tag': 'in_progress', 'is_manual': False, 'last_updated': '2026-02-10 14:59:02'}
+[2026-02-11 21:15:37,842][INFO]: [get_all_tags_with_names] stats: {'appid': '22600', 'game_name': 'Worms Reloaded', 'playtime_minutes': 0, 'total_achievements': 0, 'unlocked_achievements': 0, 'last_sync': '2026-02-11 19:30:55'}
+[2026-02-11 21:15:37,842][INFO]: [get_all_tags_with_names] game_name: Worms Reloaded
+[2026-02-11 21:15:37,842][INFO]: [get_all_tags_with_names] tag_entry: {'appid': '1449690', 'tag': 'in_progress', 'is_manual': False, 'last_updated': '2026-02-10 14:59:05'}
+[2026-02-11 21:15:37,843][INFO]: [get_all_tags_with_names] stats: {'appid': '1449690', 'game_name': 'The Walking Dead: The Telltale Definitive Series', 'playtime_minutes': 0, 'total_achievements': 0, 'unlocked_achievements': 0, 'last_sync': '2026-02-11 19:30:57'}
+[2026-02-11 21:15:37,843][INFO]: [get_all_tags_with_names] game_name: The Walking Dead: The Telltale Definitive Series
+[2026-02-11 21:15:37,843][INFO]: [get_all_tags_with_names] tag_entry: {'appid': '380', 'tag': 'completed', 'is_manual': False, 'last_updated': '2026-02-10 16:42:55'}
+[2026-02-11 21:15:37,844][INFO]: [get_all_tags_with_names] stats: {'appid': '380', 'game_name': 'Half-Life 2: Episode One', 'playtime_minutes': 0, 'total_achievements': 0, 'unlocked_achievements': 0, 'last_sync': '2026-02-11 19:31:05'}
+[2026-02-11 21:15:37,844][INFO]: [get_all_tags_with_names] game_name: Half-Life 2: Episode One
+[2026-02-11 21:15:37,844][INFO]: [get_all_tags_with_names] tag_entry: {'appid': '1225570', 'tag': 'in_progress', 'is_manual': False, 'last_updated': '2026-02-10 14:59:16'}
+[2026-02-11 21:15:37,844][INFO]: [get_all_tags_with_names] stats: {'appid': '1225570', 'game_name': 'Unravel Two', 'playtime_minutes': 0, 'total_achievements': 0, 'unlocked_achievements': 0, 'last_sync': '2026-02-11 19:31:08'}
+[2026-02-11 21:15:37,845][INFO]: [get_all_tags_with_names] game_name: Unravel Two
+[2026-02-11 21:15:37,845][INFO]: [get_all_tags_with_names] tag_entry: {'appid': '220', 'tag': 'in_progress', 'is_manual': False, 'last_updated': '2026-02-10 14:59:18'}
+[2026-02-11 21:15:37,845][INFO]: [get_all_tags_with_names] stats: {'appid': '220', 'game_name': 'Half-Life 2', 'playtime_minutes': 0, 'total_achievements': 0, 'unlocked_achievements': 0, 'last_sync': '2026-02-11 19:31:10'}
+[2026-02-11 21:15:37,845][INFO]: [get_all_tags_with_names] game_name: Half-Life 2
+[2026-02-11 21:15:37,846][INFO]: [get_all_tags_with_names] tag_entry: {'appid': '379430', 'tag': 'completed', 'is_manual': False, 'last_updated': '2026-02-10 16:43:02'}
+[2026-02-11 21:15:37,846][INFO]: [get_all_tags_with_names] stats: {'appid': '379430', 'game_name': 'Kingdom Come: Deliverance', 'playtime_minutes': 0, 'total_achievements': 0, 'unlocked_achievements': 0, 'last_sync': '2026-02-11 19:31:12'}
+[2026-02-11 21:15:37,846][INFO]: [get_all_tags_with_names] game_name: Kingdom Come: Deliverance
+[2026-02-11 21:15:37,846][INFO]: [get_all_tags_with_names] tag_entry: {'appid': '2225070', 'tag': 'completed', 'is_manual': False, 'last_updated': '2026-02-10 16:43:06'}
+[2026-02-11 21:15:37,847][INFO]: [get_all_tags_with_names] stats: {'appid': '2225070', 'game_name': 'Trackmania', 'playtime_minutes': 0, 'total_achievements': 0, 'unlocked_achievements': 0, 'last_sync': '2026-02-11 19:31:16'}
+[2026-02-11 21:15:37,847][INFO]: [get_all_tags_with_names] game_name: Trackmania
+[2026-02-11 21:15:37,847][INFO]: [get_all_tags_with_names] tag_entry: {'appid': '200210', 'tag': 'completed', 'is_manual': False, 'last_updated': '2026-02-10 16:43:07'}
+[2026-02-11 21:15:37,847][INFO]: [get_all_tags_with_names] stats: {'appid': '200210', 'game_name': 'Realm of the Mad God Exalt', 'playtime_minutes': 0, 'total_achievements': 0, 'unlocked_achievements': 0, 'last_sync': '2026-02-11 19:31:17'}
+[2026-02-11 21:15:37,847][INFO]: [get_all_tags_with_names] game_name: Realm of the Mad God Exalt
+[2026-02-11 21:15:37,847][INFO]: [get_all_tags_with_names] tag_entry: {'appid': '238960', 'tag': 'in_progress', 'is_manual': False, 'last_updated': '2026-02-10 14:59:30'}
+[2026-02-11 21:15:37,848][INFO]: [get_all_tags_with_names] stats: {'appid': '238960', 'game_name': 'Path of Exile', 'playtime_minutes': 0, 'total_achievements': 0, 'unlocked_achievements': 0, 'last_sync': '2026-02-11 19:31:22'}
+[2026-02-11 21:15:37,848][INFO]: [get_all_tags_with_names] game_name: Path of Exile
+[2026-02-11 21:15:37,848][INFO]: [get_all_tags_with_names] tag_entry: {'appid': '458710', 'tag': 'in_progress', 'is_manual': False, 'last_updated': '2026-02-10 14:59:32'}
+[2026-02-11 21:15:37,848][INFO]: [get_all_tags_with_names] stats: {'appid': '458710', 'game_name': 'Kingdom Rush Frontiers', 'playtime_minutes': 0, 'total_achievements': 0, 'unlocked_achievements': 0, 'last_sync': '2026-02-11 19:31:24'}
+[2026-02-11 21:15:37,848][INFO]: [get_all_tags_with_names] game_name: Kingdom Rush Frontiers
+[2026-02-11 21:15:37,849][INFO]: [get_all_tags_with_names] tag_entry: {'appid': '373420', 'tag': 'in_progress', 'is_manual': False, 'last_updated': '2026-02-10 17:07:06'}
+[2026-02-11 21:15:37,849][INFO]: [get_all_tags_with_names] stats: {'appid': '373420', 'game_name': 'Divinity: Original Sin Enhanced Edition', 'playtime_minutes': 0, 'total_achievements': 0, 'unlocked_achievements': 0, 'last_sync': '2026-02-11 19:31:04'}
+[2026-02-11 21:15:37,849][INFO]: [get_all_tags_with_names] game_name: Divinity: Original Sin Enhanced Edition
+[2026-02-11 21:15:37,849][INFO]: [get_all_tags_with_names] tag_entry: {'appid': '4007057898', 'tag': 'mastered', 'is_manual': True, 'last_updated': '2026-02-11 11:35:14'}
+[2026-02-11 21:15:37,849][INFO]: [get_all_tags_with_names] stats: {'appid': '4007057898', 'game_name': 'Unknown Game (4007057898)', 'playtime_minutes': 0, 'total_achievements': 0, 'unlocked_achievements': 0, 'last_sync': '2026-02-11 08:48:45'}
+[2026-02-11 21:15:37,849][INFO]: [get_all_tags_with_names] game_name: Unknown Game (4007057898)
+[2026-02-11 21:15:37,850][INFO]: === get_non_steam_games called ===
+[2026-02-11 21:15:37,850][INFO]: [get_non_steam_games] user_id=99048608, steam_path=/home/deck/.steam/steam
+[2026-02-11 21:15:37,850][INFO]: [get_non_steam_games] shortcuts_path=/home/deck/.steam/steam/userdata/99048608/config/shortcuts.vdf, exists=True
+[2026-02-11 21:15:37,850][INFO]: [get_non_steam_games] read 13605 bytes from shortcuts.vdf
+[2026-02-11 21:15:37,850][INFO]: [_parse_shortcuts_binary] Parsed 22 games
+[2026-02-11 21:15:37,851][INFO]: [get_non_steam_games] parsed 22 non-Steam games
+[2026-02-11 21:15:37,851][INFO]: [get_non_steam_games] sample: [{'appid': '2780787571', 'name': 'NFS Underground 2', 'playtime_minutes': 0, 'is_non_steam': True}, {'appid': '4003736873', 'name': 'Google Chrome', 'playtime_minutes': 0, 'is_non_steam': True}, {'appid': '3367525719', 'name': 'Epic Games', 'playtime_minutes': 0, 'is_non_steam': True}]
+[2026-02-11 21:15:37,851][INFO]: [get_all_tags_with_names] returning 16 games
+[2026-02-11 21:15:37,851][INFO]: [get_all_tags_with_names] result sample (first 3): [{'appid': '380', 'game_name': 'Half-Life 2: Episode One', 'tag': 'completed', 'is_manual': False}, {'appid': '379430', 'game_name': 'Kingdom Come: Deliverance', 'tag': 'completed', 'is_manual': False}, {'appid': '200210', 'game_name': 'Realm of the Mad God Exalt', 'tag': 'completed', 'is_manual': False}]
+[2026-02-11 21:15:38,350][INFO]: [3/96] Syncing: No Man's Sky (275850), playtime=0, achievements=0/0 (0.0%)
+[2026-02-11 21:15:38,351][INFO]: [3/96] Completed: No Man's Sky
+[2026-02-11 21:15:39,352][INFO]: [4/96] Syncing: Another World (233550), playtime=0, achievements=0/0 (0.0%)
+[2026-02-11 21:15:39,357][INFO]:   Stats: playtime=0min, achievements=0/0
+[2026-02-11 21:15:39,357][INFO]:   HLTB: main=2.3h, extra=2.5h
+[2026-02-11 21:15:39,358][INFO]:   Calculated tag: none
+[2026-02-11 21:15:39,358][INFO]: [4/96] Completed: Another World
+[2026-02-11 21:15:40,360][INFO]: [5/96] Syncing: Little Nightmares (424840), playtime=0, achievements=0/0 (0.0%)
+[2026-02-11 21:15:40,365][INFO]:   Stats: playtime=0min, achievements=0/0
+[2026-02-11 21:15:40,365][INFO]:   HLTB: main=3.6h, extra=5.1h
+[2026-02-11 21:15:40,366][INFO]:   Calculated tag: none
+[2026-02-11 21:15:40,366][INFO]: [5/96] Completed: Little Nightmares
+[2026-02-11 21:15:41,368][INFO]: [6/96] Syncing: GRID (12750), playtime=0, achievements=0/0 (0.0%)
+[2026-02-11 21:15:41,373][INFO]:   Stats: playtime=0min, achievements=0/0
+[2026-02-11 21:15:41,374][INFO]:   HLTB: main=21.5h, extra=36.4h
+[2026-02-11 21:15:41,375][INFO]:   Calculated tag: none
+[2026-02-11 21:15:41,375][INFO]: [6/96] Completed: GRID
+[2026-02-11 21:15:42,376][INFO]: [7/96] Syncing: Worms Reloaded (22600), playtime=0, achievements=0/0 (0.0%)
+[2026-02-11 21:15:42,382][INFO]:   Stats: playtime=0min, achievements=0/0
+[2026-02-11 21:15:42,383][INFO]:   HLTB: main=10.3h, extra=21.6h
+[2026-02-11 21:15:42,383][INFO]:   Calculated tag: none
+[2026-02-11 21:15:42,384][INFO]: [7/96] Completed: Worms Reloaded
+[2026-02-11 21:15:43,385][INFO]: [8/96] Syncing: Half-Life 2: Lost Coast (340), playtime=0, achievements=0/0 (0.0%)
+[2026-02-11 21:15:43,391][INFO]:   Stats: playtime=0min, achievements=0/0
+[2026-02-11 21:15:43,391][INFO]:   HLTB: main=0.4h, extra=0.5h
+[2026-02-11 21:15:43,392][INFO]:   Calculated tag: none
+[2026-02-11 21:15:43,393][INFO]: [8/96] Completed: Half-Life 2: Lost Coast
+[2026-02-11 21:15:44,394][INFO]: [9/96] Syncing: The Walking Dead: The Telltale Definitive Series (1449690), playtime=0, achievements=0/0 (0.0%)
+[2026-02-11 21:15:44,400][INFO]:   Stats: playtime=0min, achievements=0/0
+[2026-02-11 21:15:44,400][INFO]:   HLTB: main=42.0h, extra=47.3h
+[2026-02-11 21:15:44,401][INFO]:   Calculated tag: none
+[2026-02-11 21:15:44,402][INFO]: [9/96] Completed: The Walking Dead: The Telltale Definitive Series
+[2026-02-11 21:15:45,403][INFO]: [10/96] Syncing: Proton 9.0 (2805730), playtime=0, achievements=0/0 (0.0%)
+[2026-02-11 21:15:45,408][INFO]:   Stats: playtime=0min, achievements=0/0
+[2026-02-11 21:15:45,409][INFO]:   HLTB: no data
+[2026-02-11 21:15:45,410][INFO]:   Calculated tag: none
+[2026-02-11 21:15:45,410][INFO]: [10/96] Completed: Proton 9.0
+[2026-02-11 21:15:46,412][INFO]: [11/96] Syncing: Steamworks Common Redistributables (228980), playtime=0, achievements=0/0 (0.0%)
+[2026-02-11 21:15:46,417][INFO]:   Stats: playtime=0min, achievements=0/0
+[2026-02-11 21:15:46,418][INFO]:   HLTB: no data
+[2026-02-11 21:15:46,419][INFO]:   Calculated tag: none
+[2026-02-11 21:15:46,419][INFO]: [11/96] Completed: Steamworks Common Redistributables
+[2026-02-11 21:15:46,818][INFO]: === get_game_tag called: appid=1794680 ===
+[2026-02-11 21:15:46,818][INFO]: [get_game_tag] appid=1794680, tag={'appid': '1794680', 'tag': 'completed', 'is_manual': False, 'last_updated': '2026-02-10 16:42:39'}
+[2026-02-11 21:15:47,420][INFO]: [12/96] Syncing: Proton Experimental (1493710), playtime=0, achievements=0/0 (0.0%)
+[2026-02-11 21:15:47,425][INFO]:   Stats: playtime=0min, achievements=0/0
+[2026-02-11 21:15:47,425][INFO]:   HLTB: no data
+[2026-02-11 21:15:47,426][INFO]:   Calculated tag: none
+[2026-02-11 21:15:47,427][INFO]: [12/96] Completed: Proton Experimental
+[2026-02-11 21:15:48,428][INFO]: [13/96] Syncing: Steam Linux Runtime 3.0 (sniper) (1628350), playtime=0, achievements=0/0 (0.0%)
+[2026-02-11 21:15:48,433][INFO]:   Stats: playtime=0min, achievements=0/0
+[2026-02-11 21:15:48,433][INFO]:   HLTB: no data
+[2026-02-11 21:15:48,434][INFO]:   Calculated tag: none
+[2026-02-11 21:15:48,434][INFO]: [13/96] Completed: Steam Linux Runtime 3.0 (sniper)
+[2026-02-11 21:15:48,502][INFO]: === get_game_details called: appid=1794680 ===
+[2026-02-11 21:15:48,502][INFO]: [get_game_details] stats from db: {'appid': '1794680', 'game_name': 'Vampire Survivors', 'playtime_minutes': 0, 'total_achievements': 0, 'unlocked_achievements': 0, 'last_sync': '2026-02-11 20:15:36'}
+[2026-02-11 21:15:48,503][INFO]: [get_game_details] tag: {'appid': '1794680', 'tag': 'completed', 'is_manual': False, 'last_updated': '2026-02-10 16:42:39'}
+[2026-02-11 21:15:48,503][INFO]: [get_game_details] hltb_data: {'appid': '1794680', 'game_name': 'Vampire Survivors', 'matched_name': 'Vampire Survivors', 'similarity': 1.0, 'main_story': 15.0, 'main_extra': 27.9, 'completionist': 52.7, 'all_styles': 35.9, 'hltb_url': 'https://howlongtobeat.com/game/102750'}
+[2026-02-11 21:15:48,503][INFO]: [get_game_details] returning: success=True
+[2026-02-11 21:15:49,435][INFO]: [14/96] Syncing: Steam Linux Runtime 1.0 (scout) (1070560), playtime=0, achievements=0/0 (0.0%)
+[2026-02-11 21:15:49,441][INFO]:   Stats: playtime=0min, achievements=0/0
+[2026-02-11 21:15:49,441][INFO]:   HLTB: no data
+[2026-02-11 21:15:49,442][INFO]:   Calculated tag: none
+[2026-02-11 21:15:49,442][INFO]: [14/96] Completed: Steam Linux Runtime 1.0 (scout)
+[2026-02-11 21:15:49,664][INFO]: === get_game_tag called: appid=1794680 ===
+[2026-02-11 21:15:49,665][INFO]: [get_game_tag] appid=1794680, tag={'appid': '1794680', 'tag': 'completed', 'is_manual': False, 'last_updated': '2026-02-10 16:42:39'}
+[2026-02-11 21:15:50,444][INFO]: [15/96] Syncing: Proton 10.0 (3658110), playtime=0, achievements=0/0 (0.0%)
+[2026-02-11 21:15:50,449][INFO]:   Stats: playtime=0min, achievements=0/0
+[2026-02-11 21:15:50,449][INFO]:   HLTB: no data
+[2026-02-11 21:15:50,450][INFO]:   Calculated tag: none
+[2026-02-11 21:15:50,451][INFO]: [15/96] Completed: Proton 10.0
+[2026-02-11 21:15:51,452][INFO]: [16/96] Syncing: Divinity: Original Sin Enhanced Edition (373420), playtime=0, achievements=0/0 (0.0%)
+[2026-02-11 21:15:51,457][INFO]:   Stats: playtime=0min, achievements=0/0
+[2026-02-11 21:15:51,458][INFO]:   HLTB: main=60.5h, extra=83.2h
+[2026-02-11 21:15:51,459][INFO]:   Calculated tag: none
+[2026-02-11 21:15:51,460][INFO]: [16/96] Completed: Divinity: Original Sin Enhanced Edition
+[2026-02-11 21:15:52,461][INFO]: [17/96] Syncing: Half-Life 2: Episode One (380), playtime=0, achievements=0/0 (0.0%)
+[2026-02-11 21:15:52,467][INFO]:   Stats: playtime=0min, achievements=0/0
+[2026-02-11 21:15:52,467][INFO]:   HLTB: main=3.6h, extra=4.2h
+[2026-02-11 21:15:52,468][INFO]:   Calculated tag: none
+[2026-02-11 21:15:52,469][INFO]: [17/96] Completed: Half-Life 2: Episode One
+[2026-02-11 21:15:53,470][INFO]: [18/96] Syncing: Unravel (1225560), playtime=0, achievements=0/0 (0.0%)
+[2026-02-11 21:15:53,475][INFO]:   Stats: playtime=0min, achievements=0/0
+[2026-02-11 21:15:53,475][INFO]:   HLTB: main=6.1h, extra=8.2h
+[2026-02-11 21:15:53,476][INFO]:   Calculated tag: none
+[2026-02-11 21:15:53,477][INFO]: [18/96] Completed: Unravel
+[2026-02-11 21:15:54,478][INFO]: [19/96] Syncing: Steam Linux Runtime 2.0 (soldier) (1391110), playtime=0, achievements=0/0 (0.0%)
+[2026-02-11 21:15:54,483][INFO]:   Stats: playtime=0min, achievements=0/0
+[2026-02-11 21:15:54,483][INFO]:   HLTB: no data
+[2026-02-11 21:15:54,484][INFO]:   Calculated tag: none
+[2026-02-11 21:15:54,485][INFO]: [19/96] Completed: Steam Linux Runtime 2.0 (soldier)
+[2026-02-11 21:15:55,485][INFO]: [20/96] Syncing: Unravel Two (1225570), playtime=0, achievements=0/0 (0.0%)
+[2026-02-11 21:15:55,490][INFO]:   Stats: playtime=0min, achievements=0/0
+[2026-02-11 21:15:55,491][INFO]:   HLTB: main=5.1h, extra=7.3h
+[2026-02-11 21:15:55,492][INFO]:   Calculated tag: none
+[2026-02-11 21:15:55,492][INFO]: [20/96] Completed: Unravel Two
+[2026-02-11 21:15:56,493][INFO]: [21/96] Syncing: Metro 2033 Redux (286690), playtime=0, achievements=0/0 (0.0%)
+[2026-02-11 21:15:56,498][INFO]:   Stats: playtime=0min, achievements=0/0
+[2026-02-11 21:15:56,499][INFO]:   HLTB: main=9.1h, extra=11.5h
+[2026-02-11 21:15:56,500][INFO]:   Calculated tag: none
+[2026-02-11 21:15:56,500][INFO]: [21/96] Completed: Metro 2033 Redux
+[2026-02-11 21:15:57,501][INFO]: [22/96] Syncing: Half-Life 2 (220), playtime=0, achievements=0/0 (0.0%)
+[2026-02-11 21:15:57,507][INFO]:   Stats: playtime=0min, achievements=0/0
+[2026-02-11 21:15:57,507][INFO]:   HLTB: main=12.9h, extra=15.6h
+[2026-02-11 21:15:57,508][INFO]:   Calculated tag: none
+[2026-02-11 21:15:57,508][INFO]: [22/96] Completed: Half-Life 2
+[2026-02-11 21:15:58,510][INFO]: [23/96] Syncing: Audiosurf (12900), playtime=0, achievements=0/0 (0.0%)
+[2026-02-11 21:15:58,515][INFO]:   Stats: playtime=0min, achievements=0/0
+[2026-02-11 21:15:58,516][INFO]:   HLTB: main=7.8h, extra=12.2h
+[2026-02-11 21:15:58,516][INFO]:   Calculated tag: none
+[2026-02-11 21:15:58,517][INFO]: [23/96] Completed: Audiosurf
+[2026-02-11 21:15:59,518][INFO]: [24/96] Syncing: Kingdom Come: Deliverance (379430), playtime=0, achievements=0/0 (0.0%)
+[2026-02-11 21:15:59,523][INFO]:   Stats: playtime=0min, achievements=0/0
+[2026-02-11 21:15:59,524][INFO]:   HLTB: main=42.3h, extra=79.9h
+[2026-02-11 21:15:59,524][INFO]:   Calculated tag: none
+[2026-02-11 21:15:59,525][INFO]: [24/96] Completed: Kingdom Come: Deliverance
+[2026-02-11 21:16:00,526][INFO]: [25/96] Syncing: Dreadmyst (4241850), playtime=0, achievements=0/0 (0.0%)
+[2026-02-11 21:16:00,531][INFO]:   Stats: playtime=0min, achievements=0/0
+[2026-02-11 21:16:00,532][INFO]:   HLTB: main=Noneh, extra=Noneh
+[2026-02-11 21:16:00,533][INFO]:   Calculated tag: none
+[2026-02-11 21:16:00,533][INFO]: [25/96] Completed: Dreadmyst
+[2026-02-11 21:16:01,535][INFO]: [26/96] Syncing: Half-Life 2: Episode Two (420), playtime=0, achievements=0/0 (0.0%)
+[2026-02-11 21:16:01,540][INFO]:   Stats: playtime=0min, achievements=0/0
+[2026-02-11 21:16:01,541][INFO]:   HLTB: main=5.1h, extra=6.1h
+[2026-02-11 21:16:01,542][INFO]:   Calculated tag: none
+[2026-02-11 21:16:01,542][INFO]: [26/96] Completed: Half-Life 2: Episode Two
+[2026-02-11 21:16:02,544][INFO]: [27/96] Syncing: Creaks (956030), playtime=0, achievements=0/0 (0.0%)
+[2026-02-11 21:16:02,549][INFO]:   Stats: playtime=0min, achievements=0/0
+[2026-02-11 21:16:02,550][INFO]:   HLTB: main=6.1h, extra=6.2h
+[2026-02-11 21:16:02,551][INFO]:   Calculated tag: none
+[2026-02-11 21:16:02,551][INFO]: [27/96] Completed: Creaks
+[2026-02-11 21:16:03,552][INFO]: [28/96] Syncing: Trackmania (2225070), playtime=0, achievements=0/0 (0.0%)
+[2026-02-11 21:16:03,557][INFO]:   Stats: playtime=0min, achievements=0/0
+[2026-02-11 21:16:03,558][INFO]:   HLTB: main=9.1h, extra=67.2h
+[2026-02-11 21:16:03,559][INFO]:   Calculated tag: none
+[2026-02-11 21:16:03,559][INFO]: [28/96] Completed: Trackmania
+[2026-02-11 21:16:04,561][INFO]: [29/96] Syncing: Realm of the Mad God Exalt (200210), playtime=0, achievements=0/0 (0.0%)
+[2026-02-11 21:16:04,573][INFO]:   Stats: playtime=0min, achievements=0/0
+[2026-02-11 21:16:04,573][INFO]:   HLTB: main=28.3h, extra=123.7h
+[2026-02-11 21:16:04,574][INFO]:   Calculated tag: none
+[2026-02-11 21:16:04,575][INFO]: [29/96] Completed: Realm of the Mad God Exalt
+[2026-02-11 21:16:05,576][INFO]: [30/96] Syncing: GRID 2 (44350), playtime=0, achievements=0/0 (0.0%)
+[2026-02-11 21:16:05,582][INFO]:   Stats: playtime=0min, achievements=0/0
+[2026-02-11 21:16:05,582][INFO]:   HLTB: main=17.8h, extra=21.6h
+[2026-02-11 21:16:05,583][INFO]:   Calculated tag: none
+[2026-02-11 21:16:05,583][INFO]: [30/96] Completed: GRID 2
+[2026-02-11 21:16:06,585][INFO]: [31/96] Syncing: Age of Empires II (2013) (221380), playtime=0, achievements=0/0 (0.0%)
+[2026-02-11 21:16:06,595][INFO]:   Stats: playtime=0min, achievements=0/0
+[2026-02-11 21:16:09,234][INFO]:   HLTB: no data
+[2026-02-11 21:16:09,234][INFO]:   Calculated tag: none
+[2026-02-11 21:16:09,235][INFO]: [31/96] Completed: Age of Empires II (2013)
+[2026-02-11 21:16:10,236][INFO]: [32/96] Syncing: Spirit of the North (1213700), playtime=0, achievements=0/0 (0.0%)
+[2026-02-11 21:16:10,242][INFO]:   Stats: playtime=0min, achievements=0/0
+[2026-02-11 21:16:10,242][INFO]:   HLTB: main=5.1h, extra=5.9h
+[2026-02-11 21:16:10,243][INFO]:   Calculated tag: none
+[2026-02-11 21:16:10,243][INFO]: [32/96] Completed: Spirit of the North
+[2026-02-11 21:16:11,244][INFO]: [33/96] Syncing: Path of Exile (238960), playtime=0, achievements=0/0 (0.0%)
+[2026-02-11 21:16:11,250][INFO]:   Stats: playtime=0min, achievements=0/0
+[2026-02-11 21:16:11,251][INFO]:   HLTB: main=29.8h, extra=111.8h
+[2026-02-11 21:16:11,252][INFO]:   Calculated tag: none
+[2026-02-11 21:16:11,253][INFO]: [33/96] Completed: Path of Exile
+[2026-02-11 21:16:12,254][INFO]: [34/96] Syncing: Terraria (105600), playtime=0, achievements=0/0 (0.0%)
+[2026-02-11 21:16:12,262][INFO]:   Stats: playtime=0min, achievements=0/0
+[2026-02-11 21:16:12,262][INFO]:   HLTB: main=51.9h, extra=92.9h
+[2026-02-11 21:16:12,264][INFO]:   Calculated tag: none
+[2026-02-11 21:16:12,264][INFO]: [34/96] Completed: Terraria
+[2026-02-11 21:16:13,265][INFO]: [35/96] Syncing: Kingdom Rush Frontiers (458710), playtime=0, achievements=0/0 (0.0%)
+[2026-02-11 21:16:13,271][INFO]:   Stats: playtime=0min, achievements=0/0
+[2026-02-11 21:16:13,271][INFO]:   HLTB: main=10.7h, extra=18.0h
+[2026-02-11 21:16:13,272][INFO]:   Calculated tag: none
+[2026-02-11 21:16:13,272][INFO]: [35/96] Completed: Kingdom Rush Frontiers
+[2026-02-11 21:16:14,274][INFO]: [36/96] Syncing: Botanicula (207690), playtime=0, achievements=0/0 (0.0%)
+[2026-02-11 21:16:14,279][INFO]:   Stats: playtime=0min, achievements=0/0
+[2026-02-11 21:16:14,280][INFO]:   HLTB: main=3.5h, extra=3.8h
+[2026-02-11 21:16:14,281][INFO]:   Calculated tag: none
