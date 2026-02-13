@@ -31,6 +31,7 @@ Thumbs.db
 
 # Logs
 *.log
+logs/
 npm-debug.log*
 
 # Database
@@ -45,3 +46,8 @@ message.txt
 # Temporary
 .tmp/
 temp/
+
+# Dev console scripts (for debugging Steam Deck CEF)
+dev-console-scripts/
+CLAUDE.md
+f

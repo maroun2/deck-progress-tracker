@@ -50,6 +50,7 @@ export interface PluginSettings {
   // Game source settings
   source_installed: boolean;
   source_non_steam: boolean;
+  source_all_owned: boolean;  // Include all owned games (not just installed)
 }
 
 export interface TagStatistics {
@@ -71,6 +72,7 @@ export interface SyncResult {
   success: boolean;
   total?: number;
   synced?: number;
+  new_tags?: number;  // Count of games that got new/changed tags
   errors?: number;
   error_details?: Array<{ appid: string; error: string }>;
   message?: string;

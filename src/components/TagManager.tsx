@@ -120,89 +120,97 @@ export const TagManager: FC<TagManagerProps> = ({ appid, onClose }) => {
   return (
     <div style={styles.modal} onClick={onClose}>
       <div style={styles.content} onClick={(e) => e.stopPropagation()}>
-        <h2 style={styles.title}>Manage Tags: {stats?.game_name || `Game ${appid}`}</h2>
-
-        <div style={styles.section}>
-          <h3 style={styles.sectionTitle}>Game Statistics</h3>
-          {stats && (
-            <>
-              <div style={styles.statRow}>
-                <span>Playtime:</span>
-                <span>{Math.floor(stats.playtime_minutes / 60)}h {stats.playtime_minutes % 60}m</span>
-              </div>
-              <div style={styles.statRow}>
-                <span>Achievements:</span>
-                <span>{stats.unlocked_achievements}/{stats.total_achievements}</span>
-              </div>
-            </>
-          )}
-          {hltb && (
-            <>
-              <div style={styles.statRow}>
-                <span>HLTB Match:</span>
-                <span>{hltb.matched_name} ({(hltb.similarity * 100).toFixed(0)}%)</span>
-              </div>
-              {hltb.main_extra && (
-                <div style={styles.statRow}>
-                  <span>Main+Extra:</span>
-                  <span>{hltb.main_extra}h</span>
-                </div>
-              )}
-            </>
+        {/* Header: Game name with current tag */}
+        <div style={styles.header}>
+          <h2 style={styles.title}>{stats?.game_name || `Game ${appid}`}</h2>
+          {tag?.tag && (
+            <div style={styles.currentTagBadge}>
+              <TagIcon type={tag.tag as any} size={20} />
+              <span style={{ color: TAG_ICON_COLORS[tag.tag as keyof typeof TAG_ICON_COLORS] }}>
+                {tag.tag.replace('_', ' ').toUpperCase()}
+              </span>
+              <span style={styles.tagType}>
+                {tag.is_manual ? '(Manual)' : '(Auto)'}
+              </span>
+            </div>
           )}
         </div>
 
-        <div style={styles.section}>
-          <h3 style={styles.sectionTitle}>Current Tag</h3>
-          <div style={styles.currentTag}>
-            {tag?.tag ? (
+        {/* Main content: Statistics and Tag buttons side by side */}
+        <div style={styles.mainContent}>
+          {/* Left side: Statistics */}
+          <div style={styles.leftColumn}>
+            <h3 style={styles.sectionTitle}>Statistics</h3>
+            {stats && (
               <>
-                <TagIcon type={tag.tag as any} size={24} />
-                <span style={{ color: TAG_ICON_COLORS[tag.tag as keyof typeof TAG_ICON_COLORS] }}>
-                  {tag.tag.replace('_', ' ').toUpperCase()}
-                </span>
-                <span style={styles.tagType}>
-                  {tag.is_manual ? '(Manual)' : '(Automatic)'}
-                </span>
+                <div style={styles.statRow}>
+                  <span>Playtime:</span>
+                  <span>{Math.floor(stats.playtime_minutes / 60)}h {stats.playtime_minutes % 60}m</span>
+                </div>
+                <div style={styles.statRow}>
+                  <span>Achievements:</span>
+                  <span>{stats.unlocked_achievements}/{stats.total_achievements}</span>
+                </div>
               </>
-            ) : (
-              <span style={styles.noTag}>No tag assigned</span>
+            )}
+            {hltb && (
+              <>
+                <div style={styles.statRow}>
+                  <span>HLTB Match:</span>
+                  <span style={styles.hltbMatch}>
+                    {hltb.matched_name} ({Math.round((hltb.similarity || 0) * 100)}%)
+                  </span>
+                </div>
+                {hltb.main_story && (
+                  <div style={styles.statRow}>
+                    <span>Main Story:</span>
+                    <span>{hltb.main_story}h</span>
+                  </div>
+                )}
+              </>
+            )}
+            {!hltb && (
+              <div style={styles.statRow}>
+                <span>HLTB:</span>
+                <span style={styles.noData}>No data</span>
+              </div>
             )}
           </div>
-        </div>
 
-        <div style={styles.section}>
-          <h3 style={styles.sectionTitle}>Set Tag</h3>
-          <div style={styles.tagButtonGroup}>
-            <button
-              onClick={() => setTag('mastered')}
-              style={{ ...styles.tagButton, backgroundColor: TAG_ICON_COLORS.mastered }}
-            >
-              <TagIcon type="mastered" size={20} />
-              <span>Mastered</span>
-            </button>
-            <button
-              onClick={() => setTag('completed')}
-              style={{ ...styles.tagButton, backgroundColor: TAG_ICON_COLORS.completed }}
-            >
-              <TagIcon type="completed" size={20} />
-              <span>Completed</span>
-            </button>
-            <button
-              onClick={() => setTag('in_progress')}
-              style={{ ...styles.tagButton, backgroundColor: TAG_ICON_COLORS.in_progress }}
-            >
-              <TagIcon type="in_progress" size={20} />
-              <span>In Progress</span>
-            </button>
-          </div>
-          <div style={styles.buttonGroup}>
-            <button onClick={resetToAuto} style={styles.secondaryButton}>
-              Reset to Automatic
-            </button>
-            <button onClick={removeTag} style={styles.secondaryButton}>
-              Remove Tag
-            </button>
+          {/* Right side: Tag buttons */}
+          <div style={styles.rightColumn}>
+            <h3 style={styles.sectionTitle}>Set Tag</h3>
+            <div style={styles.tagButtonGroup}>
+              <button
+                onClick={() => setTag('mastered')}
+                style={{ ...styles.tagButton, backgroundColor: TAG_ICON_COLORS.mastered }}
+              >
+                <TagIcon type="mastered" size={18} />
+                <span>Mastered</span>
+              </button>
+              <button
+                onClick={() => setTag('completed')}
+                style={{ ...styles.tagButton, backgroundColor: TAG_ICON_COLORS.completed }}
+              >
+                <TagIcon type="completed" size={18} />
+                <span>Completed</span>
+              </button>
+              <button
+                onClick={() => setTag('in_progress')}
+                style={{ ...styles.tagButton, backgroundColor: TAG_ICON_COLORS.in_progress }}
+              >
+                <TagIcon type="in_progress" size={18} />
+                <span>In Progress</span>
+              </button>
+            </div>
+            <div style={styles.buttonGroup}>
+              <button onClick={resetToAuto} style={styles.secondaryButton}>
+                Reset to Auto
+              </button>
+              <button onClick={removeTag} style={styles.secondaryButton}>
+                Remove
+              </button>
+            </div>
           </div>
         </div>
 
@@ -221,54 +229,84 @@ const styles: Record<string, React.CSSProperties> = {
     bottom: 0,
     backgroundColor: 'rgba(0, 0, 0, 0.8)',
     display: 'flex',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     justifyContent: 'center',
+    paddingTop: '80px',
     zIndex: 10000,
   },
   content: {
     backgroundColor: '#1a1a1a',
     borderRadius: '8px',
     padding: '24px',
-    maxWidth: '600px',
+    maxWidth: '650px',
     width: '90%',
     maxHeight: '80vh',
     overflow: 'auto',
     color: 'white',
   },
+  header: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: '20px',
+    paddingBottom: '16px',
+    borderBottom: '1px solid #333',
+  },
+  currentTagBadge: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: '8px',
+    padding: '6px 12px',
+    backgroundColor: '#252525',
+    borderRadius: '16px',
+    fontSize: '13px',
+    fontWeight: 'bold',
+    width: 'fit-content',
+  },
   title: {
-    margin: '0 0 20px 0',
-    fontSize: '20px',
+    margin: 0,
+    fontSize: '18px',
     fontWeight: 'bold',
   },
-  section: {
+  mainContent: {
+    display: 'flex',
+    gap: '24px',
     marginBottom: '20px',
-    paddingBottom: '20px',
-    borderBottom: '1px solid #333',
+  },
+  leftColumn: {
+    flex: 1,
+    minWidth: 0,
+  },
+  rightColumn: {
+    flex: 1,
+    minWidth: 0,
   },
   sectionTitle: {
     margin: '0 0 12px 0',
-    fontSize: '16px',
+    fontSize: '14px',
     fontWeight: 'bold',
     color: '#aaa',
   },
   statRow: {
     display: 'flex',
     justifyContent: 'space-between',
-    padding: '8px 0',
-    fontSize: '14px',
+    padding: '6px 0',
+    fontSize: '13px',
   },
-  currentTag: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '12px',
-    padding: '12px',
-    backgroundColor: '#252525',
-    borderRadius: '6px',
-    fontSize: '16px',
-    fontWeight: 'bold',
+  hltbMatch: {
+    fontSize: '12px',
+    color: '#888',
+    maxWidth: '120px',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
+  },
+  noData: {
+    color: '#666',
+    fontStyle: 'italic',
   },
   tagType: {
-    fontSize: '12px',
+    fontSize: '11px',
     color: '#888',
     fontWeight: 'normal',
   },
@@ -278,38 +316,36 @@ const styles: Record<string, React.CSSProperties> = {
   },
   buttonGroup: {
     display: 'flex',
-    gap: '8px',
-    marginBottom: '8px',
-    flexWrap: 'wrap',
+    gap: '6px',
   },
   tagButtonGroup: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '8px',
-    marginBottom: '12px',
+    gap: '6px',
+    marginBottom: '10px',
   },
   tagButton: {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: '10px',
-    padding: '14px',
+    gap: '8px',
+    padding: '10px',
     border: 'none',
     borderRadius: '6px',
     color: 'white',
-    fontSize: '15px',
+    fontSize: '13px',
     fontWeight: 'bold',
     cursor: 'pointer',
     transition: 'opacity 0.2s',
   },
   secondaryButton: {
     flex: 1,
-    padding: '10px',
+    padding: '8px',
     backgroundColor: '#444',
     border: 'none',
     borderRadius: '4px',
     color: 'white',
-    fontSize: '13px',
+    fontSize: '12px',
     cursor: 'pointer',
     transition: 'background-color 0.2s',
   },
@@ -323,7 +359,6 @@ const styles: Record<string, React.CSSProperties> = {
     fontSize: '14px',
     fontWeight: 'bold',
     cursor: 'pointer',
-    marginTop: '8px',
   },
   loading: {
     textAlign: 'center',

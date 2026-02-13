@@ -206,50 +206,125 @@ class SteamDataService:
 
         return f"Unknown Game ({appid})"
 
+    async def get_steam_api_key(self) -> Optional[str]:
+        """Get Steam Web API key from settings or environment"""
+        # First check environment variable
+        api_key = os.environ.get('STEAM_API_KEY')
+        if api_key:
+            return api_key
+
+        # TODO: Add support for storing API key in plugin settings
+        # For now, return None - user needs to set STEAM_API_KEY environment variable
+        return None
+
+    async def get_steam_id64(self, user_id: str) -> Optional[str]:
+        """Convert Steam user ID (Steam3 format) to SteamID64
+
+        Steam3 ID is the local account ID (e.g., "12345678")
+        SteamID64 = 76561197960265728 + Steam3 ID
+        """
+        try:
+            steam3_id = int(user_id)
+            # SteamID64 formula for individual accounts in public universe
+            steamid64 = 76561197960265728 + steam3_id
+            return str(steamid64)
+        except (ValueError, TypeError):
+            logger.error(f"Failed to convert user_id {user_id} to SteamID64")
+            return None
+
+    async def get_achievements_from_web_api(self, appid: str, steamid64: str) -> Dict[str, Any]:
+        """Fetch achievements from Steam Web API as fallback
+
+        API: GET https://api.steampowered.com/ISteamUserStats/GetPlayerAchievements/v1/
+        Params: key, steamid, appid
+        """
+        import urllib.request
+        import json as json_lib
+
+        api_key = await self.get_steam_api_key()
+        if not api_key:
+            logger.debug(f"No Steam API key available for Web API fallback")
+            return {"total": 0, "unlocked": 0, "percentage": 0.0}
+
+        try:
+            url = f"https://api.steampowered.com/ISteamUserStats/GetPlayerAchievements/v1/?key={api_key}&steamid={steamid64}&appid={appid}"
+            req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+
+            with urllib.request.urlopen(req, timeout=10) as response:
+                data = json_lib.loads(response.read().decode())
+
+                playerstats = data.get('playerstats', {})
+                if not playerstats.get('success'):
+                    logger.debug(f"Steam Web API returned success=false for appid {appid}")
+                    return {"total": 0, "unlocked": 0, "percentage": 0.0}
+
+                achievements = playerstats.get('achievements', [])
+                if not achievements:
+                    logger.debug(f"No achievements in Web API response for appid {appid}")
+                    return {"total": 0, "unlocked": 0, "percentage": 0.0}
+
+                total = len(achievements)
+                unlocked = sum(1 for ach in achievements if ach.get('achieved') == 1)
+                percentage = (unlocked / total * 100) if total > 0 else 0.0
+
+                logger.info(f"Steam Web API: appid {appid} = {unlocked}/{total} achievements ({percentage:.1f}%)")
+
+                return {
+                    "total": total,
+                    "unlocked": unlocked,
+                    "percentage": round(percentage, 2)
+                }
+
+        except Exception as e:
+            logger.debug(f"Steam Web API request failed for appid {appid}: {e}")
+            return {"total": 0, "unlocked": 0, "percentage": 0.0}
+
     async def get_game_achievements(self, appid: str) -> Dict[str, Any]:
-        """Get achievement progress for a game"""
+        """Get achievement progress for a game
+
+        First tries local stats files, then falls back to Steam Web API if available
+        """
         user_id = await self.get_steam_user_id()
         if not user_id or not self.steam_path:
             return {"total": 0, "unlocked": 0, "percentage": 0.0}
 
-        # Try to get achievements from local stats file
+        # Try to get achievements from local stats file first (fastest)
         stats_path = self.steam_path / "userdata" / user_id / appid / "stats"
 
-        if not stats_path.exists():
-            logger.debug(f"No stats directory for appid {appid}")
-            return {"total": 0, "unlocked": 0, "percentage": 0.0}
+        if stats_path.exists():
+            # Look for achievement files
+            achievement_files = list(stats_path.glob("*.vdf"))
 
-        # Look for achievement files
-        achievement_files = list(stats_path.glob("*.vdf"))
+            if achievement_files:
+                try:
+                    # Parse the first achievement file found
+                    data = load_vdf_file(achievement_files[0])
 
-        if not achievement_files:
-            logger.debug(f"No achievement files for appid {appid}")
-            return {"total": 0, "unlocked": 0, "percentage": 0.0}
+                    # Navigate to achievements
+                    achievements = data.get("stats", {}).get("achievements", {})
 
-        try:
-            # Parse the first achievement file found
-            data = load_vdf_file(achievement_files[0])
+                    if achievements:
+                        total = len(achievements)
+                        unlocked = sum(1 for ach in achievements.values()
+                                      if isinstance(ach, dict) and ach.get("achieved", "0") == "1")
+                        percentage = (unlocked / total * 100) if total > 0 else 0.0
 
-            # Navigate to achievements
-            achievements = data.get("stats", {}).get("achievements", {})
+                        return {
+                            "total": total,
+                            "unlocked": unlocked,
+                            "percentage": round(percentage, 2)
+                        }
 
-            if not achievements:
-                return {"total": 0, "unlocked": 0, "percentage": 0.0}
+                except Exception as e:
+                    logger.error(f"Failed to parse local achievements for {appid}: {e}")
 
-            total = len(achievements)
-            unlocked = sum(1 for ach in achievements.values()
-                          if isinstance(ach, dict) and ach.get("achieved", "0") == "1")
-            percentage = (unlocked / total * 100) if total > 0 else 0.0
+        # Fallback: Try Steam Web API
+        logger.debug(f"No local achievements for {appid}, trying Steam Web API...")
+        steamid64 = await self.get_steam_id64(user_id)
+        if steamid64:
+            return await self.get_achievements_from_web_api(appid, steamid64)
 
-            return {
-                "total": total,
-                "unlocked": unlocked,
-                "percentage": round(percentage, 2)
-            }
-
-        except Exception as e:
-            logger.error(f"Failed to parse achievements for {appid}: {e}")
-            return {"total": 0, "unlocked": 0, "percentage": 0.0}
+        return {"total": 0, "unlocked": 0, "percentage": 0.0}
 
     async def get_library_folders(self) -> List[Path]:
         """Get all Steam library folder paths"""

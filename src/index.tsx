@@ -6,11 +6,12 @@
  */
 
 import { staticClasses } from '@decky/ui';
-import { definePlugin, routerHook } from '@decky/api';
+import { definePlugin, routerHook, toaster } from '@decky/api';
 import React from 'react';
 import { Settings } from './components/Settings';
 import patchLibraryApp from './lib/patchLibraryApp';
 import { syncLibraryWithFrontendData } from './lib/syncUtils';
+import { startAchievementCacheWatcher, stopAchievementCacheWatcher } from './lib/achievementCacheWatcher';
 
 // Debug logging helper
 const log = (msg: string, data?: any) => {
@@ -39,6 +40,10 @@ export default definePlugin(() => {
     log('Failed to register library app patch:', error);
   }
 
+  // Start achievement cache watcher (monitors when user views "Your Stuff" tab)
+  log('Starting achievement cache watcher');
+  startAchievementCacheWatcher();
+
   // Trigger sync with frontend data (replaces backend auto-sync)
   // This uses Steam's frontend API for real-time playtime and achievement data
   log('Triggering initial sync with frontend data...');
@@ -46,6 +51,21 @@ export default definePlugin(() => {
     try {
       const result = await syncLibraryWithFrontendData();
       log('Initial sync result:', result);
+
+      // Show toast notification when initial sync completes
+      // Use new_tags count from backend for accurate notification
+      if (result.success && result.synced && result.synced > 0) {
+        const newTags = result.new_tags || 0;
+        const message = newTags > 0
+          ? `Synced ${result.synced} games. ${newTags} new tag${newTags > 1 ? 's' : ''} added!`
+          : `Synced ${result.synced} games. Open plugin to see your library.`;
+
+        toaster.toast({
+          title: 'Game Progress Tracker',
+          body: message,
+          duration: 5000,
+        });
+      }
     } catch (err) {
       log('Initial sync failed:', err);
     }
@@ -68,6 +88,10 @@ export default definePlugin(() => {
     ),
     onDismount() {
       log('=== Plugin dismounting ===');
+
+      // Stop achievement cache watcher
+      stopAchievementCacheWatcher();
+
       // Clean up patches when plugin is unloaded
       if (libraryPatch) {
         try {

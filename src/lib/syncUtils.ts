@@ -53,9 +53,173 @@ export interface SyncResult {
   success: boolean;
   total?: number;
   synced?: number;
+  new_tags?: number;  // Count of games that got new/changed tags
   errors?: number;
   error?: string;
 }
+
+/**
+ * Get all owned game appids from Steam's frontend API
+ * This includes both installed and uninstalled games
+ * Uses window.appStore which has access to the full library
+ */
+export const getAllOwnedGameIds = async (): Promise<string[]> => {
+  log('getAllOwnedGameIds: Discovering all owned games from Steam frontend...');
+
+  const appStore = (window as any).appStore;
+
+  if (!appStore) {
+    log('appStore not available');
+    return [];
+  }
+
+  // Log available properties for debugging
+  const appStoreKeys = Object.keys(appStore);
+  log('appStore keys:', appStoreKeys.join(', '));
+
+  // Also log prototype methods
+  try {
+    const protoKeys = Object.getOwnPropertyNames(Object.getPrototypeOf(appStore));
+    log('appStore prototype methods:', protoKeys.slice(0, 30).join(', '));
+  } catch (e) {
+    log('Could not get appStore prototype');
+  }
+
+  // Try multiple known patterns for Steam's internal app storage
+  // Pattern 1: m_mapApps (Map of all apps)
+  if (appStore.m_mapApps instanceof Map) {
+    const appids = Array.from(appStore.m_mapApps.keys()).map((id: any) => String(id));
+    log(`Found ${appids.length} games via m_mapApps Map`);
+    return appids.filter((id: string) => parseInt(id) > 0);
+  }
+
+  // Pattern 2: allApps property
+  if (appStore.allApps) {
+    if (appStore.allApps instanceof Map) {
+      const appids = Array.from(appStore.allApps.keys()).map((id: any) => String(id));
+      log(`Found ${appids.length} games via allApps Map`);
+      return appids.filter((id: string) => parseInt(id) > 0);
+    }
+    if (Array.isArray(appStore.allApps)) {
+      const appids = appStore.allApps.map((app: any) => String(app.appid || app.app_id || app));
+      log(`Found ${appids.length} games via allApps Array`);
+      return appids.filter((id: string) => parseInt(id) > 0);
+    }
+  }
+
+  // Pattern 3: m_apps object
+  if (appStore.m_apps && typeof appStore.m_apps === 'object') {
+    if (appStore.m_apps instanceof Map) {
+      const appids = Array.from(appStore.m_apps.keys()).map((id: any) => String(id));
+      log(`Found ${appids.length} games via m_apps Map`);
+      return appids.filter((id: string) => parseInt(id) > 0);
+    }
+    const appids = Object.keys(appStore.m_apps);
+    log(`Found ${appids.length} games via m_apps Object`);
+    return appids.filter((id: string) => parseInt(id) > 0);
+  }
+
+  // Pattern 4: Try GetAllAppOverviews method (common Steam pattern)
+  if (typeof appStore.GetAllAppOverviews === 'function') {
+    try {
+      const overviews = appStore.GetAllAppOverviews();
+      if (Array.isArray(overviews)) {
+        const appids = overviews.map((o: any) => String(o.appid || o.app_id || o.nAppID));
+        log(`Found ${appids.length} games via GetAllAppOverviews`);
+        return appids.filter((id: string) => parseInt(id) > 0);
+      }
+    } catch (e) {
+      log('GetAllAppOverviews failed:', e);
+    }
+  }
+
+  // Pattern 5: Try iterating appStore.GetAppOverviewByAppID with known appids
+  // This won't work for discovery, but let's check what methods exist
+
+  // Pattern 6: Try collectionStore
+  const collectionStore = (window as any).collectionStore;
+  if (collectionStore) {
+    const collectionKeys = Object.keys(collectionStore);
+    log('collectionStore keys:', collectionKeys.join(', '));
+
+    // Try GetUserOwnedApps method
+    if (typeof collectionStore.GetUserOwnedApps === 'function') {
+      try {
+        const apps = collectionStore.GetUserOwnedApps();
+        if (apps && apps.length > 0) {
+          log(`Found ${apps.length} games via GetUserOwnedApps`);
+          return apps.map((id: any) => String(id)).filter((id: string) => parseInt(id) > 0);
+        }
+      } catch (e) {
+        log('GetUserOwnedApps failed:', e);
+      }
+    }
+
+    // Try ownedAppsCollection
+    if (collectionStore.ownedAppsCollection) {
+      const apps = Array.isArray(collectionStore.ownedAppsCollection)
+        ? collectionStore.ownedAppsCollection
+        : Array.from(collectionStore.ownedAppsCollection);
+      log(`Found ${apps.length} games via ownedAppsCollection`);
+      return apps.map((id: any) => String(id)).filter((id: string) => parseInt(id) > 0);
+    }
+
+    // Try allGamesCollection
+    if (collectionStore.allGamesCollection) {
+      const apps = Array.isArray(collectionStore.allGamesCollection)
+        ? collectionStore.allGamesCollection
+        : Array.from(collectionStore.allGamesCollection);
+      log(`Found ${apps.length} games via allGamesCollection`);
+      return apps.map((id: any) => String(id)).filter((id: string) => parseInt(id) > 0);
+    }
+
+    // Try userCollections
+    if (collectionStore.userCollections) {
+      log('userCollections keys:', Object.keys(collectionStore.userCollections).join(', '));
+    }
+
+    // Try allAppsCollection
+    if (collectionStore.allAppsCollection) {
+      try {
+        const apps = Array.isArray(collectionStore.allAppsCollection)
+          ? collectionStore.allAppsCollection
+          : (collectionStore.allAppsCollection.apps || Array.from(collectionStore.allAppsCollection));
+        if (apps && apps.length > 0) {
+          log(`Found ${apps.length} games via allAppsCollection`);
+          return apps.map((id: any) => String(id.appid || id)).filter((id: string) => parseInt(id) > 0);
+        }
+      } catch (e) {
+        log('allAppsCollection access failed:', e);
+      }
+    }
+  }
+
+  // Pattern 7: Try SteamClient global
+  const steamClient = (window as any).SteamClient;
+  if (steamClient) {
+    log('SteamClient available, checking for apps...');
+    if (steamClient.Apps) {
+      const appsKeys = Object.keys(steamClient.Apps);
+      log('SteamClient.Apps keys:', appsKeys.slice(0, 20).join(', '));
+
+      if (typeof steamClient.Apps.GetAllApps === 'function') {
+        try {
+          const apps = await steamClient.Apps.GetAllApps();
+          if (apps && apps.length > 0) {
+            log(`Found ${apps.length} games via SteamClient.Apps.GetAllApps`);
+            return apps.map((a: any) => String(a.appid || a)).filter((id: string) => parseInt(id) > 0);
+          }
+        } catch (e) {
+          log('SteamClient.Apps.GetAllApps failed:', e);
+        }
+      }
+    }
+  }
+
+  log('Could not discover all owned games - no matching API pattern found');
+  log('Please check console output for available APIs and report to developer');
+  return [];
+};
 
 /**
  * Get achievement data for a list of appids from Steam's frontend API
@@ -64,7 +228,7 @@ export interface SyncResult {
 export const getAchievementData = async (appids: string[]): Promise<Record<string, AchievementData>> => {
   log(`getAchievementData called with ${appids.length} appids`);
   const achievementMap: Record<string, AchievementData> = {};
-  const defaultData: AchievementData = { total: 0, unlocked: 0, percentage: 0, all_unlocked: false };
+  // NOTE: We do NOT set default 0/0 data - only return entries with actual data
 
   // Access Steam's global achievement progress cache
   const achievementCache = (window as any).appAchievementProgressCache;
@@ -93,25 +257,25 @@ export const getAchievementData = async (appids: string[]): Promise<Record<strin
     try {
       const entry = mapCache.get(parseInt(appid));
 
-      if (entry) {
-        // entry has: { appid, unlocked, total, percentage, all_unlocked, cache_time, vetted }
+      // Only store if we have actual achievement data (total > 0)
+      // Don't store 0/0 which would overwrite potentially valid data
+      if (entry && entry.total > 0) {
         achievementMap[appid] = {
-          total: entry.total || 0,
+          total: entry.total,
           unlocked: entry.unlocked || 0,
           percentage: entry.percentage || 0,
           all_unlocked: entry.all_unlocked || false
         };
         successCount++;
-        if (entry.total > 0) withAchievements++;
+        withAchievements++;
 
         if (sampleLogs.length < 5) {
           sampleLogs.push(`appid ${appid}: ${entry.unlocked}/${entry.total} (${entry.percentage.toFixed(1)}%)`);
         }
-      } else {
-        achievementMap[appid] = { ...defaultData };
       }
+      // If no entry or total=0, don't add to map - backend will preserve existing data
     } catch (e: any) {
-      achievementMap[appid] = { ...defaultData };
+      // Don't add anything on error - preserve existing data
     }
   }
 
@@ -119,7 +283,7 @@ export const getAchievementData = async (appids: string[]): Promise<Record<strin
   for (const logMsg of sampleLogs) {
     log(`Achievement sample - ${logMsg}`);
   }
-  log(`getAchievementData: found ${successCount} entries, ${withAchievements} with achievements`);
+  log(`getAchievementData: found ${successCount} entries with achievements`);
 
   return achievementMap;
 };
@@ -178,85 +342,292 @@ export const getPlaytimeData = async (appids: string[]): Promise<Record<string, 
 };
 
 /**
- * Sync library with frontend data (playtime + achievements from Steam API)
- * This is the main sync function that should be used instead of backend-only sync
+ * Get game names for a list of appids from Steam's frontend API
+ * Uses window.appStore.GetAppOverviewByAppID which has the display_name property
+ * This works for ALL owned games, even uninstalled ones
  */
-/**
- * Sync a single game with frontend data (playtime + achievements)
- * Called when viewing a game's detail page to get latest data
- */
-export const syncSingleGameWithFrontendData = async (appid: string): Promise<{ success: boolean; error?: string }> => {
-  log(`Syncing single game: ${appid}`);
+export const getGameNames = async (appids: string[]): Promise<Record<string, string>> => {
+  log(`getGameNames called with ${appids.length} appids`);
+  const nameMap: Record<string, string> = {};
 
-  try {
-    // Get playtime from Steam frontend API
-    const playtimeData = await getPlaytimeData([appid]);
-    const playtime = playtimeData[appid] || 0;
+  // Access Steam's global appStore
+  const appStore = (window as any).appStore;
 
-    // Get achievements from Steam frontend API
-    const achievementData = await getAchievementData([appid]);
-    const achievements = achievementData[appid] || { total: 0, unlocked: 0, percentage: 0, all_unlocked: false };
-
-    log(`Game ${appid}: playtime=${playtime}min, achievements=${achievements.unlocked}/${achievements.total} (${achievements.percentage.toFixed(1)}%)`);
-
-    // Send to backend for processing
-    const result = await call<[{ playtime_data: Record<string, number>; achievement_data: Record<string, AchievementData> }], SyncResult>(
-      'sync_library_with_playtime',
-      {
-        playtime_data: { [appid]: playtime },
-        achievement_data: { [appid]: achievements }
-      }
-    );
-
-    log(`Single game sync complete: success=${result.success}`);
-    return { success: result.success, error: result.error };
-
-  } catch (e: any) {
-    log(`Single game sync failed: ${e?.message}`);
-    return { success: false, error: e?.message || 'Unknown error' };
+  if (!appStore) {
+    log('appStore not available - cannot get game names!');
+    return nameMap;
   }
+
+  let successCount = 0;
+  let failCount = 0;
+  const sampleLogs: string[] = [];
+
+  for (const appid of appids) {
+    try {
+      const overview = appStore.GetAppOverviewByAppID(parseInt(appid));
+      if (overview && overview.display_name) {
+        nameMap[appid] = overview.display_name;
+        successCount++;
+
+        if (sampleLogs.length < 5) {
+          sampleLogs.push(`appid ${appid}: "${overview.display_name}"`);
+        }
+      } else {
+        failCount++;
+        // Don't set anything - backend will use fallback
+      }
+    } catch (e) {
+      failCount++;
+    }
+  }
+
+  // Log results
+  for (const logMsg of sampleLogs) {
+    log(`Game name sample - ${logMsg}`);
+  }
+  log(`getGameNames results: success=${successCount}, failed=${failCount}`);
+
+  return nameMap;
 };
 
-export const syncLibraryWithFrontendData = async (): Promise<SyncResult> => {
-  log('Starting sync with frontend data...');
+/**
+ * Get achievement data with fallback: cache first, then API call
+ * Unified function for fetching achievement data that tries cache first,
+ * then falls back to calling SteamClient.Apps.GetMyAchievementsForApp
+ *
+ * @param appids List of appids to get achievement data for
+ * @returns Map of appid -> achievement data (only includes games with achievements)
+ */
+export const getAchievementDataWithFallback = async (appids: string[]): Promise<Record<string, AchievementData>> => {
+  log(`Getting achievements for ${appids.length} games (cache + API fallback)`);
+
+  // Step 1: Try cache first (fast path)
+  const cacheData = await getAchievementData(appids);
+  const achievementMap: Record<string, AchievementData> = { ...cacheData };
+
+  // Find appids not in cache
+  const missingAppids = appids.filter(appid => !achievementMap[appid]);
+
+  if (missingAppids.length === 0) {
+    log(`All ${appids.length} games found in cache`);
+    return achievementMap;
+  }
+
+  log(`Cache: ${Object.keys(cacheData).length}/${appids.length}, fetching ${missingAppids.length} via API`);
+
+  // Step 2: For missing appids, try API with 5s timeout
+  const steamClient = (window as any).SteamClient;
+  if (!steamClient?.Apps?.GetMyAchievementsForApp) {
+    log(`API not available, returning cache data only`);
+    return achievementMap;
+  }
+
+  let apiFetched = 0;
+  let apiErrors = 0;
+
+  for (const appid of missingAppids) {
+    try {
+      const promise = steamClient.Apps.GetMyAchievementsForApp(appid);
+
+      if (promise && typeof promise.then === 'function') {
+        const timeoutPromise = new Promise<never>((_, reject) => {
+          setTimeout(() => reject(new Error('Timeout')), 5000);
+        });
+
+        const result = await Promise.race([promise, timeoutPromise]);
+
+        if (result && (result as any).result === 1 && (result as any).data?.rgAchievements) {
+          const achievements = (result as any).data.rgAchievements;
+          const total = achievements.length;
+          const unlocked = achievements.filter((a: any) => a.bAchieved).length;
+          const percentage = total > 0 ? (unlocked / total) * 100 : 0;
+
+          achievementMap[appid] = {
+            total,
+            unlocked,
+            percentage,
+            all_unlocked: total > 0 && unlocked === total
+          };
+
+          apiFetched++;
+          log(`${appid}: ${unlocked}/${total} (${percentage.toFixed(1)}%)`);
+        }
+      }
+    } catch (e: any) {
+      apiErrors++;
+      // Continue to next appid
+    }
+  }
+
+  log(`API fetch complete: ${apiFetched} success, ${apiErrors} errors`);
+  return achievementMap;
+};
+
+/**
+ * Fetch achievement data on-demand using SteamClient.Apps.GetMyAchievementsForApp
+ *
+ * This uses Steam's internal API that fetches achievement data from Steam servers,
+ * which works even for uninstalled games or games not in the frontend cache.
+ */
+export const fetchAchievementsOnDemand = async (appid: string): Promise<AchievementData | null> => {
+  log(`Fetching achievements on-demand for ${appid}`);
+
+  // First check if already in cache (fastest path)
+  const achievementCache = (window as any).appAchievementProgressCache;
+  const mapCache = achievementCache?.m_achievementProgress?.mapCache;
+
+  if (mapCache) {
+    const existing = mapCache.get(parseInt(appid));
+    if (existing && existing.total > 0) {
+      log(`${appid}: found in cache (${existing.unlocked}/${existing.total})`);
+      return {
+        total: existing.total,
+        unlocked: existing.unlocked || 0,
+        percentage: existing.percentage || 0,
+        all_unlocked: existing.all_unlocked || false
+      };
+    }
+  }
+
+  // Try SteamClient.Apps.GetMyAchievementsForApp with timeout
+  const steamClient = (window as any).SteamClient;
+
+  if (steamClient?.Apps?.GetMyAchievementsForApp) {
+    try {
+      // IMPORTANT: Must pass appid as STRING (not number) for API to work
+      const promise = steamClient.Apps.GetMyAchievementsForApp(appid);
+
+      if (promise && typeof promise.then === 'function') {
+        const timeoutPromise = new Promise<never>((_, reject) => {
+          setTimeout(() => reject(new Error('Timeout')), 5000);
+        });
+
+        const result = await Promise.race([promise, timeoutPromise]);
+
+        // Check for result structure: { result: 1, data: { rgAchievements: [...] } }
+        if (result && (result as any).result === 1 && (result as any).data?.rgAchievements) {
+          const achievements = (result as any).data.rgAchievements;
+          const total = achievements.length;
+          const unlocked = achievements.filter((a: any) => a.bAchieved).length;
+          const percentage = total > 0 ? (unlocked / total) * 100 : 0;
+
+          log(`${appid}: fetched via API (${unlocked}/${total})`);
+
+          return {
+            total,
+            unlocked,
+            percentage,
+            all_unlocked: total > 0 && unlocked === total
+          };
+        }
+      }
+    } catch (e: any) {
+      log(`${appid}: API fetch failed - ${e?.message}`);
+    }
+  }
+
+  // Return null so backend can try Steam Web API
+  return null;
+};
+
+/**
+ * Core sync helper: sync games with frontend data
+ * Unified function used by both single-game and bulk sync
+ * Uses cache + API fallback for achievements
+ *
+ * @param appids List of appids to sync
+ * @returns Sync result from backend
+ */
+const syncGames = async (appids: string[]): Promise<SyncResult> => {
+  log(`Syncing ${appids.length} games`);
 
   try {
-    // Step 1: Get game list from backend
-    log('Step 1: Getting game list from backend...');
-    const gamesResult = await call<[], GameListResult>('get_all_games');
-
-    if (!gamesResult.success || !gamesResult.games) {
-      log('Failed to get game list:', gamesResult.error);
-      return { success: false, error: gamesResult.error || 'Failed to get game list' };
-    }
-
-    const appids = gamesResult.games.map(g => g.appid);
-    log(`Got ${appids.length} games from backend`);
-
-    // Step 2: Get playtime from Steam frontend API
-    log('Step 2: Getting playtime data...');
+    // Step 1: Get playtime data
     const playtimeData = await getPlaytimeData(appids);
-    const gamesWithPlaytime = Object.values(playtimeData).filter(v => v > 0).length;
-    log(`Got playtime for ${gamesWithPlaytime}/${appids.length} games`);
+    const withPlaytime = Object.values(playtimeData).filter(v => v > 0).length;
+    log(`Playtime: ${withPlaytime}/${appids.length} games`);
 
-    // Step 3: Get achievements from Steam frontend API
-    log('Step 3: Getting achievement data...');
-    const achievementData = await getAchievementData(appids);
-    const gamesWithAchievements = Object.values(achievementData).filter(v => v.total > 0).length;
-    log(`Got achievements for ${gamesWithAchievements}/${appids.length} games`);
+    // Step 2: Get achievement data (cache + API fallback)
+    const achievementData = await getAchievementDataWithFallback(appids);
+    const withAchievements = Object.keys(achievementData).length;
+    log(`Achievements: ${withAchievements}/${appids.length} games`);
 
-    // Step 4: Send to backend for processing
-    log('Step 4: Sending to backend for sync...');
-    const result = await call<[{ playtime_data: Record<string, number>; achievement_data: Record<string, AchievementData> }], SyncResult>(
+    // Step 3: Get game names
+    const gameNames = await getGameNames(appids);
+    log(`Names: ${Object.keys(gameNames).length}/${appids.length} games`);
+
+    // Step 4: Send to backend
+    const result = await call<[{ playtime_data: Record<string, number>; achievement_data: Record<string, AchievementData>; game_names: Record<string, string> }], SyncResult>(
       'sync_library_with_playtime',
-      { playtime_data: playtimeData, achievement_data: achievementData }
+      { playtime_data: playtimeData, achievement_data: achievementData, game_names: gameNames }
     );
 
     log(`Sync complete: ${result.synced}/${result.total} games, ${result.errors || 0} errors`);
     return result;
 
   } catch (e: any) {
-    log('Sync failed with exception:', e);
+    log(`Sync failed: ${e?.message}`);
+    return { success: false, error: e?.message || 'Unknown error' };
+  }
+};
+
+/**
+ * Sync a single game with frontend data (playtime + achievements)
+ * Called when viewing a game's detail page to get latest data
+ * Uses cache + API fallback for achievements
+ */
+export const syncSingleGameWithFrontendData = async (appid: string): Promise<{ success: boolean; error?: string }> => {
+  log(`Syncing single game: ${appid}`);
+
+  const result = await syncGames([appid]);
+
+  return { success: result.success, error: result.error };
+};
+
+export const syncLibraryWithFrontendData = async (): Promise<SyncResult> => {
+  log('Starting library sync');
+
+  try {
+    // Get settings
+    const settingsResult = await call<[], { settings: { source_all_owned?: boolean } }>('get_settings');
+    const useAllOwned = settingsResult?.settings?.source_all_owned ?? true;
+    log(`Source: ${useAllOwned ? 'all owned games' : 'installed only'}`);
+
+    // Get game list
+    let appids: string[];
+
+    if (useAllOwned) {
+      appids = await getAllOwnedGameIds();
+      log(`Discovered ${appids.length} owned games`);
+
+      // Fallback to backend if discovery fails
+      if (appids.length === 0) {
+        log('Discovery failed, using backend list');
+        const gamesResult = await call<[], GameListResult>('get_all_games');
+        if (gamesResult.success && gamesResult.games) {
+          appids = gamesResult.games.map(g => g.appid);
+          log(`Backend: ${appids.length} games`);
+        }
+      }
+    } else {
+      const gamesResult = await call<[], GameListResult>('get_all_games');
+      if (!gamesResult.success || !gamesResult.games) {
+        return { success: false, error: gamesResult.error || 'Failed to get game list' };
+      }
+      appids = gamesResult.games.map(g => g.appid);
+      log(`Backend: ${appids.length} games`);
+    }
+
+    if (appids.length === 0) {
+      log('No games found');
+      return { success: true, total: 0, synced: 0, errors: 0 };
+    }
+
+    // Use syncGames helper (cache + API fallback)
+    return await syncGames(appids);
+
+  } catch (e: any) {
+    log(`Library sync failed: ${e?.message}`);
     return { success: false, error: e?.message || 'Unknown error' };
   }
 };

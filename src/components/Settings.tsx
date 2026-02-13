@@ -4,11 +4,11 @@
  */
 
 import React, { FC, useState, useEffect } from 'react';
-import { call } from '@decky/api';
+import { call, toaster } from '@decky/api';
 import { Navigation } from '@decky/ui';
 import { PluginSettings, SyncResult, TagStatistics, TaggedGame, GameListResult } from '../types';
 import { TagIcon, TagType } from './TagIcon';
-import { getAchievementData, getPlaytimeData, AchievementData } from '../lib/syncUtils';
+import { getAchievementData, getPlaytimeData, getGameNames, getAllOwnedGameIds, AchievementData } from '../lib/syncUtils';
 
 /**
  * Log to both console and backend (for debugging without CEF)
@@ -38,6 +38,7 @@ export const Settings: FC = () => {
     cache_ttl: 7200,
     source_installed: true,
     source_non_steam: true,
+    source_all_owned: true,
   });
   const [stats, setStats] = useState<TagStatistics | null>(null);
   const [loading, setLoading] = useState(false);
@@ -59,10 +60,64 @@ export const Settings: FC = () => {
   // Settings section state
   const [showSettings, setShowSettings] = useState(false);
 
+  // Track previous data to avoid unnecessary re-renders (prevents UI flashing)
+  const prevStatsRef = React.useRef<string>('');
+  const prevGamesRef = React.useRef<string>('');
+
+  // Smart update function that only updates UI if data changed
+  const smartUpdateUI = async () => {
+    try {
+      // Fetch stats
+      const statsResult = await call<[], { success: boolean; stats: TagStatistics }>('get_tag_statistics');
+      if (statsResult.success && statsResult.stats) {
+        const newStatsStr = JSON.stringify(statsResult.stats);
+        if (newStatsStr !== prevStatsRef.current) {
+          prevStatsRef.current = newStatsStr;
+          setStats(statsResult.stats);
+        }
+      }
+
+      // Fetch games
+      const gamesResult = await call<[], { success: boolean; games: TaggedGame[] }>('get_all_tags_with_names');
+      if (gamesResult.success && gamesResult.games) {
+        const newGamesStr = JSON.stringify(gamesResult.games.map(g => g.appid).sort());
+        if (newGamesStr !== prevGamesRef.current) {
+          const prevCount = prevGamesRef.current ? JSON.parse(prevGamesRef.current).length : 0;
+          const newCount = gamesResult.games.length;
+          const newGamesCount = newCount - prevCount;
+
+          prevGamesRef.current = newGamesStr;
+          setTaggedGames(gamesResult.games);
+
+          // Show toast if new games were discovered (and we had previous data)
+          if (prevCount > 0 && newGamesCount > 0) {
+            toaster.toast({
+              title: 'New Games Tagged',
+              body: `${newGamesCount} new game${newGamesCount > 1 ? 's' : ''} discovered!`,
+              duration: 3000,
+            });
+          }
+        }
+      }
+    } catch (err) {
+      // Silently fail
+    }
+  };
+
   useEffect(() => {
     loadSettings();
-    loadStats();
-    loadTaggedGames();  // Always load on mount
+    // Initial load - force update
+    loadStats().then(() => {
+      if (stats) prevStatsRef.current = JSON.stringify(stats);
+    });
+    loadTaggedGames().then(() => {
+      if (taggedGames.length > 0) prevGamesRef.current = JSON.stringify(taggedGames.map(g => g.appid).sort());
+    });
+
+    // Poll every 10 seconds for updates (from background sync or other sources)
+    const pollInterval = setInterval(smartUpdateUI, 10000);
+
+    return () => clearInterval(pollInterval);
   }, []);
 
   const loadSettings = async () => {
@@ -160,19 +215,43 @@ export const Settings: FC = () => {
       setSyncing(true);
       setMessage('Fetching game list...');
 
-      // Step 1: Get all game appids from backend
-      await logToBackend('info', 'Step 1: Calling backend get_all_games...');
-      const gamesResult = await call<[], GameListResult>('get_all_games');
-      await logToBackend('info', `get_all_games response: ${JSON.stringify(gamesResult).slice(0, 500)}`);
+      let appids: string[];
 
-      if (!gamesResult.success || !gamesResult.games) {
-        await logToBackend('error', `get_all_games failed: ${gamesResult.error}`);
-        showMessage(`Failed to get game list: ${gamesResult.error || 'Unknown error'}`);
-        return;
+      // Check if we should use all owned games from frontend or backend discovery
+      if (settings.source_all_owned) {
+        // Step 1: Get all owned games from Steam frontend API
+        await logToBackend('info', 'Step 1: Getting ALL owned games from Steam frontend API...');
+        appids = await getAllOwnedGameIds();
+        await logToBackend('info', `getAllOwnedGameIds returned ${appids.length} games`);
+
+        if (appids.length === 0) {
+          await logToBackend('warn', 'Frontend discovery returned 0 games, falling back to backend...');
+          const gamesResult = await call<[], GameListResult>('get_all_games');
+          if (gamesResult.success && gamesResult.games) {
+            appids = gamesResult.games.map(g => g.appid);
+            await logToBackend('info', `Backend fallback: Got ${appids.length} games`);
+          } else {
+            await logToBackend('error', `Both frontend and backend discovery failed`);
+            showMessage('Failed to discover games. Please try again.');
+            return;
+          }
+        }
+      } else {
+        // Step 1: Get game appids from backend (installed games only)
+        await logToBackend('info', 'Step 1: Calling backend get_all_games...');
+        const gamesResult = await call<[], GameListResult>('get_all_games');
+        await logToBackend('info', `get_all_games response: ${JSON.stringify(gamesResult).slice(0, 500)}`);
+
+        if (!gamesResult.success || !gamesResult.games) {
+          await logToBackend('error', `get_all_games failed: ${gamesResult.error}`);
+          showMessage(`Failed to get game list: ${gamesResult.error || 'Unknown error'}`);
+          return;
+        }
+
+        appids = gamesResult.games.map(g => g.appid);
       }
 
-      const appids = gamesResult.games.map(g => g.appid);
-      await logToBackend('info', `Step 1 complete: Got ${appids.length} games from backend`);
+      await logToBackend('info', `Step 1 complete: Got ${appids.length} games`);
       await logToBackend('info', `First 5 appids: ${appids.slice(0, 5).join(', ')}`);
       await logToBackend('info', `Appid types: ${appids.slice(0, 5).map(a => typeof a).join(', ')}`);
 
@@ -198,26 +277,83 @@ export const Settings: FC = () => {
       const achievementSample = Object.entries(achievementData).slice(0, 5);
       await logToBackend('info', `Sample achievement data: ${JSON.stringify(achievementSample)}`);
 
-      // Step 3: Sync with playtime and achievement data
-      await logToBackend('info', 'Step 3: Calling backend sync_library_with_playtime...');
-      await logToBackend('info', `Sending ${Object.keys(playtimeData).length} playtime entries and ${Object.keys(achievementData).length} achievement entries to backend`);
-      setMessage('Syncing library... This may take several minutes.');
-      const result = await call<[{ playtime_data: Record<string, number>; achievement_data: Record<string, AchievementData> }], SyncResult>(
-        'sync_library_with_playtime',
-        { playtime_data: playtimeData, achievement_data: achievementData }
-      );
-      await logToBackend('info', `Step 3 complete - sync result: ${JSON.stringify(result)}`);
+      // Step 2.6: Get game names from Steam frontend API (works for uninstalled games too!)
+      await logToBackend('info', 'Step 2.6: Getting game names from Steam frontend API...');
+      setMessage(`Getting game names for ${appids.length} games...`);
+      const gameNames = await getGameNames(appids);
+      await logToBackend('info', `Step 2.6 complete: Got names for ${Object.keys(gameNames).length}/${appids.length} games`);
 
-      if (result.success) {
-        showMessage(
-          `Sync complete! ${result.synced}/${result.total} games synced. ` +
-          (result.errors ? `${result.errors} errors.` : '')
+      // Step 3: Sync in batches - backend tracks new tags for notifications
+      await logToBackend('info', 'Step 3: Syncing in batches...');
+
+      const BATCH_SIZE = 50; // Process 50 games at a time
+      let totalSynced = 0;
+      let totalNewTags = 0;
+      let totalErrors = 0;
+
+      for (let i = 0; i < appids.length; i += BATCH_SIZE) {
+        const batchAppids = appids.slice(i, i + BATCH_SIZE);
+        const batchNum = Math.floor(i / BATCH_SIZE) + 1;
+        const totalBatches = Math.ceil(appids.length / BATCH_SIZE);
+
+        setMessage(`Syncing batch ${batchNum}/${totalBatches} (${i + 1}-${Math.min(i + BATCH_SIZE, appids.length)} of ${appids.length})...`);
+        await logToBackend('info', `Syncing batch ${batchNum}/${totalBatches}: ${batchAppids.length} games`);
+
+        // Get data for this batch only
+        const batchPlaytime: Record<string, number> = {};
+        const batchAchievements: Record<string, AchievementData> = {};
+        const batchNames: Record<string, string> = {};
+
+        for (const appid of batchAppids) {
+          batchPlaytime[appid] = playtimeData[appid] || 0;
+          batchAchievements[appid] = achievementData[appid] || { total: 0, unlocked: 0, percentage: 0, all_unlocked: false };
+          if (gameNames[appid]) {
+            batchNames[appid] = gameNames[appid];
+          }
+        }
+
+        const result = await call<[{ playtime_data: Record<string, number>; achievement_data: Record<string, AchievementData>; game_names: Record<string, string> }], SyncResult>(
+          'sync_library_with_playtime',
+          { playtime_data: batchPlaytime, achievement_data: batchAchievements, game_names: batchNames }
         );
-        await loadStats();
-        await loadTaggedGames();
-      } else {
-        showMessage(`Sync failed: ${result.error}`);
+
+        if (result.success) {
+          totalSynced += result.synced || 0;
+          totalNewTags += result.new_tags || 0;
+          totalErrors += result.errors || 0;
+
+          // Update UI after each batch
+          await smartUpdateUI();
+
+          await logToBackend('info', `Batch ${batchNum} complete: ${result.synced} synced, ${result.new_tags || 0} new tags, ${result.errors || 0} errors`);
+
+          // Show toast for new tags in this batch (if any and not first batch)
+          if (batchNum > 1 && result.new_tags && result.new_tags > 0) {
+            toaster.toast({
+              title: 'New Games Tagged',
+              body: `${result.new_tags} new game${result.new_tags > 1 ? 's' : ''} tagged!`,
+              duration: 3000,
+            });
+          }
+        } else {
+          await logToBackend('error', `Batch ${batchNum} failed: ${result.error}`);
+          totalErrors += batchAppids.length;
+        }
       }
+
+      await logToBackend('info', `Step 3 complete: ${totalSynced}/${appids.length} synced, ${totalNewTags} new tags, ${totalErrors} errors`);
+
+      const syncMessage = `Sync complete! ${totalSynced}/${appids.length} games synced.` +
+        (totalNewTags > 0 ? ` ${totalNewTags} new tags.` : '') +
+        (totalErrors ? ` ${totalErrors} errors.` : '');
+      showMessage(syncMessage);
+
+      // Show final toast notification
+      toaster.toast({
+        title: 'Game Progress Tracker',
+        body: syncMessage,
+        duration: 5000,
+      });
     } catch (err: any) {
       console.error('[GameProgressTracker] Error syncing library:', err);
       showMessage(`Sync error: ${err?.message || 'Unknown error'}`);
@@ -272,8 +408,6 @@ export const Settings: FC = () => {
 
   return (
     <div style={styles.container}>
-      <h2 style={styles.title}>Game Progress Tracker</h2>
-
       {message && (
         <div style={styles.message}>{message}</div>
       )}
@@ -368,120 +502,11 @@ export const Settings: FC = () => {
         </div>
       </div>
 
-      {/* Settings - collapsible */}
-      <div style={styles.section}>
-        <button
-          onClick={() => setShowSettings(!showSettings)}
-          style={styles.expandButton}
-        >
-          {showSettings ? '- Hide' : '+ Show'} Settings
-        </button>
-
-        {showSettings && (
-          <div style={styles.settingsContainer}>
-            {/* Auto-tagging Settings */}
-            <div style={styles.settingGroup}>
-              <h4 style={styles.settingGroupTitle}>Automatic Tagging</h4>
-              <div style={styles.settingRow}>
-                <label style={styles.label}>
-                  <input
-                    type="checkbox"
-                    checked={settings.auto_tag_enabled}
-                    onChange={(e) => updateSetting('auto_tag_enabled', e.target.checked)}
-                    style={styles.checkbox}
-                  />
-                  Enable Auto-Tagging
-                </label>
-              </div>
-            </div>
-
-            {/* Tag Rules Info */}
-            <div style={styles.settingGroup}>
-              <h4 style={styles.settingGroupTitle}>Tag Rules</h4>
-              <div style={styles.tagRulesInfo}>
-                <div style={styles.tagRule}>
-                  <TagIcon type="mastered" size={16} />
-                  <strong>Mastered:</strong> 85%+ achievements unlocked
-                </div>
-                <div style={styles.tagRule}>
-                  <TagIcon type="completed" size={16} />
-                  <strong>Completed:</strong> Playtime ≥ main story time (from HLTB)
-                </div>
-                <div style={styles.tagRule}>
-                  <TagIcon type="in_progress" size={16} />
-                  <strong>In Progress:</strong> Playtime ≥ {settings.in_progress_threshold} minutes
-                </div>
-              </div>
-
-              <div style={styles.settingRow}>
-                <label style={styles.label}>
-                  In Progress Threshold: {settings.in_progress_threshold} minutes
-                </label>
-                <input
-                  type="range"
-                  min="15"
-                  max="120"
-                  step="15"
-                  value={settings.in_progress_threshold}
-                  onChange={(e) => updateSetting('in_progress_threshold', parseInt(e.target.value))}
-                  style={styles.slider}
-                />
-                <div style={styles.hint}>
-                  Minimum playtime to mark as In Progress
-                </div>
-              </div>
-            </div>
-
-            {/* Game Sources */}
-            <div style={styles.settingGroup}>
-              <h4 style={styles.settingGroupTitle}>Game Sources</h4>
-              <div style={styles.hint}>
-                Select which games to include when syncing
-              </div>
-              <div style={styles.settingRow}>
-                <label style={styles.label}>
-                  <input
-                    type="checkbox"
-                    checked={settings.source_installed}
-                    onChange={(e) => updateSetting('source_installed', e.target.checked)}
-                    style={styles.checkbox}
-                  />
-                  Installed Steam Games
-                </label>
-              </div>
-              <div style={styles.settingRow}>
-                <label style={styles.label}>
-                  <input
-                    type="checkbox"
-                    checked={settings.source_non_steam}
-                    onChange={(e) => updateSetting('source_non_steam', e.target.checked)}
-                    style={styles.checkbox}
-                  />
-                  Non-Steam Games (Shortcuts)
-                </label>
-              </div>
-            </div>
-
-            {/* Cache Management */}
-            <div style={styles.settingGroup}>
-              <h4 style={styles.settingGroupTitle}>Cache</h4>
-              <button
-                onClick={refreshCache}
-                disabled={syncing || loading}
-                style={styles.buttonSecondary}
-              >
-                Refresh HLTB Cache
-              </button>
-            </div>
-          </div>
-        )}
-      </div>
-
       {/* About */}
       <div style={styles.section}>
         <h3 style={styles.sectionTitle}>About</h3>
         <div style={styles.about}>
-          <p>Game Progress Tracker v{__PLUGIN_VERSION__}</p>
+          <p>Game Progress Tracker {__PLUGIN_VERSION__}</p>
           <p>Automatic game tagging based on achievements, playtime, and completion time.</p>
           <p style={styles.smallText}>
             Data from HowLongToBeat • Steam achievement system
@@ -496,11 +521,6 @@ const styles: Record<string, React.CSSProperties> = {
   container: {
     padding: '16px',
     color: 'white',
-  },
-  title: {
-    margin: '0 0 20px 0',
-    fontSize: '24px',
-    fontWeight: 'bold',
   },
   message: {
     padding: '12px',
