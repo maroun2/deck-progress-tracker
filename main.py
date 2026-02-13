@@ -133,7 +133,14 @@ class Plugin:
         in_progress_threshold = settings.get('in_progress_threshold', 30)  # Default 30 min
 
         # Priority 1: Mastered (>=85% achievements)
-        achievement_percentage = stats.get('achievement_percentage', 0)
+        # Calculate percentage from total/unlocked since it's not stored in DB
+        total_achievements = stats.get('total_achievements', 0)
+        unlocked_achievements = stats.get('unlocked_achievements', 0)
+        if total_achievements > 0:
+            achievement_percentage = (unlocked_achievements / total_achievements) * 100
+        else:
+            achievement_percentage = 0
+
         if achievement_percentage >= 85:
             return "mastered"
 
@@ -551,11 +558,13 @@ class Plugin:
             logger.info("Extracting nested params from first argument")
             playtime_data = playtime_data_or_params.get('playtime_data', {})
             achievement_data = playtime_data_or_params.get('achievement_data', {})
+            game_names = playtime_data_or_params.get('game_names', {})
         else:
             # Direct params (backwards compatibility)
             playtime_data = playtime_data_or_params
             if achievement_data is None:
                 achievement_data = {}
+            game_names = {}
 
         logger.info(f"Playtime data type: {type(playtime_data)}, keys: {len(playtime_data) if isinstance(playtime_data, dict) else 'N/A'}")
         logger.info(f"Achievement data type: {type(achievement_data)}, keys: {len(achievement_data) if isinstance(achievement_data, dict) else 'N/A'}")
@@ -583,6 +592,12 @@ class Plugin:
             except Exception as e:
                 logger.error(f"Error counting achievements: {e}")
 
+        # Log game names stats
+        if isinstance(game_names, dict):
+            logger.info(f"Received game_names keys count: {len(game_names)}")
+            sample_names = list(game_names.items())[:5]
+            logger.info(f"Sample game names (first 5): {sample_names}")
+
         try:
             logger.info(f"=== Starting sync with {len(playtime_data)} playtime entries ===")
 
@@ -591,11 +606,15 @@ class Plugin:
             appids_to_sync = list(playtime_data.keys())
             total = len(appids_to_sync)
             synced = 0
+            new_tags = 0  # Track newly tagged games for notifications
             errors = 0
             error_list = []
 
+            hltb_requests = 0  # Track HLTB API requests for rate limiting
+
             for i, appid in enumerate(appids_to_sync):
-                game_name = f'Game {appid}'
+                # Get game name from frontend (works for uninstalled games!)
+                game_name = game_names.get(appid, None)
 
                 # Use playtime from frontend - ensure it's an int
                 raw_playtime = playtime_data.get(appid, 0)
@@ -605,34 +624,55 @@ class Plugin:
                     logger.warning(f"Unexpected playtime type for {appid}: {type(raw_playtime)} = {raw_playtime}")
                     playtime_minutes = 0
 
-                # Get achievement data from frontend
-                game_achievements = achievement_data.get(appid, {})
-                total_achievements = game_achievements.get('total', 0) if isinstance(game_achievements, dict) else 0
-                unlocked_achievements = game_achievements.get('unlocked', 0) if isinstance(game_achievements, dict) else 0
-                achievement_percentage = game_achievements.get('percentage', 0.0) if isinstance(game_achievements, dict) else 0.0
+                # Get achievement data from frontend (None if not available)
+                # We only pass data if we have actual achievement info (total > 0)
+                # Otherwise pass None to preserve existing DB values
+                game_achievements = achievement_data.get(appid)
+                if isinstance(game_achievements, dict) and game_achievements.get('total', 0) > 0:
+                    total_achievements = game_achievements.get('total')
+                    unlocked_achievements = game_achievements.get('unlocked', 0)
+                    achievement_percentage = game_achievements.get('percentage', 0.0)
+                else:
+                    # No achievement data from frontend - pass None to preserve existing
+                    total_achievements = None
+                    unlocked_achievements = None
+                    achievement_percentage = None
 
-                logger.info(f"[{i+1}/{total}] Syncing: {game_name} ({appid}), playtime={playtime_minutes}, achievements={unlocked_achievements}/{total_achievements} ({achievement_percentage:.1f}%)")
+                # Log progress every 50 games to reduce log spam
+                if i % 50 == 0 or i == total - 1:
+                    logger.info(f"[{i+1}/{total}] Progress: syncing game {appid} ({game_name or 'unknown'})")
 
                 try:
-                    await Plugin.sync_game_with_playtime(self, appid, playtime_minutes, total_achievements, unlocked_achievements, achievement_percentage)
-                    synced += 1
-                    logger.info(f"[{i+1}/{total}] Completed: {game_name}")
+                    # Check if we need to fetch HLTB (no cache and has playtime)
+                    cached_hltb = await self.db.get_hltb_cache(appid)
+                    needs_hltb = not cached_hltb and playtime_minutes > 0
 
-                    # Add delay for HLTB rate limiting
-                    if i < total - 1:
-                        await asyncio.sleep(1.0)
+                    result = await Plugin.sync_game_with_playtime(self, appid, playtime_minutes, total_achievements, unlocked_achievements, achievement_percentage, game_name)
+                    synced += 1
+
+                    # Track if this game got a new/changed tag
+                    if result.get('tag_changed'):
+                        new_tags += 1
+
+                    # Only add delay when we actually made an HLTB request
+                    if needs_hltb:
+                        hltb_requests += 1
+                        # Rate limit: delay every 5 HLTB requests
+                        if hltb_requests % 5 == 0:
+                            await asyncio.sleep(1.0)
 
                 except Exception as e:
                     errors += 1
                     error_list.append({"appid": appid, "error": str(e)})
                     logger.error(f"[{i+1}/{total}] Failed: {game_name} - {e}")
 
-            logger.info(f"Library sync completed: {synced}/{total} synced, {errors} errors")
+            logger.info(f"Library sync completed: {synced}/{total} synced, {new_tags} new tags, {errors} errors")
 
             return {
                 "success": True,
                 "total": total,
                 "synced": synced,
+                "new_tags": new_tags,  # New field for notification purposes
                 "errors": errors,
                 "error_details": error_list[:10]
             }
@@ -643,16 +683,53 @@ class Plugin:
             logger.error(traceback.format_exc())
             return {"success": False, "error": str(e)}
 
-    async def sync_game_with_playtime(self, appid: str, playtime_minutes: int, total_achievements: int = 0, unlocked_achievements: int = 0, achievement_percentage: float = 0.0) -> Dict[str, Any]:
-        """Sync a single game using frontend-provided playtime and achievements"""
-        logger.debug(f"sync_game_with_playtime: appid={appid}, playtime_minutes={playtime_minutes}, achievements={unlocked_achievements}/{total_achievements} ({achievement_percentage:.1f}%)")
+    async def _fetch_game_name_from_steam_store(self, appid: str) -> Optional[str]:
+        """Fetch game name from Steam's store API (works for uninstalled games)"""
+        import urllib.request
+        import json as json_lib
+
+        try:
+            url = f"https://store.steampowered.com/api/appdetails?appids={appid}"
+            req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+            with urllib.request.urlopen(req, timeout=5) as response:
+                data = json_lib.loads(response.read().decode())
+                if data.get(str(appid), {}).get('success'):
+                    name = data[str(appid)]['data'].get('name')
+                    logger.debug(f"Got name from Steam Store API for {appid}: {name}")
+                    return name
+        except Exception as e:
+            logger.debug(f"Steam Store API error for {appid}: {e}")
+
+        return None
+
+    async def sync_game_with_playtime(self, appid: str, playtime_minutes: int, total_achievements: int = None, unlocked_achievements: int = None, achievement_percentage: float = None, frontend_game_name: str = None) -> Dict[str, Any]:
+        """Sync a single game using frontend-provided playtime, achievements, and name
+
+        NOTE: Achievement params can be None if frontend doesn't have data.
+        In that case, we preserve existing achievement data in DB.
+        """
+        logger.debug(f"sync_game_with_playtime: appid={appid}, playtime_minutes={playtime_minutes}, achievements={unlocked_achievements}/{total_achievements}")
 
         # Get current tag
         current_tag = await self.db.get_tag(appid)
         is_manual = current_tag and current_tag.get('is_manual')
 
-        # Get game name from steam service
-        game_name = await self.steam_service.get_game_name(appid)
+        # Get existing stats to preserve achievement data if frontend doesn't have it
+        existing_stats = await self.db.get_game_stats(appid)
+
+        # Use game name from frontend if provided (works for uninstalled games!)
+        if frontend_game_name:
+            game_name = frontend_game_name
+        else:
+            # Fallback: Get game name from steam service (local appmanifest)
+            game_name = await self.steam_service.get_game_name(appid)
+
+            # If still not found locally (uninstalled game), try Steam Store API
+            if not game_name or game_name.startswith('Unknown Game') or game_name.startswith('Game '):
+                store_name = await self._fetch_game_name_from_steam_store(appid)
+                if store_name:
+                    game_name = store_name
+                    logger.info(f"  Got name from Steam Store: {game_name}")
 
         # Check if this is a non-Steam game (appid > 2 billion = CRC32 hash)
         try:
@@ -662,32 +739,45 @@ class Plugin:
             is_non_steam = False
 
         # Fetch HLTB if needed (do this before building stats so we can set is_hidden)
+        # Retry HLTB lookup if:
+        # 1. No cache exists at all
+        # 2. Cache exists but has no main_story data (might have failed before)
         cached_hltb = await self.db.get_hltb_cache(appid)
-        if not cached_hltb:
+        should_fetch_hltb = not cached_hltb or not cached_hltb.get('main_story')
+
+        if should_fetch_hltb:
+            logger.info(f"  Fetching HLTB for: {game_name} (cached={bool(cached_hltb)}, has_main_story={cached_hltb.get('main_story') if cached_hltb else None})")
             hltb_data = await self.hltb_service.search_game(game_name)
-            if hltb_data:
+            if hltb_data and hltb_data.get('main_story'):
+                # Only cache if we got actual completion time data
                 await self.db.cache_hltb_data(appid, hltb_data)
                 cached_hltb = hltb_data
+                logger.info(f"  HLTB cached: main_story={hltb_data.get('main_story')}h")
 
         # Determine if this game should be hidden from library
         # Hide non-Steam apps that have no HLTB data (likely not real games: Discord, Chrome, etc.)
         is_hidden = is_non_steam and not cached_hltb
 
         # Build stats object with frontend playtime and achievements
+        # If frontend doesn't have achievement data (None), preserve existing DB values
+        final_total_achievements = total_achievements if total_achievements is not None else (existing_stats.get('total_achievements', 0) if existing_stats else 0)
+        final_unlocked_achievements = unlocked_achievements if unlocked_achievements is not None else (existing_stats.get('unlocked_achievements', 0) if existing_stats else 0)
+        final_achievement_percentage = achievement_percentage if achievement_percentage is not None else (existing_stats.get('achievement_percentage', 0.0) if existing_stats else 0.0)
+
         stats = {
             "appid": appid,
             "game_name": game_name,
             "playtime_minutes": playtime_minutes,  # From frontend!
-            "total_achievements": total_achievements,  # From frontend!
-            "unlocked_achievements": unlocked_achievements,  # From frontend!
-            "achievement_percentage": round(achievement_percentage, 2),
+            "total_achievements": final_total_achievements,
+            "unlocked_achievements": final_unlocked_achievements,
+            "achievement_percentage": round(final_achievement_percentage, 2),
             "is_hidden": is_hidden
         }
 
         await self.db.update_game_stats(appid, stats)
 
         logger.info(f"  Stats: playtime={playtime_minutes}min, " +
-                    f"achievements={unlocked_achievements}/{total_achievements}" +
+                    f"achievements={final_unlocked_achievements}/{final_total_achievements}" +
                     (f", HIDDEN (non-Steam app without HLTB)" if is_hidden else ""))
 
         if cached_hltb:
@@ -697,6 +787,7 @@ class Plugin:
 
         # Calculate tag (but don't override manual tags)
         # Skip tag calculation for hidden games (unless manually tagged)
+        tag_changed = False
         if is_manual:
             logger.info(f"  Skipping tag calculation (manual override)")
         elif is_hidden:
@@ -711,8 +802,11 @@ class Plugin:
                 if new_tag != current_tag_value:
                     await self.db.set_tag(appid, new_tag, is_manual=False)
                     logger.info(f"  -> Tag set: {new_tag}")
+                    tag_changed = True
 
-        return await self.db.get_tag(appid) or {}
+        result = await self.db.get_tag(appid) or {}
+        result['tag_changed'] = tag_changed
+        return result
 
     async def get_all_tags_with_names(self) -> Dict[str, Any]:
         """Get all tags with game names for display"""

@@ -41,6 +41,7 @@ export interface PluginSettings {
     cache_ttl: number;
     source_installed: boolean;
     source_non_steam: boolean;
+    source_all_owned: boolean;
 }
 export interface TagStatistics {
     completed: number;
@@ -59,6 +60,7 @@ export interface SyncResult {
     success: boolean;
     total?: number;
     synced?: number;
+    new_tags?: number;
     errors?: number;
     error_details?: Array<{
         appid: string;

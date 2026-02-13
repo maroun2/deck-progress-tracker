@@ -112,7 +112,8 @@ class Database:
                 ('in_progress_threshold', '30'),
                 ('cache_ttl', '7200'),
                 ('source_installed', 'true'),
-                ('source_non_steam', 'true')
+                ('source_non_steam', 'true'),
+                ('source_all_owned', 'true')
         """)
 
         conn.commit()

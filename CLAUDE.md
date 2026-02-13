@@ -27,6 +27,10 @@ This script:
 4. Logs at: `/home/deck/homebrew/plugins/game-progress-tracker/logs/message.txt`
 5. All frontend logs go to backend via `log_frontend()` - no CEF debugging needed
 
+## CEF Debugging
+
+For debugging the Steam Deck frontend using Chrome DevTools Protocol (CDP), see `dev-console-scripts/README.md` for available scripts and usage.
+
 ## Key Architecture
 
 - **Frontend** (Settings.tsx): Gets playtime from `window.appStore.GetAppOverviewByAppID()`

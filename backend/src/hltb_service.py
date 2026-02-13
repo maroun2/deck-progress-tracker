@@ -61,6 +61,37 @@ class HLTBService:
 
         return None
 
+    def _sanitize_game_name(self, game_name: str) -> str:
+        """Sanitize game name for better HLTB search matching.
+        Removes special characters that can interfere with search."""
+        import re
+        # Remove common suffixes that don't help with matching
+        suffixes_to_remove = [
+            r'\s*-\s*Steam Special Edition',
+            r'\s*-\s*Special Edition',
+            r'\s*-\s*Enhanced Edition',
+            r'\s*-\s*Game of the Year',
+            r'\s*-\s*GOTY',
+            r'\s*-\s*Anniversary Edition',
+            r'\s*-\s*Definitive Edition',
+            r'\s*\([\d]{4}\)',  # Year in parentheses like (2008)
+        ]
+        result = game_name
+        for suffix in suffixes_to_remove:
+            result = re.sub(suffix, '', result, flags=re.IGNORECASE)
+
+        # Replace hyphens and colons with spaces (e.g., "Brothers - A Tale" -> "Brothers A Tale")
+        result = re.sub(r'[-:]+', ' ', result)
+        # Remove other special characters but keep alphanumeric and spaces
+        result = re.sub(r'[^\w\s]', '', result)
+        # Collapse multiple spaces
+        result = re.sub(r'\s+', ' ', result).strip()
+
+        if result != game_name:
+            logger.debug(f"Sanitized game name: '{game_name}' -> '{result}'")
+
+        return result
+
     def _search_sync(self, game_name: str) -> Optional[Dict[str, Any]]:
         """Synchronous HLTB search"""
         try:
@@ -84,10 +115,13 @@ class HLTBService:
                 "x-auth-token": self.auth_token,
             }
 
+            # Sanitize game name for better search matching
+            sanitized_name = self._sanitize_game_name(game_name)
+
             # HLTB API payload
             payload = {
                 "searchType": "games",
-                "searchTerms": game_name.split(),
+                "searchTerms": sanitized_name.split(),
                 "searchPage": 1,
                 "size": 20,
                 "searchOptions": {

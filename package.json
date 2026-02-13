@@ -1,6 +1,6 @@
 {
   "name": "game-progress-tracker",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "type": "module",
   "description": "Game tagging plugin for Steam Deck",
   "scripts": {
@@ -18,7 +18,8 @@
   "license": "MIT",
   "dependencies": {
     "@decky/api": "^1.1.2",
-    "@decky/ui": "^4.6.2"
+    "@decky/ui": "^4.6.2",
+    "chrome-remote-interface": "^0.34.0"
   },
   "devDependencies": {
     "@decky/rollup": "^1.0.2",
