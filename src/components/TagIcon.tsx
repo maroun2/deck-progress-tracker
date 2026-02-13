@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 
-export type TagType = 'mastered' | 'completed' | 'in_progress' | 'backlog' | null;
+export type TagType = 'mastered' | 'completed' | 'in_progress' | 'backlog' | 'dropped' | null;
 
 interface TagIconProps {
   type: TagType;
@@ -14,6 +14,7 @@ export const TAG_ICON_COLORS = {
   completed: '#38ef7d',
   in_progress: '#764ba2',
   backlog: '#888',
+  dropped: '#c9a171',  // Beige/tan color for dropped games
 };
 
 /**
@@ -76,6 +77,23 @@ const EmptyCircleIcon: FC<{ size: number; color: string }> = ({ size, color }) =
 );
 
 /**
+ * X in circle for Dropped (abandoned)
+ */
+const XCircleIcon: FC<{ size: number; color: string }> = ({ size, color }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+    <circle cx="12" cy="12" r="10" stroke={color} strokeWidth="2" fill="none" />
+    <path
+      d="M15 9l-6 6M9 9l6 6"
+      stroke={color}
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      fill="none"
+    />
+  </svg>
+);
+
+/**
  * TagIcon component - displays appropriate icon based on tag type
  */
 export const TagIcon: FC<TagIconProps> = ({ type, size = 24, className }) => {
@@ -96,6 +114,7 @@ export const TagIcon: FC<TagIconProps> = ({ type, size = 24, className }) => {
       {type === 'completed' && <CheckCircleIcon size={size} color={color} />}
       {type === 'in_progress' && <ClockIcon size={size} color={color} />}
       {type === 'backlog' && <EmptyCircleIcon size={size} color={color} />}
+      {type === 'dropped' && <XCircleIcon size={size} color={color} />}
     </span>
   );
 };

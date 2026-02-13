@@ -34,10 +34,17 @@ export declare const getAllOwnedGameIds: () => Promise<string[]>;
  */
 export declare const getAchievementData: (appids: string[]) => Promise<Record<string, AchievementData>>;
 /**
- * Get playtime data for a list of appids from Steam's frontend API
+ * Game data structure including playtime and last played timestamp
+ */
+export interface GameData {
+    playtime_minutes: number;
+    rt_last_time_played: number | null;
+}
+/**
+ * Get playtime and last played data for a list of appids from Steam's frontend API
  * Uses window.appStore which is Steam's internal game data cache
  */
-export declare const getPlaytimeData: (appids: string[]) => Promise<Record<string, number>>;
+export declare const getPlaytimeData: (appids: string[]) => Promise<Record<string, GameData>>;
 /**
  * Get game names for a list of appids from Steam's frontend API
  * Uses window.appStore.GetAppOverviewByAppID which has the display_name property

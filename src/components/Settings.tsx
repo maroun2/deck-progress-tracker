@@ -255,16 +255,16 @@ export const Settings: FC = () => {
       await logToBackend('info', `First 5 appids: ${appids.slice(0, 5).join(', ')}`);
       await logToBackend('info', `Appid types: ${appids.slice(0, 5).map(a => typeof a).join(', ')}`);
 
-      // Step 2: Get playtime from Steam frontend API
-      await logToBackend('info', 'Step 2: Getting playtime from Steam frontend API...');
-      setMessage(`Getting playtime data for ${appids.length} games...`);
-      const playtimeData = await getPlaytimeData(appids);
-      const gamesWithPlaytime = Object.values(playtimeData).filter(v => v > 0).length;
-      await logToBackend('info', `Step 2 complete: Got playtime for ${gamesWithPlaytime}/${appids.length} games`);
+      // Step 2: Get game data (playtime + last played) from Steam frontend API
+      await logToBackend('info', 'Step 2: Getting game data from Steam frontend API...');
+      setMessage(`Getting game data for ${appids.length} games...`);
+      const gameData = await getPlaytimeData(appids);
+      const gamesWithPlaytime = Object.values(gameData).filter(v => v.playtime_minutes > 0).length;
+      await logToBackend('info', `Step 2 complete: Got game data for ${gamesWithPlaytime}/${appids.length} games`);
 
-      // Log sample of playtime data
-      const sampleEntries = Object.entries(playtimeData).slice(0, 5);
-      await logToBackend('info', `Sample playtime data: ${JSON.stringify(sampleEntries)}`);
+      // Log sample of game data
+      const sampleEntries = Object.entries(gameData).slice(0, 5);
+      await logToBackend('info', `Sample game data: ${JSON.stringify(sampleEntries)}`);
 
       // Step 2.5: Get achievement data from Steam frontend API
       await logToBackend('info', 'Step 2.5: Getting achievement data from Steam frontend API...');
@@ -300,21 +300,21 @@ export const Settings: FC = () => {
         await logToBackend('info', `Syncing batch ${batchNum}/${totalBatches}: ${batchAppids.length} games`);
 
         // Get data for this batch only
-        const batchPlaytime: Record<string, number> = {};
+        const batchGameData: Record<string, import('../lib/syncUtils').GameData> = {};
         const batchAchievements: Record<string, AchievementData> = {};
         const batchNames: Record<string, string> = {};
 
         for (const appid of batchAppids) {
-          batchPlaytime[appid] = playtimeData[appid] || 0;
+          batchGameData[appid] = gameData[appid] || { playtime_minutes: 0, rt_last_time_played: null };
           batchAchievements[appid] = achievementData[appid] || { total: 0, unlocked: 0, percentage: 0, all_unlocked: false };
           if (gameNames[appid]) {
             batchNames[appid] = gameNames[appid];
           }
         }
 
-        const result = await call<[{ playtime_data: Record<string, number>; achievement_data: Record<string, AchievementData>; game_names: Record<string, string> }], SyncResult>(
+        const result = await call<[{ game_data: Record<string, import('../lib/syncUtils').GameData>; achievement_data: Record<string, AchievementData>; game_names: Record<string, string> }], SyncResult>(
           'sync_library_with_playtime',
-          { playtime_data: batchPlaytime, achievement_data: batchAchievements, game_names: batchNames }
+          { game_data: batchGameData, achievement_data: batchAchievements, game_names: batchNames }
         );
 
         if (result.success) {

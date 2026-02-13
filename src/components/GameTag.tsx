@@ -40,6 +40,10 @@ const TAG_STYLES: Record<string, TagStyle> = {
   mastered: {
     background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
     label: 'Mastered'
+  },
+  dropped: {
+    background: 'linear-gradient(135deg, #b8956a 0%, #c9a171 100%)',
+    label: 'Dropped'
   }
 };
 

@@ -202,6 +202,13 @@ export const TagManager: FC<TagManagerProps> = ({ appid, onClose }) => {
                 <TagIcon type="in_progress" size={18} />
                 <span>In Progress</span>
               </button>
+              <button
+                onClick={() => setTag('dropped')}
+                style={{ ...styles.tagButton, backgroundColor: TAG_ICON_COLORS.dropped }}
+              >
+                <TagIcon type="dropped" size={18} />
+                <span>Dropped</span>
+              </button>
             </div>
             <div style={styles.buttonGroup}>
               <button onClick={resetToAuto} style={styles.secondaryButton}>
