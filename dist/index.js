@@ -1,4 +1,4 @@
-const manifest = {"name":"Game Progress Tracker","author":"Maron","version":"1.2.25","api_version":1,"flags":["_root"],"publish":{"tags":["library","achievements","statistics","enhancement"],"description":"Automatic game tagging based on achievements, playtime, and completion time. Track your progress with visual badges in the Steam library.","image":"https://opengraph.githubassets.com/1/SteamDeckHomebrew/decky-loader"}};
+const manifest = {"name":"Game Progress Tracker","author":"Maron","version":"1.2.0","api_version":1,"flags":["_root"],"publish":{"tags":["library","achievements","statistics","enhancement"],"description":"Automatic game tagging based on achievements, playtime, and completion time. Track your progress with visual badges in the Steam library.","image":"https://opengraph.githubassets.com/1/SteamDeckHomebrew/decky-loader"}};
 const API_VERSION = 2;
 if (!manifest?.name) {
     throw new Error('[@decky/api]: Failed to find plugin manifest.');
@@ -33,6 +33,7 @@ const TAG_ICON_COLORS = {
     completed: '#38ef7d',
     in_progress: '#764ba2',
     backlog: '#888',
+    dropped: '#c9a171', // Beige/tan color for dropped games
 };
 /**
  * Trophy icon for Mastered (100% achievements)
@@ -58,6 +59,12 @@ const ClockIcon = ({ size, color }) => (SP_REACT.createElement("svg", { width: s
 const EmptyCircleIcon = ({ size, color }) => (SP_REACT.createElement("svg", { width: size, height: size, viewBox: "0 0 24 24", fill: "none" },
     SP_REACT.createElement("circle", { cx: "12", cy: "12", r: "10", stroke: color, strokeWidth: "2", fill: "none" })));
 /**
+ * X in circle for Dropped (abandoned)
+ */
+const XCircleIcon = ({ size, color }) => (SP_REACT.createElement("svg", { width: size, height: size, viewBox: "0 0 24 24", fill: "none" },
+    SP_REACT.createElement("circle", { cx: "12", cy: "12", r: "10", stroke: color, strokeWidth: "2", fill: "none" }),
+    SP_REACT.createElement("path", { d: "M15 9l-6 6M9 9l6 6", stroke: color, strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round", fill: "none" })));
+/**
  * TagIcon component - displays appropriate icon based on tag type
  */
 const TagIcon = ({ type, size = 24, className }) => {
@@ -74,7 +81,8 @@ const TagIcon = ({ type, size = 24, className }) => {
         type === 'mastered' && SP_REACT.createElement(TrophyIcon, { size: size, color: color }),
         type === 'completed' && SP_REACT.createElement(CheckCircleIcon, { size: size, color: color }),
         type === 'in_progress' && SP_REACT.createElement(ClockIcon, { size: size, color: color }),
-        type === 'backlog' && SP_REACT.createElement(EmptyCircleIcon, { size: size, color: color })));
+        type === 'backlog' && SP_REACT.createElement(EmptyCircleIcon, { size: size, color: color }),
+        type === 'dropped' && SP_REACT.createElement(XCircleIcon, { size: size, color: color })));
 };
 
 /**
@@ -295,35 +303,43 @@ const getAchievementData = async (appids) => {
     return achievementMap;
 };
 /**
- * Get playtime data for a list of appids from Steam's frontend API
+ * Get playtime and last played data for a list of appids from Steam's frontend API
  * Uses window.appStore which is Steam's internal game data cache
  */
 const getPlaytimeData = async (appids) => {
     log$7(`getPlaytimeData called with ${appids.length} appids`);
-    const playtimeMap = {};
+    const gameDataMap = {};
     // Access Steam's global appStore
     const appStore = window.appStore;
     log$7(`appStore available: ${!!appStore}`);
     if (!appStore) {
         log$7('appStore not available - cannot get playtime!');
-        return playtimeMap;
+        return gameDataMap;
     }
     log$7(`GetAppOverviewByAppID exists: ${typeof appStore.GetAppOverviewByAppID}`);
     let successCount = 0;
     let failCount = 0;
     let withPlaytime = 0;
+    let withLastPlayed = 0;
     const sampleLogs = [];
     for (const appid of appids) {
         try {
             const overview = appStore.GetAppOverviewByAppID(parseInt(appid));
             if (overview) {
                 const playtime = overview.minutes_playtime_forever || 0;
-                playtimeMap[appid] = playtime;
+                const rtLastTimePlayed = overview.rt_last_time_played || null;
+                gameDataMap[appid] = {
+                    playtime_minutes: playtime,
+                    rt_last_time_played: rtLastTimePlayed
+                };
                 successCount++;
                 if (playtime > 0)
                     withPlaytime++;
+                if (rtLastTimePlayed)
+                    withLastPlayed++;
                 if (sampleLogs.length < 3) {
-                    sampleLogs.push(`appid ${appid}: playtime=${playtime}min, name=${overview.display_name || 'unknown'}`);
+                    const lastPlayedStr = rtLastTimePlayed ? new Date(rtLastTimePlayed * 1000).toISOString() : 'never';
+                    sampleLogs.push(`appid ${appid}: playtime=${playtime}min, lastPlayed=${lastPlayedStr}, name=${overview.display_name || 'unknown'}`);
                 }
             }
             else {
@@ -336,10 +352,10 @@ const getPlaytimeData = async (appids) => {
     }
     // Log results
     for (const logMsg of sampleLogs) {
-        log$7(`Playtime sample - ${logMsg}`);
+        log$7(`Game data sample - ${logMsg}`);
     }
-    log$7(`getPlaytimeData results: success=${successCount}, failed=${failCount}, withPlaytime=${withPlaytime}`);
-    return playtimeMap;
+    log$7(`getPlaytimeData results: success=${successCount}, failed=${failCount}, withPlaytime=${withPlaytime}, withLastPlayed=${withLastPlayed}`);
+    return gameDataMap;
 };
 /**
  * Get game names for a list of appids from Steam's frontend API
@@ -455,10 +471,11 @@ const getAchievementDataWithFallback = async (appids) => {
 const syncGames = async (appids) => {
     log$7(`Syncing ${appids.length} games`);
     try {
-        // Step 1: Get playtime data
-        const playtimeData = await getPlaytimeData(appids);
-        const withPlaytime = Object.values(playtimeData).filter(v => v > 0).length;
-        log$7(`Playtime: ${withPlaytime}/${appids.length} games`);
+        // Step 1: Get playtime and last played data
+        const gameData = await getPlaytimeData(appids);
+        const withPlaytime = Object.values(gameData).filter(v => v.playtime_minutes > 0).length;
+        const withLastPlayed = Object.values(gameData).filter(v => v.rt_last_time_played !== null).length;
+        log$7(`Game data: ${withPlaytime}/${appids.length} with playtime, ${withLastPlayed}/${appids.length} with last played`);
         // Step 2: Get achievement data (cache + API fallback)
         const achievementData = await getAchievementDataWithFallback(appids);
         const withAchievements = Object.keys(achievementData).length;
@@ -467,7 +484,7 @@ const syncGames = async (appids) => {
         const gameNames = await getGameNames(appids);
         log$7(`Names: ${Object.keys(gameNames).length}/${appids.length} games`);
         // Step 4: Send to backend
-        const result = await call('sync_library_with_playtime', { playtime_data: playtimeData, achievement_data: achievementData, game_names: gameNames });
+        const result = await call('sync_library_with_playtime', { game_data: gameData, achievement_data: achievementData, game_names: gameNames });
         log$7(`Sync complete: ${result.synced}/${result.total} games, ${result.errors || 0} errors`);
         return result;
     }
@@ -709,7 +726,7 @@ const Settings = () => {
     };
     const syncLibrary = async () => {
         await logToBackend('info', '========================================');
-        await logToBackend('info', `syncLibrary button clicked - v${"1.2.25"}`);
+        await logToBackend('info', `syncLibrary button clicked - v${"1.2.0"}`);
         await logToBackend('info', '========================================');
         try {
             setSyncing(true);
@@ -750,15 +767,15 @@ const Settings = () => {
             await logToBackend('info', `Step 1 complete: Got ${appids.length} games`);
             await logToBackend('info', `First 5 appids: ${appids.slice(0, 5).join(', ')}`);
             await logToBackend('info', `Appid types: ${appids.slice(0, 5).map(a => typeof a).join(', ')}`);
-            // Step 2: Get playtime from Steam frontend API
-            await logToBackend('info', 'Step 2: Getting playtime from Steam frontend API...');
-            setMessage(`Getting playtime data for ${appids.length} games...`);
-            const playtimeData = await getPlaytimeData(appids);
-            const gamesWithPlaytime = Object.values(playtimeData).filter(v => v > 0).length;
-            await logToBackend('info', `Step 2 complete: Got playtime for ${gamesWithPlaytime}/${appids.length} games`);
-            // Log sample of playtime data
-            const sampleEntries = Object.entries(playtimeData).slice(0, 5);
-            await logToBackend('info', `Sample playtime data: ${JSON.stringify(sampleEntries)}`);
+            // Step 2: Get game data (playtime + last played) from Steam frontend API
+            await logToBackend('info', 'Step 2: Getting game data from Steam frontend API...');
+            setMessage(`Getting game data for ${appids.length} games...`);
+            const gameData = await getPlaytimeData(appids);
+            const gamesWithPlaytime = Object.values(gameData).filter(v => v.playtime_minutes > 0).length;
+            await logToBackend('info', `Step 2 complete: Got game data for ${gamesWithPlaytime}/${appids.length} games`);
+            // Log sample of game data
+            const sampleEntries = Object.entries(gameData).slice(0, 5);
+            await logToBackend('info', `Sample game data: ${JSON.stringify(sampleEntries)}`);
             // Step 2.5: Get achievement data from Steam frontend API
             await logToBackend('info', 'Step 2.5: Getting achievement data from Steam frontend API...');
             setMessage(`Getting achievement data for ${appids.length} games...`);
@@ -786,17 +803,17 @@ const Settings = () => {
                 setMessage(`Syncing batch ${batchNum}/${totalBatches} (${i + 1}-${Math.min(i + BATCH_SIZE, appids.length)} of ${appids.length})...`);
                 await logToBackend('info', `Syncing batch ${batchNum}/${totalBatches}: ${batchAppids.length} games`);
                 // Get data for this batch only
-                const batchPlaytime = {};
+                const batchGameData = {};
                 const batchAchievements = {};
                 const batchNames = {};
                 for (const appid of batchAppids) {
-                    batchPlaytime[appid] = playtimeData[appid] || 0;
+                    batchGameData[appid] = gameData[appid] || { playtime_minutes: 0, rt_last_time_played: null };
                     batchAchievements[appid] = achievementData[appid] || { total: 0, unlocked: 0, percentage: 0, all_unlocked: false };
                     if (gameNames[appid]) {
                         batchNames[appid] = gameNames[appid];
                     }
                 }
-                const result = await call('sync_library_with_playtime', { playtime_data: batchPlaytime, achievement_data: batchAchievements, game_names: batchNames });
+                const result = await call('sync_library_with_playtime', { game_data: batchGameData, achievement_data: batchAchievements, game_names: batchNames });
                 if (result.success) {
                     totalSynced += result.synced || 0;
                     totalNewTags += result.new_tags || 0;
@@ -904,7 +921,7 @@ const Settings = () => {
             SP_REACT.createElement("div", { style: styles$1.about },
                 SP_REACT.createElement("p", null,
                     "Game Progress Tracker ",
-                    "1.2.25"),
+                    "1.2.0"),
                 SP_REACT.createElement("p", null, "Automatic game tagging based on achievements, playtime, and completion time."),
                 SP_REACT.createElement("p", { style: styles$1.smallText }, "Data from HowLongToBeat \u2022 Steam achievement system")))));
 };
@@ -1202,6 +1219,10 @@ const TAG_STYLES = {
     mastered: {
         background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
         label: 'Mastered'
+    },
+    dropped: {
+        background: 'linear-gradient(135deg, #b8956a 0%, #c9a171 100%)',
+        label: 'Dropped'
     }
 };
 const GameTag = ({ tag, onClick, compact = false }) => {
@@ -1406,7 +1427,10 @@ const TagManager = ({ appid, onClose }) => {
                             SP_REACT.createElement("span", null, "Completed")),
                         SP_REACT.createElement("button", { onClick: () => setTag('in_progress'), style: { ...styles.tagButton, backgroundColor: TAG_ICON_COLORS.in_progress } },
                             SP_REACT.createElement(TagIcon, { type: "in_progress", size: 18 }),
-                            SP_REACT.createElement("span", null, "In Progress"))),
+                            SP_REACT.createElement("span", null, "In Progress")),
+                        SP_REACT.createElement("button", { onClick: () => setTag('dropped'), style: { ...styles.tagButton, backgroundColor: TAG_ICON_COLORS.dropped } },
+                            SP_REACT.createElement(TagIcon, { type: "dropped", size: 18 }),
+                            SP_REACT.createElement("span", null, "Dropped"))),
                     SP_REACT.createElement("div", { style: styles.buttonGroup },
                         SP_REACT.createElement("button", { onClick: resetToAuto, style: styles.secondaryButton }, "Reset to Auto"),
                         SP_REACT.createElement("button", { onClick: removeTag, style: styles.secondaryButton }, "Remove")))),

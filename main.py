@@ -263,7 +263,7 @@ class Plugin:
 
         try:
             # Validate tag
-            valid_tags = ['completed', 'in_progress', 'mastered']
+            valid_tags = ['completed', 'in_progress', 'mastered', 'dropped']
             if tag not in valid_tags:
                 logger.error(f"Invalid tag: {tag}. Must be one of: {valid_tags}")
                 return {"success": False, "error": f"Invalid tag. Must be one of: {valid_tags}"}
@@ -474,6 +474,7 @@ class Plugin:
                 "completed": 0,
                 "in_progress": 0,
                 "mastered": 0,
+                "dropped": 0,
             }
 
             for tag_entry in all_tags:
@@ -552,36 +553,47 @@ class Plugin:
         logger.info(f"Received first arg type: {type(playtime_data_or_params)}")
 
         # Handle Decky API passing all params as single dict
-        # Frontend calls: call('sync_library_with_playtime', { playtime_data, achievement_data })
+        # Frontend calls: call('sync_library_with_playtime', { game_data, achievement_data })
         # Decky passes entire object as first argument
-        if isinstance(playtime_data_or_params, dict) and 'playtime_data' in playtime_data_or_params:
-            logger.info("Extracting nested params from first argument")
+        if isinstance(playtime_data_or_params, dict) and 'game_data' in playtime_data_or_params:
+            logger.info("Extracting nested params from first argument (new format with game_data)")
+            game_data = playtime_data_or_params.get('game_data', {})
+            achievement_data = playtime_data_or_params.get('achievement_data', {})
+            game_names = playtime_data_or_params.get('game_names', {})
+        elif isinstance(playtime_data_or_params, dict) and 'playtime_data' in playtime_data_or_params:
+            logger.info("Extracting nested params from first argument (old format with playtime_data)")
+            # Backwards compatibility: convert old playtime_data format to game_data format
             playtime_data = playtime_data_or_params.get('playtime_data', {})
+            game_data = {appid: {"playtime_minutes": mins, "rt_last_time_played": None}
+                        for appid, mins in playtime_data.items()}
             achievement_data = playtime_data_or_params.get('achievement_data', {})
             game_names = playtime_data_or_params.get('game_names', {})
         else:
             # Direct params (backwards compatibility)
             playtime_data = playtime_data_or_params
+            game_data = {appid: {"playtime_minutes": mins, "rt_last_time_played": None}
+                        for appid, mins in playtime_data.items()}
             if achievement_data is None:
                 achievement_data = {}
             game_names = {}
 
-        logger.info(f"Playtime data type: {type(playtime_data)}, keys: {len(playtime_data) if isinstance(playtime_data, dict) else 'N/A'}")
+        logger.info(f"Game data type: {type(game_data)}, keys: {len(game_data) if isinstance(game_data, dict) else 'N/A'}")
         logger.info(f"Achievement data type: {type(achievement_data)}, keys: {len(achievement_data) if isinstance(achievement_data, dict) else 'N/A'}")
 
-        # Handle case where playtime_data might be nested or wrong type
-        if isinstance(playtime_data, dict):
-            logger.info(f"Received playtime_data keys count: {len(playtime_data)}")
-            sample = list(playtime_data.items())[:5]
-            logger.info(f"Sample playtime data (first 5): {sample}")
-            # Safely count non-zero values
+        # Handle case where game_data might be nested or wrong type
+        if isinstance(game_data, dict):
+            logger.info(f"Received game_data keys count: {len(game_data)}")
+            sample = list(game_data.items())[:5]
+            logger.info(f"Sample game data (first 5): {sample}")
+            # Safely count non-zero playtime and last_played values
             try:
-                non_zero = sum(1 for v in playtime_data.values() if isinstance(v, (int, float)) and v > 0)
-                logger.info(f"Games with playtime > 0: {non_zero}/{len(playtime_data)}")
+                non_zero_playtime = sum(1 for v in game_data.values() if isinstance(v, dict) and v.get('playtime_minutes', 0) > 0)
+                with_last_played = sum(1 for v in game_data.values() if isinstance(v, dict) and v.get('rt_last_time_played'))
+                logger.info(f"Games with playtime > 0: {non_zero_playtime}/{len(game_data)}, with last_played: {with_last_played}/{len(game_data)}")
             except Exception as e:
-                logger.error(f"Error counting non-zero playtime: {e}")
+                logger.error(f"Error counting game data stats: {e}")
         else:
-            logger.error(f"playtime_data is not a dict! Type: {type(playtime_data)}")
+            logger.error(f"game_data is not a dict! Type: {type(game_data)}")
 
         # Log achievement data stats
         if isinstance(achievement_data, dict):
@@ -599,11 +611,11 @@ class Plugin:
             logger.info(f"Sample game names (first 5): {sample_names}")
 
         try:
-            logger.info(f"=== Starting sync with {len(playtime_data)} playtime entries ===")
+            logger.info(f"=== Starting sync with {len(game_data)} game entries ===")
 
-            # Only sync games that were passed in playtime_data
+            # Only sync games that were passed in game_data
             # This prevents single-game syncs from overwriting all other games with zeros
-            appids_to_sync = list(playtime_data.keys())
+            appids_to_sync = list(game_data.keys())
             total = len(appids_to_sync)
             synced = 0
             new_tags = 0  # Track newly tagged games for notifications
@@ -616,13 +628,19 @@ class Plugin:
                 # Get game name from frontend (works for uninstalled games!)
                 game_name = game_names.get(appid, None)
 
-                # Use playtime from frontend - ensure it's an int
-                raw_playtime = playtime_data.get(appid, 0)
-                if isinstance(raw_playtime, (int, float)):
-                    playtime_minutes = int(raw_playtime)
+                # Extract game data from new structure
+                game_info = game_data.get(appid, {})
+                if isinstance(game_info, dict):
+                    playtime_minutes = int(game_info.get('playtime_minutes', 0))
+                    rt_last_time_played = game_info.get('rt_last_time_played')
+                elif isinstance(game_info, (int, float)):
+                    # Backwards compatibility: if old format passes just int/float
+                    playtime_minutes = int(game_info)
+                    rt_last_time_played = None
                 else:
-                    logger.warning(f"Unexpected playtime type for {appid}: {type(raw_playtime)} = {raw_playtime}")
+                    logger.warning(f"Unexpected game_info type for {appid}: {type(game_info)} = {game_info}")
                     playtime_minutes = 0
+                    rt_last_time_played = None
 
                 # Get achievement data from frontend (None if not available)
                 # We only pass data if we have actual achievement info (total > 0)
@@ -647,7 +665,7 @@ class Plugin:
                     cached_hltb = await self.db.get_hltb_cache(appid)
                     needs_hltb = not cached_hltb and playtime_minutes > 0
 
-                    result = await Plugin.sync_game_with_playtime(self, appid, playtime_minutes, total_achievements, unlocked_achievements, achievement_percentage, game_name)
+                    result = await Plugin.sync_game_with_playtime(self, appid, playtime_minutes, total_achievements, unlocked_achievements, achievement_percentage, game_name, rt_last_time_played)
                     synced += 1
 
                     # Track if this game got a new/changed tag
@@ -702,13 +720,13 @@ class Plugin:
 
         return None
 
-    async def sync_game_with_playtime(self, appid: str, playtime_minutes: int, total_achievements: int = None, unlocked_achievements: int = None, achievement_percentage: float = None, frontend_game_name: str = None) -> Dict[str, Any]:
-        """Sync a single game using frontend-provided playtime, achievements, and name
+    async def sync_game_with_playtime(self, appid: str, playtime_minutes: int, total_achievements: int = None, unlocked_achievements: int = None, achievement_percentage: float = None, frontend_game_name: str = None, rt_last_time_played: int = None) -> Dict[str, Any]:
+        """Sync a single game using frontend-provided playtime, achievements, name, and last played timestamp
 
         NOTE: Achievement params can be None if frontend doesn't have data.
         In that case, we preserve existing achievement data in DB.
         """
-        logger.debug(f"sync_game_with_playtime: appid={appid}, playtime_minutes={playtime_minutes}, achievements={unlocked_achievements}/{total_achievements}")
+        logger.debug(f"sync_game_with_playtime: appid={appid}, playtime_minutes={playtime_minutes}, achievements={unlocked_achievements}/{total_achievements}, rt_last_time_played={rt_last_time_played}")
 
         # Get current tag
         current_tag = await self.db.get_tag(appid)
@@ -771,21 +789,49 @@ class Plugin:
             "total_achievements": final_total_achievements,
             "unlocked_achievements": final_unlocked_achievements,
             "achievement_percentage": round(final_achievement_percentage, 2),
-            "is_hidden": is_hidden
+            "is_hidden": is_hidden,
+            "rt_last_time_played": rt_last_time_played  # Unix timestamp of last play
         }
 
         await self.db.update_game_stats(appid, stats)
 
         logger.info(f"  Stats: playtime={playtime_minutes}min, " +
                     f"achievements={final_unlocked_achievements}/{final_total_achievements}" +
-                    (f", HIDDEN (non-Steam app without HLTB)" if is_hidden else ""))
+                    (f", HIDDEN (non-Steam app without HLTB)" if is_hidden else "") +
+                    (f", last_played={rt_last_time_played}" if rt_last_time_played else ""))
 
         if cached_hltb:
             logger.info(f"  HLTB: main={cached_hltb.get('main_story')}h, extra={cached_hltb.get('main_extra')}h")
         else:
             logger.info(f"  HLTB: no data")
 
-        # Calculate tag (but don't override manual tags)
+        # Check for automatic "dropped" tagging
+        # Only auto-tag as dropped if:
+        # 1. Game was played before (rt_last_time_played exists and > 0)
+        # 2. Not played for over 1 year
+        # 3. Not manually tagged
+        # 4. Not hidden
+        import time
+        should_check_dropped = (
+            rt_last_time_played and
+            rt_last_time_played > 0 and
+            not is_manual and
+            not is_hidden
+        )
+
+        if should_check_dropped:
+            current_time = int(time.time())
+            one_year_seconds = 365 * 24 * 60 * 60  # 31536000 seconds
+            days_since_played = (current_time - rt_last_time_played) / (24 * 60 * 60)
+
+            if current_time - rt_last_time_played > one_year_seconds:
+                # Auto-tag as dropped
+                current_tag_value = current_tag.get('tag') if current_tag else None
+                if current_tag_value != 'dropped':
+                    await self.db.set_tag(appid, 'dropped', is_manual=False)
+                    logger.info(f"  -> Auto-tagged as 'dropped' (not played for {days_since_played:.0f} days)")
+
+        # Calculate tag (but don't override manual tags or dropped tags)
         # Skip tag calculation for hidden games (unless manually tagged)
         tag_changed = False
         if is_manual:
@@ -793,16 +839,20 @@ class Plugin:
         elif is_hidden:
             logger.info(f"  Skipping tag calculation (hidden non-Steam app)")
         else:
-            new_tag = await Plugin.calculate_auto_tag(self, appid)
-            logger.info(f"  Calculated tag: {new_tag or 'none'}")
+            # Check if already dropped - don't recalculate if dropped
+            current_tag_value = current_tag.get('tag') if current_tag else None
+            if current_tag_value == 'dropped':
+                logger.info(f"  Skipping tag calculation (already dropped)")
+            else:
+                new_tag = await Plugin.calculate_auto_tag(self, appid)
+                logger.info(f"  Calculated tag: {new_tag or 'none'}")
 
-            # Update if changed or doesn't exist
-            if new_tag:
-                current_tag_value = current_tag.get('tag') if current_tag else None
-                if new_tag != current_tag_value:
-                    await self.db.set_tag(appid, new_tag, is_manual=False)
-                    logger.info(f"  -> Tag set: {new_tag}")
-                    tag_changed = True
+                # Update if changed or doesn't exist
+                if new_tag:
+                    if new_tag != current_tag_value:
+                        await self.db.set_tag(appid, new_tag, is_manual=False)
+                        logger.info(f"  -> Tag set: {new_tag}")
+                        tag_changed = True
 
         result = await self.db.get_tag(appid) or {}
         result['tag_changed'] = tag_changed
@@ -847,7 +897,7 @@ class Plugin:
                 })
 
             # Sort by tag type, then by name
-            tag_order = {'completed': 0, 'mastered': 1, 'in_progress': 2}
+            tag_order = {'completed': 0, 'mastered': 1, 'in_progress': 2, 'dropped': 3}
             result.sort(key=lambda x: (tag_order.get(x['tag'], 99), x['game_name'].lower()))
 
             logger.info(f"[get_all_tags_with_names] returning {len(result)} games")

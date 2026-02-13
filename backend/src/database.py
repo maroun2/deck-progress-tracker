@@ -46,7 +46,7 @@ class Database:
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS game_tags (
                 appid TEXT PRIMARY KEY,
-                tag TEXT NOT NULL CHECK(tag IN ('completed', 'in_progress', 'mastered')),
+                tag TEXT NOT NULL,
                 is_manual BOOLEAN DEFAULT 0,
                 last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
@@ -87,6 +87,7 @@ class Database:
                 total_achievements INTEGER DEFAULT 0,
                 unlocked_achievements INTEGER DEFAULT 0,
                 is_hidden BOOLEAN DEFAULT 0,
+                rt_last_time_played INTEGER,
                 last_sync TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         """)
@@ -96,6 +97,8 @@ class Database:
         columns = [col[1] for col in cursor.fetchall()]
         if 'is_hidden' not in columns:
             cursor.execute("ALTER TABLE game_stats ADD COLUMN is_hidden BOOLEAN DEFAULT 0")
+        if 'rt_last_time_played' not in columns:
+            cursor.execute("ALTER TABLE game_stats ADD COLUMN rt_last_time_played INTEGER")
 
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS settings (
@@ -305,15 +308,16 @@ class Database:
         cursor.execute("""
             INSERT INTO game_stats (
                 appid, game_name, playtime_minutes,
-                total_achievements, unlocked_achievements, is_hidden, last_sync
+                total_achievements, unlocked_achievements, is_hidden, rt_last_time_played, last_sync
             )
-            VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+            VALUES (?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
             ON CONFLICT(appid) DO UPDATE SET
                 game_name = excluded.game_name,
                 playtime_minutes = excluded.playtime_minutes,
                 total_achievements = excluded.total_achievements,
                 unlocked_achievements = excluded.unlocked_achievements,
                 is_hidden = excluded.is_hidden,
+                rt_last_time_played = excluded.rt_last_time_played,
                 last_sync = CURRENT_TIMESTAMP
         """, (
             appid,
@@ -321,7 +325,8 @@ class Database:
             stats.get("playtime_minutes", 0),
             stats.get("total_achievements", 0),
             stats.get("unlocked_achievements", 0),
-            int(stats.get("is_hidden", False))
+            int(stats.get("is_hidden", False)),
+            stats.get("rt_last_time_played")
         ))
         conn.commit()
 
@@ -357,6 +362,12 @@ class Database:
             except (KeyError, IndexError):
                 is_hidden = False
 
+            # Handle case where rt_last_time_played might not exist yet (migration)
+            try:
+                rt_last_time_played = row["rt_last_time_played"]
+            except (KeyError, IndexError):
+                rt_last_time_played = None
+
             return {
                 "appid": row["appid"],
                 "game_name": row["game_name"],
@@ -364,6 +375,7 @@ class Database:
                 "total_achievements": row["total_achievements"],
                 "unlocked_achievements": row["unlocked_achievements"],
                 "is_hidden": is_hidden,
+                "rt_last_time_played": rt_last_time_played,
                 "last_sync": row["last_sync"]
             }
         return None
