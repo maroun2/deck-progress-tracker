@@ -101,11 +101,100 @@ class Plugin:
         # This ensures we use real-time playtime/achievement data from Steam's frontend API.
         logger.info("Plugin ready. Sync will be triggered by frontend with real-time data.")
 
+        # Start background task for daily dropped game check
+        self.dropped_task = asyncio.create_task(self._dropped_games_checker())
+        logger.info("Started background task for dropped games checking")
+
     async def _unload(self):
         """Cleanup on plugin unload"""
         logger.info("Unloading plugin...")
+
+        # Cancel background task
+        if hasattr(self, 'dropped_task'):
+            self.dropped_task.cancel()
+            try:
+                await self.dropped_task
+            except asyncio.CancelledError:
+                pass
+            logger.info("Stopped background task for dropped games checking")
+
         if hasattr(self, 'db'):
             await self.db.close()
+
+    async def _dropped_games_checker(self):
+        """Background task that runs daily to check and tag dropped games"""
+        logger.info("Dropped games checker task started")
+
+        # Wait 1 hour after plugin load before first check (let things settle)
+        await asyncio.sleep(3600)
+
+        while True:
+            try:
+                logger.info("Running daily dropped games check...")
+                dropped_count = await self._check_and_tag_dropped_games()
+                logger.info(f"Dropped games check complete: {dropped_count} games tagged as dropped")
+
+                # Sleep for 24 hours until next check
+                await asyncio.sleep(24 * 60 * 60)
+
+            except asyncio.CancelledError:
+                logger.info("Dropped games checker task cancelled")
+                break
+            except Exception as e:
+                logger.error(f"Error in dropped games checker: {e}")
+                import traceback
+                logger.error(traceback.format_exc())
+                # Wait 1 hour before retrying on error
+                await asyncio.sleep(3600)
+
+    async def _check_and_tag_dropped_games(self, days_threshold: int = 365) -> int:
+        """Check database for games that should be tagged as dropped
+
+        Finds games where:
+        - rt_last_time_played exists and is older than days_threshold
+        - Game is not hidden
+        - Game is not manually tagged
+        - Game is not completed/mastered (either no tag or in_progress)
+        - Game is not already dropped
+
+        Returns count of games newly tagged as dropped
+        """
+        logger.info(f"Checking for games not played in {days_threshold} days...")
+
+        try:
+            # Get eligible games from database
+            eligible_games = await self.db.get_games_eligible_for_dropped(days_threshold)
+            logger.info(f"Found {len(eligible_games)} games eligible for dropped tagging")
+
+            if not eligible_games:
+                return 0
+
+            dropped_count = 0
+            for game in eligible_games:
+                appid = game['appid']
+                game_name = game['game_name']
+                rt_last_time_played = game['rt_last_time_played']
+
+                # Calculate days since played for logging
+                import time
+                current_time = int(time.time())
+                days_since_played = (current_time - rt_last_time_played) / (24 * 60 * 60)
+
+                # Tag as dropped
+                success = await self.db.set_tag(appid, 'dropped', is_manual=False)
+                if success:
+                    dropped_count += 1
+                    logger.info(f"Tagged as dropped: {game_name} (appid={appid}, not played for {days_since_played:.0f} days)")
+                else:
+                    logger.error(f"Failed to tag as dropped: {game_name} (appid={appid})")
+
+            return dropped_count
+
+        except Exception as e:
+            logger.error(f"Error checking dropped games: {e}")
+            import traceback
+            logger.error(traceback.format_exc())
+            return 0
 
     # ==================== Tag Calculation Logic ====================
 
@@ -954,3 +1043,19 @@ class Plugin:
             import traceback
             logger.error(traceback.format_exc())
             return {'success': False, 'error': str(e)}
+
+    async def check_dropped_games(self, days_threshold: int = 365) -> Dict[str, Any]:
+        """Manually trigger check for dropped games (for testing/manual run)"""
+        logger.info(f"=== check_dropped_games called manually (threshold={days_threshold} days) ===")
+        try:
+            dropped_count = await self._check_and_tag_dropped_games(days_threshold)
+            return {
+                "success": True,
+                "dropped_count": dropped_count,
+                "message": f"Tagged {dropped_count} games as dropped"
+            }
+        except Exception as e:
+            logger.error(f"Manual dropped games check failed: {e}")
+            import traceback
+            logger.error(traceback.format_exc())
+            return {"success": False, "error": str(e)}

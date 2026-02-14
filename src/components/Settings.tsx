@@ -28,6 +28,7 @@ const TAG_COLORS: Record<string, string> = {
   in_progress: '#764ba2',
   mastered: '#f5576c',
   backlog: '#888',
+  dropped: '#c9a171',
 };
 
 export const Settings: FC = () => {
@@ -53,6 +54,7 @@ export const Settings: FC = () => {
     in_progress: false,
     backlog: false,
     mastered: false,
+    dropped: false,
   });
   const [loadingGames, setLoadingGames] = useState(false);
   const [loadingBacklog, setLoadingBacklog] = useState(false);
@@ -390,10 +392,19 @@ export const Settings: FC = () => {
   }, {} as Record<string, TaggedGame[]>);
 
   const tagLabels: Record<string, string> = {
-    completed: 'Completed (Beat Main Story)',
+    completed: 'Completed',
     in_progress: 'In Progress',
-    backlog: 'Backlog (Not Started)',
-    mastered: 'Mastered (85%+ Achievements)',
+    backlog: 'Backlog',
+    mastered: 'Mastered',
+    dropped: 'Dropped',
+  };
+
+  const tagDescriptions: Record<string, string> = {
+    completed: 'Beat the main story (playtime ≥ HLTB main story time)',
+    in_progress: 'Currently playing (playtime ≥ 30 minutes)',
+    backlog: 'Not started yet (no playtime or minimal playtime)',
+    mastered: 'Unlocked 85%+ of all achievements',
+    dropped: 'Not played for over 1 year',
   };
 
   const totalGames = stats ? stats.total : 0;
@@ -424,7 +435,7 @@ export const Settings: FC = () => {
           </div>
         ) : (
           <div style={styles.taggedListContainer}>
-            {(['in_progress', 'completed', 'mastered', 'backlog'] as TagType[]).map((tagType) => {
+            {(['in_progress', 'completed', 'mastered', 'dropped', 'backlog'] as TagType[]).map((tagType) => {
               if (!tagType) return null;
               const isBacklog = tagType === 'backlog';
               const games = isBacklog ? backlogGames : (groupedGames[tagType] || []);
@@ -450,6 +461,12 @@ export const Settings: FC = () => {
                       </span>
                     </div>
                   </button>
+
+                  {isExpanded && (
+                    <div style={styles.tagDescription}>
+                      {tagDescriptions[tagType]}
+                    </div>
+                  )}
 
                   {isExpanded && isBacklog && loadingBacklog && (
                     <div style={styles.emptySection}>Loading backlog games...</div>
@@ -782,5 +799,12 @@ const styles: Record<string, React.CSSProperties> = {
     color: '#666',
     fontSize: '13px',
     fontStyle: 'italic',
+  },
+  tagDescription: {
+    padding: '8px 16px 12px 16px',
+    color: '#999',
+    fontSize: '12px',
+    fontStyle: 'italic',
+    borderBottom: '1px solid #2a2a2a',
   },
 };
