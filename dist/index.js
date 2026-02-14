@@ -513,11 +513,21 @@ const syncLibraryWithFrontendData = async () => {
         // Get game list
         let appids;
         if (useAllOwned) {
+            // Try to discover games from frontend with retries if appStore isn't ready
             appids = await getAllOwnedGameIds();
             log$7(`Discovered ${appids.length} owned games`);
-            // Fallback to backend if discovery fails
+            // Retry up to 3 times with 2 second delays if discovery fails (appStore not ready on initial load)
+            let retries = 0;
+            while (appids.length === 0 && retries < 3) {
+                retries++;
+                log$7(`Discovery failed (appStore may not be ready yet), retry ${retries}/3 in 2s...`);
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                appids = await getAllOwnedGameIds();
+                log$7(`Retry ${retries}: Discovered ${appids.length} owned games`);
+            }
+            // Final fallback to backend if discovery still fails after retries
             if (appids.length === 0) {
-                log$7('Discovery failed, using backend list');
+                log$7('Discovery failed after retries, using backend list');
                 const gamesResult = await call('get_all_games');
                 if (gamesResult.success && gamesResult.games) {
                     appids = gamesResult.games.map(g => g.appid);
@@ -638,6 +648,31 @@ const Settings = () => {
             // Silently fail
         }
     };
+    // Poll for sync progress from backend (works for both auto-sync and manual sync)
+    SP_REACT.useEffect(() => {
+        const pollSyncProgress = async () => {
+            try {
+                const result = await call('get_sync_progress');
+                if (result.success && result.syncing) {
+                    // Update message with current progress
+                    setMessage(`Syncing: ${result.current}/${result.total} games`);
+                    setSyncing(true);
+                }
+                else if (result.success && !result.syncing && syncing) {
+                    // Sync just finished
+                    setSyncing(false);
+                    // Update UI to show new tags
+                    smartUpdateUI();
+                }
+            }
+            catch (err) {
+                // Silently fail - backend may not support get_sync_progress yet
+            }
+        };
+        // Poll every 500ms when syncing, less frequently otherwise
+        const interval = setInterval(pollSyncProgress, syncing ? 500 : 2000);
+        return () => clearInterval(interval);
+    }, [syncing]);
     SP_REACT.useEffect(() => {
         loadSettings();
         // Initial load - force update
@@ -802,7 +837,7 @@ const Settings = () => {
                 const batchAppids = appids.slice(i, i + BATCH_SIZE);
                 const batchNum = Math.floor(i / BATCH_SIZE) + 1;
                 const totalBatches = Math.ceil(appids.length / BATCH_SIZE);
-                setMessage(`Syncing batch ${batchNum}/${totalBatches} (${i + 1}-${Math.min(i + BATCH_SIZE, appids.length)} of ${appids.length})...`);
+                // Progress message now handled by universal polling via get_sync_progress
                 await logToBackend('info', `Syncing batch ${batchNum}/${totalBatches}: ${batchAppids.length} games`);
                 // Get data for this batch only
                 const batchGameData = {};
@@ -898,7 +933,7 @@ const Settings = () => {
                 "Library (",
                 totalGames,
                 " games)"),
-            loadingGames ? (SP_REACT.createElement("div", { style: styles$1.loadingText }, "Loading games...")) : totalGames === 0 ? (SP_REACT.createElement("div", { style: styles$1.loadingText }, "No games synced yet. Click \"Sync Entire Library\" to tag your games based on playtime and achievements.")) : (SP_REACT.createElement("div", { style: styles$1.taggedListContainer }, ['in_progress', 'completed', 'mastered', 'dropped', 'backlog'].map((tagType) => {
+            loadingGames ? (SP_REACT.createElement("div", { style: styles$1.loadingText }, "Loading games...")) : totalGames === 0 ? (SP_REACT.createElement("div", { style: styles$1.loadingText }, "No games synced yet. Click \"Sync Entire Library\" to tag your games based on playtime and achievements.")) : (SP_REACT.createElement(DFL.Focusable, { style: styles$1.taggedListContainer, "flow-children": "down" }, ['in_progress', 'completed', 'mastered', 'dropped', 'backlog'].map((tagType) => {
                 if (!tagType)
                     return null;
                 const isBacklog = tagType === 'backlog';
@@ -1387,7 +1422,8 @@ const TagManager = ({ appid, onClose }) => {
         return (SP_REACT.createElement("div", { style: styles.modal },
             SP_REACT.createElement("div", { style: styles.content },
                 SP_REACT.createElement("div", { style: styles.error }, error || 'Failed to load game details'),
-                SP_REACT.createElement("button", { onClick: onClose, style: styles.button }, "Close"))));
+                SP_REACT.createElement(DFL.Focusable, null,
+                    SP_REACT.createElement(DFL.DialogButton, { onClick: onClose }, "Close")))));
     }
     const stats = details.stats;
     const tag = details.tag;
@@ -1435,23 +1471,24 @@ const TagManager = ({ appid, onClose }) => {
                         SP_REACT.createElement("span", { style: styles.noData }, "No data")))),
                 SP_REACT.createElement("div", { style: styles.rightColumn },
                     SP_REACT.createElement("h3", { style: styles.sectionTitle }, "Set Tag"),
-                    SP_REACT.createElement("div", { style: styles.tagButtonGroup },
-                        SP_REACT.createElement("button", { onClick: () => setTag('mastered'), style: { ...styles.tagButton, backgroundColor: TAG_ICON_COLORS.mastered } },
+                    SP_REACT.createElement(DFL.Focusable, { style: styles.tagButtonGroup, "flow-children": "down" },
+                        SP_REACT.createElement(DFL.Focusable, { onActivate: () => setTag('mastered'), style: { ...styles.tagButton, backgroundColor: TAG_ICON_COLORS.mastered } },
                             SP_REACT.createElement(TagIcon, { type: "mastered", size: 18 }),
                             SP_REACT.createElement("span", null, "Mastered")),
-                        SP_REACT.createElement("button", { onClick: () => setTag('completed'), style: { ...styles.tagButton, backgroundColor: TAG_ICON_COLORS.completed } },
+                        SP_REACT.createElement(DFL.Focusable, { onActivate: () => setTag('completed'), style: { ...styles.tagButton, backgroundColor: TAG_ICON_COLORS.completed } },
                             SP_REACT.createElement(TagIcon, { type: "completed", size: 18 }),
                             SP_REACT.createElement("span", null, "Completed")),
-                        SP_REACT.createElement("button", { onClick: () => setTag('in_progress'), style: { ...styles.tagButton, backgroundColor: TAG_ICON_COLORS.in_progress } },
+                        SP_REACT.createElement(DFL.Focusable, { onActivate: () => setTag('in_progress'), style: { ...styles.tagButton, backgroundColor: TAG_ICON_COLORS.in_progress } },
                             SP_REACT.createElement(TagIcon, { type: "in_progress", size: 18 }),
                             SP_REACT.createElement("span", null, "In Progress")),
-                        SP_REACT.createElement("button", { onClick: () => setTag('dropped'), style: { ...styles.tagButton, backgroundColor: TAG_ICON_COLORS.dropped } },
+                        SP_REACT.createElement(DFL.Focusable, { onActivate: () => setTag('dropped'), style: { ...styles.tagButton, backgroundColor: TAG_ICON_COLORS.dropped } },
                             SP_REACT.createElement(TagIcon, { type: "dropped", size: 18 }),
                             SP_REACT.createElement("span", null, "Dropped"))),
-                    SP_REACT.createElement("div", { style: styles.buttonGroup },
-                        SP_REACT.createElement("button", { onClick: resetToAuto, style: styles.secondaryButton }, "Reset to Auto"),
-                        SP_REACT.createElement("button", { onClick: removeTag, style: styles.secondaryButton }, "Remove")))),
-            SP_REACT.createElement("button", { onClick: onClose, style: styles.closeButton }, "Close"))));
+                    SP_REACT.createElement(DFL.Focusable, { style: styles.buttonGroup, "flow-children": "horizontal" },
+                        SP_REACT.createElement(DFL.DialogButton, { onClick: resetToAuto, style: styles.secondaryButton }, "Reset to Auto"),
+                        SP_REACT.createElement(DFL.DialogButton, { onClick: removeTag, style: styles.secondaryButton }, "Remove")))),
+            SP_REACT.createElement(DFL.Focusable, null,
+                SP_REACT.createElement(DFL.DialogButton, { onClick: onClose, style: styles.closeButton }, "Close")))));
 };
 const styles = {
     modal: {
@@ -1568,7 +1605,6 @@ const styles = {
         color: 'white',
         fontSize: '13px',
         fontWeight: 'bold',
-        cursor: 'pointer',
         transition: 'opacity 0.2s',
     },
     secondaryButton: {
@@ -1579,7 +1615,6 @@ const styles = {
         borderRadius: '4px',
         color: 'white',
         fontSize: '12px',
-        cursor: 'pointer',
         transition: 'background-color 0.2s',
     },
     closeButton: {
@@ -1591,7 +1626,6 @@ const styles = {
         color: 'white',
         fontSize: '14px',
         fontWeight: 'bold',
-        cursor: 'pointer',
     },
     loading: {
         textAlign: 'center',
@@ -1612,7 +1646,6 @@ const styles = {
         color: 'white',
         fontSize: '14px',
         fontWeight: 'bold',
-        cursor: 'pointer',
         marginTop: '12px',
     },
 };
