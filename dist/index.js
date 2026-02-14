@@ -1,4 +1,4 @@
-const manifest = {"name":"Game Progress Tracker","author":"Maron","version":"1.2.0","api_version":1,"flags":["_root"],"publish":{"tags":["library","achievements","statistics","enhancement"],"description":"Automatic game tagging based on achievements, playtime, and completion time. Track your progress with visual badges in the Steam library.","image":"https://opengraph.githubassets.com/1/SteamDeckHomebrew/decky-loader"}};
+const manifest = {"name":"Game Progress Tracker","author":"Maron","version":"1.3.0","api_version":1,"flags":["_root"],"publish":{"tags":["library","achievements","statistics","enhancement"],"description":"Automatic game tagging based on achievements, playtime, and completion time. Track your progress with visual badges in the Steam library.","image":"https://opengraph.githubassets.com/1/SteamDeckHomebrew/decky-loader"}};
 const API_VERSION = 2;
 if (!manifest?.name) {
     throw new Error('[@decky/api]: Failed to find plugin manifest.');
@@ -568,6 +568,7 @@ const TAG_COLORS = {
     in_progress: '#764ba2',
     mastered: '#f5576c',
     backlog: '#888',
+    dropped: '#c9a171',
 };
 const Settings = () => {
     const [settings, setSettings] = SP_REACT.useState({
@@ -591,6 +592,7 @@ const Settings = () => {
         in_progress: false,
         backlog: false,
         mastered: false,
+        dropped: false,
     });
     const [loadingGames, setLoadingGames] = SP_REACT.useState(false);
     const [loadingBacklog, setLoadingBacklog] = SP_REACT.useState(false);
@@ -726,7 +728,7 @@ const Settings = () => {
     };
     const syncLibrary = async () => {
         await logToBackend('info', '========================================');
-        await logToBackend('info', `syncLibrary button clicked - v${"1.2.0"}`);
+        await logToBackend('info', `syncLibrary button clicked - v${"1.3.0"}`);
         await logToBackend('info', '========================================');
         try {
             setSyncing(true);
@@ -868,10 +870,18 @@ const Settings = () => {
         return acc;
     }, {});
     const tagLabels = {
-        completed: 'Completed (Beat Main Story)',
+        completed: 'Completed',
         in_progress: 'In Progress',
-        backlog: 'Backlog (Not Started)',
-        mastered: 'Mastered (85%+ Achievements)',
+        backlog: 'Backlog',
+        mastered: 'Mastered',
+        dropped: 'Dropped',
+    };
+    const tagDescriptions = {
+        completed: 'Beat the main story (playtime ≥ HLTB main story time)',
+        in_progress: 'Currently playing (playtime ≥ 30 minutes)',
+        backlog: 'Not started yet (no playtime or minimal playtime)',
+        mastered: 'Unlocked 85%+ of all achievements',
+        dropped: 'Not played for over 1 year',
     };
     const totalGames = stats ? stats.total : 0;
     // Get count for each category including backlog from stats
@@ -888,7 +898,7 @@ const Settings = () => {
                 "Library (",
                 totalGames,
                 " games)"),
-            loadingGames ? (SP_REACT.createElement("div", { style: styles$1.loadingText }, "Loading games...")) : totalGames === 0 ? (SP_REACT.createElement("div", { style: styles$1.loadingText }, "No games synced yet. Click \"Sync Entire Library\" to tag your games based on playtime and achievements.")) : (SP_REACT.createElement("div", { style: styles$1.taggedListContainer }, ['in_progress', 'completed', 'mastered', 'backlog'].map((tagType) => {
+            loadingGames ? (SP_REACT.createElement("div", { style: styles$1.loadingText }, "Loading games...")) : totalGames === 0 ? (SP_REACT.createElement("div", { style: styles$1.loadingText }, "No games synced yet. Click \"Sync Entire Library\" to tag your games based on playtime and achievements.")) : (SP_REACT.createElement("div", { style: styles$1.taggedListContainer }, ['in_progress', 'completed', 'mastered', 'dropped', 'backlog'].map((tagType) => {
                 if (!tagType)
                     return null;
                 const isBacklog = tagType === 'backlog';
@@ -903,6 +913,7 @@ const Settings = () => {
                         SP_REACT.createElement("div", { style: styles$1.tagSectionRight },
                             SP_REACT.createElement("span", { style: { ...styles$1.tagCount, color: TAG_COLORS[tagType] } }, count),
                             SP_REACT.createElement("span", { style: styles$1.expandIcon }, isExpanded ? '−' : '+'))),
+                    isExpanded && (SP_REACT.createElement("div", { style: styles$1.tagDescription }, tagDescriptions[tagType])),
                     isExpanded && isBacklog && loadingBacklog && (SP_REACT.createElement("div", { style: styles$1.emptySection }, "Loading backlog games...")),
                     isExpanded && games.length > 0 && (SP_REACT.createElement("div", { style: styles$1.gameList }, games.map((game) => (SP_REACT.createElement("div", { key: game.appid, style: styles$1.gameItem, onClick: () => navigateToGame(game.appid) },
                         SP_REACT.createElement("span", { style: {
@@ -921,7 +932,7 @@ const Settings = () => {
             SP_REACT.createElement("div", { style: styles$1.about },
                 SP_REACT.createElement("p", null,
                     "Game Progress Tracker ",
-                    "1.2.0"),
+                    "1.3.0"),
                 SP_REACT.createElement("p", null, "Automatic game tagging based on achievements, playtime, and completion time."),
                 SP_REACT.createElement("p", { style: styles$1.smallText }, "Data from HowLongToBeat \u2022 Steam achievement system")))));
 };
@@ -1190,6 +1201,13 @@ const styles$1 = {
         color: '#666',
         fontSize: '13px',
         fontStyle: 'italic',
+    },
+    tagDescription: {
+        padding: '8px 16px 12px 16px',
+        color: '#999',
+        fontSize: '12px',
+        fontStyle: 'italic',
+        borderBottom: '1px solid #2a2a2a',
     },
 };
 
