@@ -1,4 +1,4 @@
-const manifest = {"name":"Game Progress Tracker","author":"Maron","version":"1.3.5","api_version":1,"flags":["_root"],"publish":{"tags":["library","achievements","statistics","enhancement"],"description":"Automatic game tagging based on achievements, playtime, and completion time. Track your progress with visual badges in the Steam library.","image":"https://opengraph.githubassets.com/1/SteamDeckHomebrew/decky-loader"}};
+const manifest = {"name":"Game Progress Tracker","author":"Maron","version":"1.3.6","api_version":1,"flags":["_root"],"publish":{"tags":["library","achievements","statistics","enhancement"],"description":"Automatic game tagging based on achievements, playtime, and completion time. Track your progress with visual badges in the Steam library.","image":"https://opengraph.githubassets.com/1/SteamDeckHomebrew/decky-loader"}};
 const API_VERSION = 2;
 if (!manifest?.name) {
     throw new Error('[@decky/api]: Failed to find plugin manifest.');
@@ -753,7 +753,7 @@ const Settings = () => {
     };
     const syncLibrary = async () => {
         await logToBackend('info', '========================================');
-        await logToBackend('info', `syncLibrary button clicked - v${"1.3.5"}`);
+        await logToBackend('info', `syncLibrary button clicked - v${"1.3.6"}`);
         await logToBackend('info', '========================================');
         try {
             setSyncing(true);
@@ -877,6 +877,12 @@ const Settings = () => {
         return (groupedGames[tagType] || []).length;
     };
     return (SP_REACT.createElement("div", { style: styles$1.container },
+        SP_REACT.createElement("style", null, `
+        .gpfocusable:focus-within {
+          outline: 2px solid #4c9aff !important;
+          background-color: #2a3f5f !important;
+        }
+      `),
         message && (SP_REACT.createElement("div", { style: styles$1.message }, message)),
         SP_REACT.createElement("div", { style: styles$1.section },
             SP_REACT.createElement("h3", { style: styles$1.sectionTitle },
@@ -918,7 +924,7 @@ const Settings = () => {
             SP_REACT.createElement("div", { style: styles$1.about },
                 SP_REACT.createElement("p", null,
                     "Game Progress Tracker ",
-                    "1.3.5"),
+                    "1.3.6"),
                 SP_REACT.createElement("p", null, "Automatic game tagging based on achievements, playtime, and completion time."),
                 SP_REACT.createElement("p", { style: styles$1.smallText }, "Data from HowLongToBeat \u2022 Steam achievement system")))));
 };
@@ -1021,7 +1027,12 @@ const styles$1 = {
         padding: '8px 12px',
         backgroundColor: '#252525',
         borderRadius: '4px',
-        transition: 'background-color 0.2s',
+        border: '2px solid transparent',
+        transition: 'all 0.2s',
+    },
+    gameItemFocused: {
+        backgroundColor: '#2a3f5f',
+        borderColor: '#4c9aff',
     },
     smallDot: {
         width: '8px',
@@ -1149,13 +1160,18 @@ const styles$1 = {
         width: '100%',
         padding: '12px 14px',
         backgroundColor: '#252525',
-        border: 'none',
+        border: '2px solid transparent',
         borderRadius: '0',
         color: 'white',
         fontSize: '14px',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
+        transition: 'all 0.2s',
+    },
+    tagSectionHeaderFocused: {
+        backgroundColor: '#2a3f5f',
+        borderColor: '#4c9aff',
     },
     tagSectionLeft: {
         display: 'flex',

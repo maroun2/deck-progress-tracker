@@ -385,6 +385,12 @@ export const Settings: FC = () => {
 
   return (
     <div style={styles.container}>
+      <style>{`
+        .gpfocusable:focus-within {
+          outline: 2px solid #4c9aff !important;
+          background-color: #2a3f5f !important;
+        }
+      `}</style>
       {message && (
         <div style={styles.message}>{message}</div>
       )}
@@ -601,7 +607,12 @@ const styles: Record<string, React.CSSProperties> = {
     padding: '8px 12px',
     backgroundColor: '#252525',
     borderRadius: '4px',
-    transition: 'background-color 0.2s',
+    border: '2px solid transparent',
+    transition: 'all 0.2s',
+  },
+  gameItemFocused: {
+    backgroundColor: '#2a3f5f',
+    borderColor: '#4c9aff',
   },
   smallDot: {
     width: '8px',
@@ -729,13 +740,18 @@ const styles: Record<string, React.CSSProperties> = {
     width: '100%',
     padding: '12px 14px',
     backgroundColor: '#252525',
-    border: 'none',
+    border: '2px solid transparent',
     borderRadius: '0',
     color: 'white',
     fontSize: '14px',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
+    transition: 'all 0.2s',
+  },
+  tagSectionHeaderFocused: {
+    backgroundColor: '#2a3f5f',
+    borderColor: '#4c9aff',
   },
   tagSectionLeft: {
     display: 'flex',
