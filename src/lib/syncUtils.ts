@@ -615,12 +615,23 @@ export const syncLibraryWithFrontendData = async (): Promise<SyncResult> => {
     let appids: string[];
 
     if (useAllOwned) {
+      // Try to discover games from frontend with retries if appStore isn't ready
       appids = await getAllOwnedGameIds();
       log(`Discovered ${appids.length} owned games`);
 
-      // Fallback to backend if discovery fails
+      // Retry up to 3 times with 2 second delays if discovery fails (appStore not ready on initial load)
+      let retries = 0;
+      while (appids.length === 0 && retries < 3) {
+        retries++;
+        log(`Discovery failed (appStore may not be ready yet), retry ${retries}/3 in 2s...`);
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        appids = await getAllOwnedGameIds();
+        log(`Retry ${retries}: Discovered ${appids.length} owned games`);
+      }
+
+      // Final fallback to backend if discovery still fails after retries
       if (appids.length === 0) {
-        log('Discovery failed, using backend list');
+        log('Discovery failed after retries, using backend list');
         const gamesResult = await call<[], GameListResult>('get_all_games');
         if (gamesResult.success && gamesResult.games) {
           appids = gamesResult.games.map(g => g.appid);

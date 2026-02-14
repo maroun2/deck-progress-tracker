@@ -106,6 +106,31 @@ export const Settings: FC = () => {
     }
   };
 
+  // Poll for sync progress from backend (works for both auto-sync and manual sync)
+  useEffect(() => {
+    const pollSyncProgress = async () => {
+      try {
+        const result = await call<[], { success: boolean; syncing: boolean; current: number; total: number }>('get_sync_progress');
+        if (result.success && result.syncing) {
+          // Update message with current progress
+          setMessage(`Syncing: ${result.current}/${result.total} games`);
+          setSyncing(true);
+        } else if (result.success && !result.syncing && syncing) {
+          // Sync just finished
+          setSyncing(false);
+          // Update UI to show new tags
+          smartUpdateUI();
+        }
+      } catch (err) {
+        // Silently fail - backend may not support get_sync_progress yet
+      }
+    };
+
+    // Poll every 500ms when syncing, less frequently otherwise
+    const interval = setInterval(pollSyncProgress, syncing ? 500 : 2000);
+    return () => clearInterval(interval);
+  }, [syncing]);
+
   useEffect(() => {
     loadSettings();
     // Initial load - force update
@@ -298,7 +323,7 @@ export const Settings: FC = () => {
         const batchNum = Math.floor(i / BATCH_SIZE) + 1;
         const totalBatches = Math.ceil(appids.length / BATCH_SIZE);
 
-        setMessage(`Syncing batch ${batchNum}/${totalBatches} (${i + 1}-${Math.min(i + BATCH_SIZE, appids.length)} of ${appids.length})...`);
+        // Progress message now handled by universal polling via get_sync_progress
         await logToBackend('info', `Syncing batch ${batchNum}/${totalBatches}: ${batchAppids.length} games`);
 
         // Get data for this batch only
@@ -434,7 +459,7 @@ export const Settings: FC = () => {
             No games synced yet. Click "Sync Entire Library" to tag your games based on playtime and achievements.
           </div>
         ) : (
-          <div style={styles.taggedListContainer}>
+          <Focusable style={styles.taggedListContainer} flow-children="down">
             {(['in_progress', 'completed', 'mastered', 'dropped', 'backlog'] as TagType[]).map((tagType) => {
               if (!tagType) return null;
               const isBacklog = tagType === 'backlog';
@@ -501,7 +526,7 @@ export const Settings: FC = () => {
                 </div>
               );
             })}
-          </div>
+          </Focusable>
         )}
       </div>
 

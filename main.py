@@ -95,6 +95,11 @@ class Plugin:
         self.steam_service = SteamDataService()
         self.hltb_service = HLTBService()
 
+        # Initialize sync progress tracking
+        self.sync_in_progress = False
+        self.sync_current = 0
+        self.sync_total = 0
+
         logger.info("Plugin initialized successfully")
 
         # Note: Auto-sync removed. Sync is now triggered by frontend after plugin loads.
@@ -603,6 +608,15 @@ class Plugin:
             logger.info(f"[FRONTEND] {message}")
         return {"success": True}
 
+    async def get_sync_progress(self) -> Dict[str, Any]:
+        """Get current sync progress for frontend to display"""
+        return {
+            "success": True,
+            "syncing": self.sync_in_progress,
+            "current": self.sync_current,
+            "total": self.sync_total
+        }
+
     async def get_all_games(self) -> Dict[str, Any]:
         """Get list of all games for frontend to fetch playtime"""
         logger.info("=== get_all_games called (frontend requesting game list) ===")
@@ -711,6 +725,11 @@ class Plugin:
             errors = 0
             error_list = []
 
+            # Set sync progress for universal tracking
+            self.sync_in_progress = True
+            self.sync_current = 0
+            self.sync_total = total
+
             hltb_requests = 0  # Track HLTB API requests for rate limiting
 
             for i, appid in enumerate(appids_to_sync):
@@ -757,6 +776,9 @@ class Plugin:
                     result = await Plugin.sync_game_with_playtime(self, appid, playtime_minutes, total_achievements, unlocked_achievements, achievement_percentage, game_name, rt_last_time_played)
                     synced += 1
 
+                    # Update sync progress
+                    self.sync_current = i + 1
+
                     # Track if this game got a new/changed tag
                     if result.get('tag_changed'):
                         new_tags += 1
@@ -772,8 +794,15 @@ class Plugin:
                     errors += 1
                     error_list.append({"appid": appid, "error": str(e)})
                     logger.error(f"[{i+1}/{total}] Failed: {game_name} - {e}")
+                    # Update progress even on error
+                    self.sync_current = i + 1
 
             logger.info(f"Library sync completed: {synced}/{total} synced, {new_tags} new tags, {errors} errors")
+
+            # Clear sync progress
+            self.sync_in_progress = False
+            self.sync_current = 0
+            self.sync_total = 0
 
             return {
                 "success": True,
@@ -788,6 +817,10 @@ class Plugin:
             logger.error(f"sync_library_with_playtime failed: {e}")
             import traceback
             logger.error(traceback.format_exc())
+            # Clear sync progress on error
+            self.sync_in_progress = False
+            self.sync_current = 0
+            self.sync_total = 0
             return {"success": False, "error": str(e)}
 
     async def _fetch_game_name_from_steam_store(self, appid: str) -> Optional[str]:
