@@ -526,6 +526,9 @@ const styles: Record<string, React.CSSProperties> = {
     marginBottom: '24px',
     paddingBottom: '16px',
     borderBottom: '1px solid #333',
+    width: '100%',
+    maxWidth: '100%',
+    overflow: 'hidden',
   },
   sectionTitle: {
     margin: '0 0 12px 0',
