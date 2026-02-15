@@ -400,7 +400,7 @@ export const Settings: FC = () => {
             No games synced yet. Click "Sync Entire Library" to tag your games based on playtime and achievements.
           </div>
         ) : (
-          <Focusable style={styles.taggedListContainer} flow-children="down">
+          <PanelSection>
             {(['in_progress', 'completed', 'mastered', 'dropped', 'backlog'] as TagType[]).map((tagType) => {
               if (!tagType) return null;
               const isBacklog = tagType === 'backlog';
@@ -409,24 +409,28 @@ export const Settings: FC = () => {
               const isExpanded = expandedSections[tagType];
 
               return (
-                <Focusable key={tagType} style={styles.tagSection} flow-children="down">
-                  <Focusable
-                    style={styles.tagSectionHeader}
-                    onActivate={() => toggleSection(tagType)}
-                  >
-                    <div style={styles.tagSectionLeft}>
-                      <TagIcon type={tagType} size={18} />
-                      <span style={styles.tagSectionTitle}>{tagLabels[tagType]}</span>
-                    </div>
-                    <div style={styles.tagSectionRight}>
-                      <span style={{ ...styles.tagCount, color: TAG_COLORS[tagType] }}>
-                        {count}
-                      </span>
-                      <span style={styles.expandIcon}>
-                        {isExpanded ? '−' : '+'}
-                      </span>
-                    </div>
-                  </Focusable>
+                <React.Fragment key={tagType}>
+                  <PanelSectionRow>
+                    <ButtonItem
+                      layout="below"
+                      onClick={() => toggleSection(tagType)}
+                    >
+                      <div style={styles.tagSectionContent}>
+                        <div style={styles.tagSectionLeft}>
+                          <TagIcon type={tagType} size={18} />
+                          <span style={styles.tagSectionTitle}>{tagLabels[tagType]}</span>
+                        </div>
+                        <div style={styles.tagSectionRight}>
+                          <span style={{ ...styles.tagCount, color: TAG_COLORS[tagType] }}>
+                            {count}
+                          </span>
+                          <span style={styles.expandIcon}>
+                            {isExpanded ? '−' : '+'}
+                          </span>
+                        </div>
+                      </div>
+                    </ButtonItem>
+                  </PanelSectionRow>
 
                   {isExpanded && (
                     <div style={styles.tagDescription}>
@@ -467,10 +471,10 @@ export const Settings: FC = () => {
                   {isExpanded && games.length === 0 && !loadingBacklog && (
                     <div style={styles.emptySection}>No games with this tag</div>
                   )}
-                </Focusable>
+                </React.Fragment>
               );
             })}
-          </Focusable>
+          </PanelSection>
         )}
       </div>
 
@@ -507,7 +511,7 @@ export const Settings: FC = () => {
 
 const styles: Record<string, React.CSSProperties> = {
   container: {
-    padding: '16px',
+    paddingTop: '16px',
     color: 'white',
   },
   message: {
@@ -713,28 +717,11 @@ const styles: Record<string, React.CSSProperties> = {
     marginBottom: '8px',
     fontSize: '13px',
   },
-  tagSection: {
-    marginBottom: '8px',
-    backgroundColor: '#1a1a1a',
-    borderRadius: '6px',
-    overflow: 'hidden',
-  },
-  tagSectionHeader: {
+  tagSectionContent: {
     width: '100%',
-    padding: '12px 14px',
-    backgroundColor: '#252525',
-    border: '2px solid transparent',
-    borderRadius: '0',
-    color: 'white',
-    fontSize: '14px',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
-    transition: 'all 0.2s',
-  },
-  tagSectionHeaderFocused: {
-    backgroundColor: '#2a3f5f',
-    borderColor: '#4c9aff',
   },
   tagSectionLeft: {
     display: 'flex',
