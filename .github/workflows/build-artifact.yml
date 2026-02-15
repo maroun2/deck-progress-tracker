@@ -108,5 +108,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: game-progress-tracker-${{ steps.version.outputs.version }}
-          path: plugin-build/game-progress-tracker/
+          path: plugin-build/
           retention-days: 90
