@@ -877,15 +877,6 @@ const Settings = () => {
         return (groupedGames[tagType] || []).length;
     };
     return (SP_REACT.createElement("div", { style: styles$1.container },
-        SP_REACT.createElement("style", null, `
-        /* Subtle Steam-like focus styling - only highlights the actual focused element */
-        .gpfocus {
-          outline: 1px solid rgba(76, 154, 255, 0.8) !important;
-          outline-offset: 2px;
-          background-color: rgba(76, 154, 255, 0.1) !important;
-          transition: all 0.15s ease-in-out;
-        }
-      `),
         message && (SP_REACT.createElement("div", { style: styles$1.message }, message)),
         SP_REACT.createElement("div", { style: styles$1.section },
             SP_REACT.createElement("h3", { style: styles$1.sectionTitle },
