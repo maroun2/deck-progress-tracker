@@ -513,6 +513,9 @@ const styles: Record<string, React.CSSProperties> = {
   container: {
     paddingTop: '16px',
     color: 'white',
+    width: '100%',
+    maxWidth: '100%',
+    overflow: 'hidden',
   },
   message: {
     padding: '12px',
