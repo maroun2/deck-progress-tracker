@@ -386,7 +386,16 @@ export const Settings: FC = () => {
   return (
     <div style={styles.container}>
       <style>{`
-        .gpfocusable:focus-within {
+        /* Focus styling for all Focusable elements */
+        [class*="Focusable"].gpfocus > div,
+        [class*="Focusable"].gpfocus,
+        .gpfocus {
+          outline: 2px solid #4c9aff !important;
+          background-color: #2a3f5f !important;
+        }
+        /* Specific styling for game items and section headers */
+        [class*="Focusable"]:focus-within,
+        [class*="Focusable"][tabindex="0"]:focus {
           outline: 2px solid #4c9aff !important;
           background-color: #2a3f5f !important;
         }
