@@ -883,21 +883,23 @@ const Settings = () => {
                 "Library (",
                 totalGames,
                 " games)"),
-            loadingGames ? (SP_REACT.createElement("div", { style: styles$1.loadingText }, "Loading games...")) : totalGames === 0 ? (SP_REACT.createElement("div", { style: styles$1.loadingText }, "No games synced yet. Click \"Sync Entire Library\" to tag your games based on playtime and achievements.")) : (SP_REACT.createElement(DFL.Focusable, { style: styles$1.taggedListContainer, "flow-children": "down" }, ['in_progress', 'completed', 'mastered', 'dropped', 'backlog'].map((tagType) => {
+            loadingGames ? (SP_REACT.createElement("div", { style: styles$1.loadingText }, "Loading games...")) : totalGames === 0 ? (SP_REACT.createElement("div", { style: styles$1.loadingText }, "No games synced yet. Click \"Sync Entire Library\" to tag your games based on playtime and achievements.")) : (SP_REACT.createElement(DFL.PanelSection, null, ['in_progress', 'completed', 'mastered', 'dropped', 'backlog'].map((tagType) => {
                 if (!tagType)
                     return null;
                 const isBacklog = tagType === 'backlog';
                 const games = isBacklog ? backlogGames : (groupedGames[tagType] || []);
                 const count = getCategoryCount(tagType);
                 const isExpanded = expandedSections[tagType];
-                return (SP_REACT.createElement(DFL.Focusable, { key: tagType, style: styles$1.tagSection, "flow-children": "down" },
-                    SP_REACT.createElement(DFL.Focusable, { style: styles$1.tagSectionHeader, onActivate: () => toggleSection(tagType) },
-                        SP_REACT.createElement("div", { style: styles$1.tagSectionLeft },
-                            SP_REACT.createElement(TagIcon, { type: tagType, size: 18 }),
-                            SP_REACT.createElement("span", { style: styles$1.tagSectionTitle }, tagLabels[tagType])),
-                        SP_REACT.createElement("div", { style: styles$1.tagSectionRight },
-                            SP_REACT.createElement("span", { style: { ...styles$1.tagCount, color: TAG_COLORS[tagType] } }, count),
-                            SP_REACT.createElement("span", { style: styles$1.expandIcon }, isExpanded ? '−' : '+'))),
+                return (SP_REACT.createElement(SP_REACT.Fragment, { key: tagType },
+                    SP_REACT.createElement(DFL.PanelSectionRow, null,
+                        SP_REACT.createElement(DFL.ButtonItem, { layout: "below", onClick: () => toggleSection(tagType) },
+                            SP_REACT.createElement("div", { style: styles$1.tagSectionContent },
+                                SP_REACT.createElement("div", { style: styles$1.tagSectionLeft },
+                                    SP_REACT.createElement(TagIcon, { type: tagType, size: 18 }),
+                                    SP_REACT.createElement("span", { style: styles$1.tagSectionTitle }, tagLabels[tagType])),
+                                SP_REACT.createElement("div", { style: styles$1.tagSectionRight },
+                                    SP_REACT.createElement("span", { style: { ...styles$1.tagCount, color: TAG_COLORS[tagType] } }, count),
+                                    SP_REACT.createElement("span", { style: styles$1.expandIcon }, isExpanded ? '−' : '+'))))),
                     isExpanded && (SP_REACT.createElement("div", { style: styles$1.tagDescription }, tagDescriptions[tagType])),
                     isExpanded && isBacklog && loadingBacklog && (SP_REACT.createElement("div", { style: styles$1.emptySection }, "Loading backlog games...")),
                     isExpanded && games.length > 0 && (SP_REACT.createElement(SP_REACT.Fragment, null, games.map((game) => (SP_REACT.createElement(DFL.PanelSectionRow, { key: game.appid },
@@ -926,7 +928,7 @@ const Settings = () => {
 };
 const styles$1 = {
     container: {
-        padding: '16px',
+        paddingTop: '16px',
         color: 'white',
     },
     message: {
@@ -1132,28 +1134,11 @@ const styles$1 = {
         marginBottom: '8px',
         fontSize: '13px',
     },
-    tagSection: {
-        marginBottom: '8px',
-        backgroundColor: '#1a1a1a',
-        borderRadius: '6px',
-        overflow: 'hidden',
-    },
-    tagSectionHeader: {
+    tagSectionContent: {
         width: '100%',
-        padding: '12px 14px',
-        backgroundColor: '#252525',
-        border: '2px solid transparent',
-        borderRadius: '0',
-        color: 'white',
-        fontSize: '14px',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
-        transition: 'all 0.2s',
-    },
-    tagSectionHeaderFocused: {
-        backgroundColor: '#2a3f5f',
-        borderColor: '#4c9aff',
     },
     tagSectionLeft: {
         display: 'flex',
