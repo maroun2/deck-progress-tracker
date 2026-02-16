@@ -449,22 +449,22 @@ export const Settings: FC = () => {
                           <ButtonItem
                             layout="below"
                             onClick={() => navigateToGame(game.appid)}
-                            style={{ width: '100%', minWidth: 0, overflow: 'hidden' }} 
+                            style={{ width: '100%', overflow: 'hidden' }}
                           >
-                          {/* Container wrapper to isolate from ButtonItem's internal quirks */}
-                          <div style={{ width: '100%', minWidth: 0, overflow: 'hidden' }}>
-                            <div style={styles.gameItemContent}>
-                              <span
-                                style={{
-                                  ...styles.smallDot,
-                                  backgroundColor: TAG_COLORS[game.tag],
-                                }}
-                              />
-                              <div style={styles.gameName}>{game.game_name}</div>
-                              {game.is_manual && (
-                                <span style={styles.manualBadge}>manual</span>
-                              )}
-                            </div>
+                            {/* This wrapper forces the layout to respect the 100% width */}
+                            <div style={{ display: 'table', tableLayout: 'fixed', width: '100%' }}>
+                              <div style={styles.gameItemContent}>
+                                <span
+                                  style={{
+                                    ...styles.smallDot,
+                                    backgroundColor: TAG_COLORS[game.tag],
+                                  }}
+                                />
+                                <span style={styles.gameName}>{game.game_name}</span>
+                                {game.is_manual && (
+                                  <span style={styles.manualBadge}>manual</span>
+                                )}
+                              </div>
                             </div>
                           </ButtonItem>
                         </PanelSectionRow>
