@@ -450,7 +450,6 @@ export const Settings: FC = () => {
                             layout="below"
                             onClick={() => navigateToGame(game.appid)}
                           >
-                            <div style={styles.gameItemContent}>
                               <span
                                 style={{
                                   ...styles.smallDot,
@@ -461,7 +460,7 @@ export const Settings: FC = () => {
                               {game.is_manual && (
                                 <span style={styles.manualBadge}>manual</span>
                               )}
-                            </div>
+                            
                           </ButtonItem>
                         </PanelSectionRow>
                       ))}
