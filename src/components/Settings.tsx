@@ -610,10 +610,10 @@ const styles: Record<string, React.CSSProperties> = {
     display: 'flex',
     alignItems: 'center',
     gap: '8px',
-    maxWidth: '100%',
-    minWidth: 0,
-    width: '100%',      // Added
-    overflow: 'hidden',  // Added
+    width: '100%',
+    overflow: 'hidden',
+    // This is the critical change for DialogButton children
+    flexFlow: 'row nowrap', 
   },
   smallDot: {
     width: '8px',
@@ -623,12 +623,17 @@ const styles: Record<string, React.CSSProperties> = {
   },
   gameName: {
     fontSize: '13px',
+    color: '#ddd',
+    whiteSpace: 'nowrap',
     overflow: 'hidden',
     textOverflow: 'ellipsis',
-    whiteSpace: 'nowrap',
-    display: 'block',
-    flex: 1,
-    minWidth: 0,
+    display: 'inline-block', // Change from block to inline-block
+    verticalAlign: 'middle',
+    /* We use a high percentage but leave room for the dot/badge.
+       Since the parent is width 100%, this forces truncation.
+    */
+    maxWidth: 'calc(100% - 40px)', 
+    flexShrink: 1,
   },
   manualBadge: {
     fontSize: '10px',
