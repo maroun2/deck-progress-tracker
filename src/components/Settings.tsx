@@ -608,6 +608,8 @@ const styles: Record<string, React.CSSProperties> = {
     gap: '8px',
     maxWidth: '100%',
     minWidth: 0,
+    width: '100%',      // Added
+    overflow: 'hidden',  // Added
   },
   smallDot: {
     width: '8px',
