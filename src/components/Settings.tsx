@@ -1,516 +1,239 @@
-/**
- * Settings Component
- * Plugin settings and configuration panel
- */
-
-import React, { FC, useState, useEffect } from 'react';
+import React, { FC, useState, useEffect, useRef } from 'react';
 import { call, toaster } from '@decky/api';
-import { Navigation } from '@decky/ui';
+import { PanelSection, PanelSectionRow, ButtonItem, Navigation } from '@decky/ui';
 import { PluginSettings, SyncResult, TagStatistics, TaggedGame, GameListResult } from '../types';
 import { TagIcon, TagType } from './TagIcon';
 import { getAchievementData, getPlaytimeData, getGameNames, getAllOwnedGameIds, AchievementData } from '../lib/syncUtils';
 
-/**
- * Log to both console and backend (for debugging without CEF)
- */
 const logToBackend = async (level: 'info' | 'error' | 'warn', message: string) => {
   console.log(`[GameProgressTracker] ${message}`);
   try {
-    await call<[{ level: string; message: string }], { success: boolean }>('log_frontend', { level, message });
-  } catch (e) {
-    // Silently fail if backend logging fails
-  }
+    await call('log_frontend', { level, message });
+  } catch (e) {}
 };
 
-// Tag color mapping
 const TAG_COLORS: Record<string, string> = {
   completed: '#38ef7d',
   in_progress: '#764ba2',
   mastered: '#f5576c',
   backlog: '#888',
+  dropped: '#c9a171',
+};
+
+const TAG_LABELS: Record<string, string> = {
+  completed: 'Completed',
+  in_progress: 'In Progress',
+  backlog: 'Backlog',
+  mastered: 'Mastered',
+  dropped: 'Dropped',
+};
+
+const TAG_DESCRIPTIONS: Record<string, string> = {
+  completed: 'Beat the main story (playtime ≥ HLTB main story time)',
+  in_progress: 'Currently playing (playtime ≥ 30 minutes)',
+  backlog: 'Not started yet (no playtime or minimal playtime)',
+  mastered: 'Unlocked 85%+ of all achievements',
+  dropped: 'Not played for over 1 year',
 };
 
 export const Settings: FC = () => {
   const [settings, setSettings] = useState<PluginSettings>({
     auto_tag_enabled: true,
-    mastered_multiplier: 1.5,  // Deprecated, kept for compatibility
+    mastered_multiplier: 1.5,
     in_progress_threshold: 30,
     cache_ttl: 7200,
     source_installed: true,
     source_non_steam: true,
     source_all_owned: true,
   });
+
   const [stats, setStats] = useState<TagStatistics | null>(null);
-  const [loading, setLoading] = useState(false);
   const [syncing, setSyncing] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
-
-  // Tagged games list state
   const [taggedGames, setTaggedGames] = useState<TaggedGame[]>([]);
   const [backlogGames, setBacklogGames] = useState<TaggedGame[]>([]);
-  const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
-    completed: false,
-    in_progress: false,
-    backlog: false,
-    mastered: false,
-  });
+  const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({});
   const [loadingGames, setLoadingGames] = useState(false);
   const [loadingBacklog, setLoadingBacklog] = useState(false);
 
-  // Settings section state
-  const [showSettings, setShowSettings] = useState(false);
+  const prevStatsRef = useRef<string>('');
+  const prevGamesRef = useRef<string>('');
+  const containerRef = useRef<HTMLDivElement>(null);
 
-  // Track previous data to avoid unnecessary re-renders (prevents UI flashing)
-  const prevStatsRef = React.useRef<string>('');
-  const prevGamesRef = React.useRef<string>('');
-
-  // Smart update function that only updates UI if data changed
   const smartUpdateUI = async () => {
     try {
-      // Fetch stats
       const statsResult = await call<[], { success: boolean; stats: TagStatistics }>('get_tag_statistics');
-      if (statsResult.success && statsResult.stats) {
-        const newStatsStr = JSON.stringify(statsResult.stats);
-        if (newStatsStr !== prevStatsRef.current) {
-          prevStatsRef.current = newStatsStr;
-          setStats(statsResult.stats);
-        }
+      if (statsResult.success && JSON.stringify(statsResult.stats) !== prevStatsRef.current) {
+        prevStatsRef.current = JSON.stringify(statsResult.stats);
+        setStats(statsResult.stats);
       }
 
-      // Fetch games
       const gamesResult = await call<[], { success: boolean; games: TaggedGame[] }>('get_all_tags_with_names');
-      if (gamesResult.success && gamesResult.games) {
-        const newGamesStr = JSON.stringify(gamesResult.games.map(g => g.appid).sort());
-        if (newGamesStr !== prevGamesRef.current) {
-          const prevCount = prevGamesRef.current ? JSON.parse(prevGamesRef.current).length : 0;
-          const newCount = gamesResult.games.length;
-          const newGamesCount = newCount - prevCount;
-
-          prevGamesRef.current = newGamesStr;
+      if (gamesResult.success) {
+        const fingerPrint = JSON.stringify(gamesResult.games.map(g => g.appid).sort());
+        if (fingerPrint !== prevGamesRef.current) {
+          prevGamesRef.current = fingerPrint;
           setTaggedGames(gamesResult.games);
-
-          // Show toast if new games were discovered (and we had previous data)
-          if (prevCount > 0 && newGamesCount > 0) {
-            toaster.toast({
-              title: 'New Games Tagged',
-              body: `${newGamesCount} new game${newGamesCount > 1 ? 's' : ''} discovered!`,
-              duration: 3000,
-            });
-          }
         }
       }
-    } catch (err) {
-      // Silently fail
-    }
+    } catch (err) {}
   };
 
   useEffect(() => {
-    loadSettings();
-    // Initial load - force update
-    loadStats().then(() => {
-      if (stats) prevStatsRef.current = JSON.stringify(stats);
-    });
-    loadTaggedGames().then(() => {
-      if (taggedGames.length > 0) prevGamesRef.current = JSON.stringify(taggedGames.map(g => g.appid).sort());
-    });
+    // Scroll to top when component mounts
+    if (containerRef.current) {
+      containerRef.current.scrollIntoView({ block: 'start' });
+    }
 
-    // Poll every 10 seconds for updates (from background sync or other sources)
-    const pollInterval = setInterval(smartUpdateUI, 10000);
-
-    return () => clearInterval(pollInterval);
+    call<[], { settings: PluginSettings }>('get_settings').then(res => res.settings && setSettings(res.settings));
+    smartUpdateUI();
+    const interval = setInterval(smartUpdateUI, 10000);
+    return () => clearInterval(interval);
   }, []);
 
-  const loadSettings = async () => {
-    try {
-      const result = await call<[], { settings: PluginSettings }>('get_settings');
-      if (result.settings) {
-        setSettings(result.settings);
-      }
-    } catch (err) {
-      console.error('Error loading settings:', err);
-    }
-  };
+  useEffect(() => {
+    const pollSync = async () => {
+      try {
+        const res = await call<[], { success: boolean; syncing: boolean; current: number; total: number }>('get_sync_progress');
+        if (res.success && res.syncing) {
+          setMessage(`Syncing: ${res.current}/${res.total} games`);
+          setSyncing(true);
+        } else if (res.success && !res.syncing && syncing) {
+          setSyncing(false);
+          smartUpdateUI();
+        }
+      } catch (err) {}
+    };
+    const interval = setInterval(pollSync, syncing ? 500 : 2000);
+    return () => clearInterval(interval);
+  }, [syncing]);
 
-  const loadStats = async () => {
-    await logToBackend('info', 'loadStats called');
-    try {
-      const result = await call<[], { success: boolean; stats: TagStatistics }>('get_tag_statistics');
-      await logToBackend('info', `loadStats result: ${JSON.stringify(result)}`);
-      if (result.success && result.stats) {
-        setStats(result.stats);
-      }
-    } catch (err) {
-      await logToBackend('error', `loadStats error: ${err}`);
-    }
-  };
+  const toggleSection = async (tagType: string) => {
+    const willExpand = !expandedSections[tagType];
+    setExpandedSections(prev => ({ ...prev, [tagType]: willExpand }));
 
-  const loadTaggedGames = async () => {
-    await logToBackend('info', 'loadTaggedGames called');
-    try {
-      setLoadingGames(true);
-      const result = await call<[], { success: boolean; games: TaggedGame[] }>('get_all_tags_with_names');
-      await logToBackend('info', `loadTaggedGames result: success=${result.success}, games=${result.games?.length || 0}`);
-      if (result.success && result.games) {
-        setTaggedGames(result.games);
-      }
-    } catch (err) {
-      await logToBackend('error', `loadTaggedGames error: ${err}`);
-    } finally {
-      setLoadingGames(false);
-    }
-  };
-
-  const loadBacklogGames = async () => {
-    await logToBackend('info', 'loadBacklogGames called');
-    try {
+    if (tagType === 'backlog' && willExpand && backlogGames.length === 0) {
       setLoadingBacklog(true);
-      const result = await call<[], { success: boolean; games: TaggedGame[] }>('get_backlog_games');
-      await logToBackend('info', `loadBacklogGames result: success=${result.success}, games=${result.games?.length || 0}`);
-      if (result.success && result.games) {
-        setBacklogGames(result.games);
-      }
-    } catch (err) {
-      await logToBackend('error', `loadBacklogGames error: ${err}`);
-    } finally {
+      const res = await call<[], { success: boolean; games: TaggedGame[] }>('get_backlog_games');
+      if (res.success) setBacklogGames(res.games);
       setLoadingBacklog(false);
     }
   };
 
-  const toggleSection = (tagType: string) => {
-    const willExpand = !expandedSections[tagType];
-    setExpandedSections(prev => ({
-      ...prev,
-      [tagType]: willExpand,
-    }));
-
-    // Load backlog games when expanding backlog section (and not already loaded)
-    if (tagType === 'backlog' && willExpand && backlogGames.length === 0) {
-      loadBacklogGames();
-    }
-  };
-
-  const navigateToGame = (appid: string) => {
-    Navigation.Navigate(`/library/app/${appid}`);
-    Navigation.CloseSideMenus();
-  };
-
-  const updateSetting = async (key: keyof PluginSettings, value: any) => {
-    const newSettings = { ...settings, [key]: value };
-    setSettings(newSettings);
-
-    try {
-      await call<[{ settings: PluginSettings }], void>('update_settings', { settings: newSettings });
-      showMessage('Settings saved');
-    } catch (err) {
-      console.error('Error updating settings:', err);
-      showMessage('Failed to save settings');
-    }
-  };
-
   const syncLibrary = async () => {
-    await logToBackend('info', '========================================');
-    await logToBackend('info', `syncLibrary button clicked - v${__PLUGIN_VERSION__}`);
-    await logToBackend('info', '========================================');
     try {
       setSyncing(true);
       setMessage('Fetching game list...');
+      let appids = settings.source_all_owned ? await getAllOwnedGameIds() : [];
 
-      let appids: string[];
-
-      // Check if we should use all owned games from frontend or backend discovery
-      if (settings.source_all_owned) {
-        // Step 1: Get all owned games from Steam frontend API
-        await logToBackend('info', 'Step 1: Getting ALL owned games from Steam frontend API...');
-        appids = await getAllOwnedGameIds();
-        await logToBackend('info', `getAllOwnedGameIds returned ${appids.length} games`);
-
-        if (appids.length === 0) {
-          await logToBackend('warn', 'Frontend discovery returned 0 games, falling back to backend...');
-          const gamesResult = await call<[], GameListResult>('get_all_games');
-          if (gamesResult.success && gamesResult.games) {
-            appids = gamesResult.games.map(g => g.appid);
-            await logToBackend('info', `Backend fallback: Got ${appids.length} games`);
-          } else {
-            await logToBackend('error', `Both frontend and backend discovery failed`);
-            showMessage('Failed to discover games. Please try again.');
-            return;
-          }
-        }
-      } else {
-        // Step 1: Get game appids from backend (installed games only)
-        await logToBackend('info', 'Step 1: Calling backend get_all_games...');
-        const gamesResult = await call<[], GameListResult>('get_all_games');
-        await logToBackend('info', `get_all_games response: ${JSON.stringify(gamesResult).slice(0, 500)}`);
-
-        if (!gamesResult.success || !gamesResult.games) {
-          await logToBackend('error', `get_all_games failed: ${gamesResult.error}`);
-          showMessage(`Failed to get game list: ${gamesResult.error || 'Unknown error'}`);
-          return;
-        }
-
-        appids = gamesResult.games.map(g => g.appid);
+      if (appids.length === 0) {
+        const res = await call<[], GameListResult>('get_all_games');
+        appids = res.games?.map(g => g.appid) || [];
       }
 
-      await logToBackend('info', `Step 1 complete: Got ${appids.length} games`);
-      await logToBackend('info', `First 5 appids: ${appids.slice(0, 5).join(', ')}`);
-      await logToBackend('info', `Appid types: ${appids.slice(0, 5).map(a => typeof a).join(', ')}`);
+      setMessage(`Processing ${appids.length} games...`);
+      const [gameData, achievementData, gameNames] = await Promise.all([
+        getPlaytimeData(appids),
+        getAchievementData(appids),
+        getGameNames(appids)
+      ]);
 
-      // Step 2: Get playtime from Steam frontend API
-      await logToBackend('info', 'Step 2: Getting playtime from Steam frontend API...');
-      setMessage(`Getting playtime data for ${appids.length} games...`);
-      const playtimeData = await getPlaytimeData(appids);
-      const gamesWithPlaytime = Object.values(playtimeData).filter(v => v > 0).length;
-      await logToBackend('info', `Step 2 complete: Got playtime for ${gamesWithPlaytime}/${appids.length} games`);
-
-      // Log sample of playtime data
-      const sampleEntries = Object.entries(playtimeData).slice(0, 5);
-      await logToBackend('info', `Sample playtime data: ${JSON.stringify(sampleEntries)}`);
-
-      // Step 2.5: Get achievement data from Steam frontend API
-      await logToBackend('info', 'Step 2.5: Getting achievement data from Steam frontend API...');
-      setMessage(`Getting achievement data for ${appids.length} games...`);
-      const achievementData = await getAchievementData(appids);
-      const gamesWithAchievements = Object.values(achievementData).filter(v => v.total > 0).length;
-      await logToBackend('info', `Step 2.5 complete: Got achievements for ${gamesWithAchievements}/${appids.length} games`);
-
-      // Log sample of achievement data
-      const achievementSample = Object.entries(achievementData).slice(0, 5);
-      await logToBackend('info', `Sample achievement data: ${JSON.stringify(achievementSample)}`);
-
-      // Step 2.6: Get game names from Steam frontend API (works for uninstalled games too!)
-      await logToBackend('info', 'Step 2.6: Getting game names from Steam frontend API...');
-      setMessage(`Getting game names for ${appids.length} games...`);
-      const gameNames = await getGameNames(appids);
-      await logToBackend('info', `Step 2.6 complete: Got names for ${Object.keys(gameNames).length}/${appids.length} games`);
-
-      // Step 3: Sync in batches - backend tracks new tags for notifications
-      await logToBackend('info', 'Step 3: Syncing in batches...');
-
-      const BATCH_SIZE = 50; // Process 50 games at a time
-      let totalSynced = 0;
-      let totalNewTags = 0;
-      let totalErrors = 0;
-
-      for (let i = 0; i < appids.length; i += BATCH_SIZE) {
-        const batchAppids = appids.slice(i, i + BATCH_SIZE);
-        const batchNum = Math.floor(i / BATCH_SIZE) + 1;
-        const totalBatches = Math.ceil(appids.length / BATCH_SIZE);
-
-        setMessage(`Syncing batch ${batchNum}/${totalBatches} (${i + 1}-${Math.min(i + BATCH_SIZE, appids.length)} of ${appids.length})...`);
-        await logToBackend('info', `Syncing batch ${batchNum}/${totalBatches}: ${batchAppids.length} games`);
-
-        // Get data for this batch only
-        const batchPlaytime: Record<string, number> = {};
-        const batchAchievements: Record<string, AchievementData> = {};
-        const batchNames: Record<string, string> = {};
-
-        for (const appid of batchAppids) {
-          batchPlaytime[appid] = playtimeData[appid] || 0;
-          batchAchievements[appid] = achievementData[appid] || { total: 0, unlocked: 0, percentage: 0, all_unlocked: false };
-          if (gameNames[appid]) {
-            batchNames[appid] = gameNames[appid];
-          }
-        }
-
-        const result = await call<[{ playtime_data: Record<string, number>; achievement_data: Record<string, AchievementData>; game_names: Record<string, string> }], SyncResult>(
-          'sync_library_with_playtime',
-          { playtime_data: batchPlaytime, achievement_data: batchAchievements, game_names: batchNames }
-        );
-
-        if (result.success) {
-          totalSynced += result.synced || 0;
-          totalNewTags += result.new_tags || 0;
-          totalErrors += result.errors || 0;
-
-          // Update UI after each batch
-          await smartUpdateUI();
-
-          await logToBackend('info', `Batch ${batchNum} complete: ${result.synced} synced, ${result.new_tags || 0} new tags, ${result.errors || 0} errors`);
-
-          // Show toast for new tags in this batch (if any and not first batch)
-          if (batchNum > 1 && result.new_tags && result.new_tags > 0) {
-            toaster.toast({
-              title: 'New Games Tagged',
-              body: `${result.new_tags} new game${result.new_tags > 1 ? 's' : ''} tagged!`,
-              duration: 3000,
-            });
-          }
-        } else {
-          await logToBackend('error', `Batch ${batchNum} failed: ${result.error}`);
-          totalErrors += batchAppids.length;
-        }
-      }
-
-      await logToBackend('info', `Step 3 complete: ${totalSynced}/${appids.length} synced, ${totalNewTags} new tags, ${totalErrors} errors`);
-
-      const syncMessage = `Sync complete! ${totalSynced}/${appids.length} games synced.` +
-        (totalNewTags > 0 ? ` ${totalNewTags} new tags.` : '') +
-        (totalErrors ? ` ${totalErrors} errors.` : '');
-      showMessage(syncMessage);
-
-      // Show final toast notification
-      toaster.toast({
-        title: 'Game Progress Tracker',
-        body: syncMessage,
-        duration: 5000,
+      const result = await call<[any], SyncResult>('sync_library_with_playtime', { 
+        game_data: gameData, achievement_data: achievementData, game_names: gameNames 
       });
+
+      smartUpdateUI();
+      const msg = `Sync complete! ${result.synced} games updated.`;
+      setMessage(msg);
+      toaster.toast({ title: 'Tracker', body: msg, duration: 5000 });
     } catch (err: any) {
-      console.error('[GameProgressTracker] Error syncing library:', err);
-      showMessage(`Sync error: ${err?.message || 'Unknown error'}`);
+      setMessage(`Sync error: ${err?.message || 'Unknown'}`);
     } finally {
       setSyncing(false);
     }
   };
 
-  const refreshCache = async () => {
-    try {
-      setLoading(true);
-      await call<[], void>('refresh_hltb_cache');
-      showMessage('Cache will be refreshed on next sync');
-    } catch (err) {
-      console.error('Error refreshing cache:', err);
-      showMessage('Failed to refresh cache');
-    } finally {
-      setLoading(false);
-    }
-  };
+  const groupedGames = taggedGames.reduce((acc, g) => {
+    if (!acc[g.tag]) acc[g.tag] = [];
+    acc[g.tag].push(g);
+    return acc;
+  }, {} as Record<string, TaggedGame[]>);
 
   const showMessage = (msg: string) => {
     setMessage(msg);
     setTimeout(() => setMessage(null), 5000);
   };
 
-  // Group tagged games by tag type
-  const groupedGames = taggedGames.reduce((acc, game) => {
-    if (!acc[game.tag]) {
-      acc[game.tag] = [];
-    }
-    acc[game.tag].push(game);
-    return acc;
-  }, {} as Record<string, TaggedGame[]>);
-
-  const tagLabels: Record<string, string> = {
-    completed: 'Completed (Beat Main Story)',
-    in_progress: 'In Progress',
-    backlog: 'Backlog (Not Started)',
-    mastered: 'Mastered (85%+ Achievements)',
-  };
-
-  const totalGames = stats ? stats.total : 0;
-
-  // Get count for each category including backlog from stats
-  const getCategoryCount = (tagType: string): number => {
-    if (tagType === 'backlog') {
-      return stats?.backlog || 0;
-    }
-    return (groupedGames[tagType] || []).length;
-  };
-
   return (
-    <div style={styles.container}>
-      {message && (
-        <div style={styles.message}>{message}</div>
-      )}
+    <div ref={containerRef} style={styles.container}>
+      {message && <div style={styles.message}>{message}</div>}
 
-      {/* Game Lists - Expandable per tag type */}
       <div style={styles.section}>
-        <h3 style={styles.sectionTitle}>Library ({totalGames} games)</h3>
+        <h3 style={styles.sectionTitle}>Library ({stats?.total || 0} games)</h3>
+        <PanelSection>
+          {(['in_progress', 'completed', 'mastered', 'dropped', 'backlog'] as TagType[]).map(tagType => {
+            const isBacklog = tagType === 'backlog';
+            const games = isBacklog ? backlogGames : (groupedGames[tagType] || []);
+            const count = isBacklog ? (stats?.backlog || 0) : games.length;
+            const isExpanded = !!expandedSections[tagType];
 
-        {loadingGames ? (
-          <div style={styles.loadingText}>Loading games...</div>
-        ) : totalGames === 0 ? (
-          <div style={styles.loadingText}>
-            No games synced yet. Click "Sync Entire Library" to tag your games based on playtime and achievements.
-          </div>
-        ) : (
-          <div style={styles.taggedListContainer}>
-            {(['in_progress', 'completed', 'mastered', 'backlog'] as TagType[]).map((tagType) => {
-              if (!tagType) return null;
-              const isBacklog = tagType === 'backlog';
-              const games = isBacklog ? backlogGames : (groupedGames[tagType] || []);
-              const count = getCategoryCount(tagType);
-              const isExpanded = expandedSections[tagType];
-
-              return (
-                <div key={tagType} style={styles.tagSection}>
-                  <button
-                    onClick={() => toggleSection(tagType)}
-                    style={styles.tagSectionHeader}
-                  >
-                    <div style={styles.tagSectionLeft}>
-                      <TagIcon type={tagType} size={18} />
-                      <span style={styles.tagSectionTitle}>{tagLabels[tagType]}</span>
+            return (
+              <React.Fragment key={tagType}>
+                <PanelSectionRow>
+                  <ButtonItem layout="below" onClick={() => toggleSection(tagType)}>
+                    <div style={styles.tagSectionContent}>
+                      <div style={styles.tagSectionLeft}>
+                        <TagIcon type={tagType} size={18} />
+                        <span style={styles.tagSectionTitle}>{TAG_LABELS[tagType]}</span>
+                      </div>
+                      <div style={styles.tagSectionRight}>
+                        <span style={{ ...styles.tagCount, color: TAG_COLORS[tagType] }}>{count}</span>
+                        <span style={styles.expandIcon}>{isExpanded ? '−' : '+'}</span>
+                      </div>
                     </div>
-                    <div style={styles.tagSectionRight}>
-                      <span style={{ ...styles.tagCount, color: TAG_COLORS[tagType] }}>
-                        {count}
-                      </span>
-                      <span style={styles.expandIcon}>
-                        {isExpanded ? '−' : '+'}
-                      </span>
-                    </div>
-                  </button>
+                  </ButtonItem>
+                </PanelSectionRow>
 
-                  {isExpanded && isBacklog && loadingBacklog && (
-                    <div style={styles.emptySection}>Loading backlog games...</div>
-                  )}
-
-                  {isExpanded && games.length > 0 && (
-                    <div style={styles.gameList}>
-                      {games.map((game) => (
-                        <div
-                          key={game.appid}
-                          style={styles.gameItem}
-                          onClick={() => navigateToGame(game.appid)}
-                        >
-                          <span
-                            style={{
-                              ...styles.smallDot,
-                              backgroundColor: TAG_COLORS[game.tag],
-                            }}
-                          />
+                {isExpanded && <div style={styles.tagDescription}>{TAG_DESCRIPTIONS[tagType]}</div>}
+                
+                {isExpanded && games.length > 0 && games.map(game => (
+                  <PanelSectionRow key={game.appid}>
+                    <ButtonItem
+                      layout="below"
+                      onClick={() => { Navigation.Navigate(`/library/app/${game.appid}`); Navigation.CloseSideMenus(); }}
+                      style={{ width: '100%', overflow: 'hidden' }}
+                    >
+                      <div style={{ display: 'table', tableLayout: 'fixed', width: '100%' }}>
+                        <div style={styles.gameItemContent}>
+                          <span style={{ ...styles.smallDot, backgroundColor: TAG_COLORS[game.tag] }} />
                           <span style={styles.gameName}>{game.game_name}</span>
-                          {game.is_manual && (
-                            <span style={styles.manualBadge}>manual</span>
-                          )}
+                          {game.is_manual && <span style={styles.manualBadge}>manual</span>}
                         </div>
-                      ))}
-                    </div>
-                  )}
-
-                  {isExpanded && games.length === 0 && !loadingBacklog && (
-                    <div style={styles.emptySection}>No games with this tag</div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        )}
+                      </div>
+                    </ButtonItem>
+                  </PanelSectionRow>
+                ))}
+                {isExpanded && games.length === 0 && !loadingBacklog && <div style={styles.emptySection}>No games found</div>}
+              </React.Fragment>
+            );
+          })}
+        </PanelSection>
       </div>
 
-      {/* Sync Button - always visible */}
-      <div style={styles.section}>
-        <button
-          onClick={syncLibrary}
-          disabled={syncing || loading}
-          style={syncing ? styles.buttonDisabled : styles.button}
-        >
-          {syncing ? 'Syncing...' : 'Sync Entire Library'}
-        </button>
-        <div style={styles.hint}>
-          Sync may take several minutes for large libraries
-        </div>
-      </div>
+      <PanelSection>
+        <PanelSectionRow>
+          <ButtonItem layout="below" onClick={syncLibrary} disabled={syncing}>
+            {syncing ? 'Syncing...' : 'Sync Entire Library'}
+          </ButtonItem>
+        </PanelSectionRow>
+      </PanelSection>
 
-      {/* About */}
       <div style={styles.section}>
         <h3 style={styles.sectionTitle}>About</h3>
         <div style={styles.about}>
-          <p>Game Progress Tracker {__PLUGIN_VERSION__}</p>
-          <p>Automatic game tagging based on achievements, playtime, and completion time.</p>
-          <p style={styles.smallText}>
-            Data from HowLongToBeat • Steam achievement system
-          </p>
+          <p style={styles.aboutLine}>Game Progress Tracker v{__PLUGIN_VERSION__}</p>
+          <p style={styles.aboutLine}>Data from HowLongToBeat & Steam</p>
+          <p style={styles.donationText}>Donations are appreciated</p>
         </div>
       </div>
     </div>
@@ -518,269 +241,23 @@ export const Settings: FC = () => {
 };
 
 const styles: Record<string, React.CSSProperties> = {
-  container: {
-    padding: '16px',
-    color: 'white',
-  },
-  message: {
-    padding: '12px',
-    backgroundColor: 'rgba(102, 126, 234, 0.2)',
-    borderRadius: '4px',
-    marginBottom: '16px',
-    fontSize: '14px',
-    border: '1px solid rgba(102, 126, 234, 0.5)',
-  },
-  section: {
-    marginBottom: '24px',
-    paddingBottom: '16px',
-    borderBottom: '1px solid #333',
-  },
-  sectionTitle: {
-    margin: '0 0 12px 0',
-    fontSize: '16px',
-    fontWeight: 'bold',
-    color: '#aaa',
-  },
-  statGrid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(100px, 1fr))',
-    gap: '10px',
-  },
-  statCard: {
-    backgroundColor: '#252525',
-    padding: '12px 8px',
-    borderRadius: '8px',
-    textAlign: 'center',
-  },
-  statValue: {
-    fontSize: '28px',
-    fontWeight: 'bold',
-    color: '#667eea',
-    marginBottom: '4px',
-  },
-  statLabel: {
-    fontSize: '11px',
-    color: '#aaa',
-  },
-  expandButton: {
-    width: '100%',
-    padding: '12px',
-    backgroundColor: '#333',
-    border: '1px solid #444',
-    borderRadius: '4px',
-    color: 'white',
-    fontSize: '14px',
-    cursor: 'pointer',
-    textAlign: 'left',
-  },
-  taggedListContainer: {
-    marginTop: '12px',
-    maxHeight: '400px',
-    overflowY: 'auto',
-  },
-  loadingText: {
-    padding: '16px',
-    textAlign: 'center',
-    color: '#888',
-    fontSize: '14px',
-  },
-  tagGroup: {
-    marginBottom: '16px',
-  },
-  tagGroupHeader: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '8px',
-    fontSize: '14px',
-    fontWeight: 'bold',
-    color: '#ccc',
-    marginBottom: '8px',
-    paddingBottom: '4px',
-    borderBottom: '1px solid #333',
-  },
-  tagDot: {
-    width: '12px',
-    height: '12px',
-    borderRadius: '50%',
-    display: 'inline-block',
-  },
-  gameList: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '4px',
-  },
-  gameItem: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '8px',
-    padding: '8px 12px',
-    backgroundColor: '#252525',
-    borderRadius: '4px',
-    cursor: 'pointer',
-    transition: 'background-color 0.2s',
-  },
-  smallDot: {
-    width: '8px',
-    height: '8px',
-    borderRadius: '50%',
-    flexShrink: 0,
-  },
-  gameName: {
-    fontSize: '13px',
-    color: '#ddd',
-    flex: 1,
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-    whiteSpace: 'nowrap',
-  },
-  manualBadge: {
-    fontSize: '10px',
-    color: '#888',
-    backgroundColor: '#333',
-    padding: '2px 6px',
-    borderRadius: '3px',
-  },
-  settingsContainer: {
-    marginTop: '12px',
-    padding: '12px',
-    backgroundColor: '#1a1a1a',
-    borderRadius: '4px',
-  },
-  settingGroup: {
-    marginBottom: '16px',
-  },
-  settingGroupTitle: {
-    margin: '0 0 8px 0',
-    fontSize: '14px',
-    fontWeight: 'bold',
-    color: '#888',
-  },
-  settingRow: {
-    marginBottom: '16px',
-  },
-  label: {
-    display: 'block',
-    fontSize: '14px',
-    marginBottom: '8px',
-    cursor: 'pointer',
-  },
-  checkbox: {
-    marginRight: '8px',
-    cursor: 'pointer',
-  },
-  slider: {
-    width: '100%',
-    marginTop: '8px',
-  },
-  hint: {
-    fontSize: '12px',
-    color: '#888',
-    marginTop: '4px',
-  },
-  button: {
-    width: '100%',
-    padding: '12px',
-    backgroundColor: '#667eea',
-    border: 'none',
-    borderRadius: '4px',
-    color: 'white',
-    fontSize: '14px',
-    fontWeight: 'bold',
-    cursor: 'pointer',
-    marginBottom: '8px',
-    transition: 'background-color 0.2s',
-  },
-  buttonDisabled: {
-    width: '100%',
-    padding: '12px',
-    backgroundColor: '#555',
-    border: 'none',
-    borderRadius: '4px',
-    color: '#aaa',
-    fontSize: '14px',
-    fontWeight: 'bold',
-    cursor: 'not-allowed',
-    marginBottom: '8px',
-  },
-  buttonSecondary: {
-    width: '100%',
-    padding: '10px',
-    backgroundColor: '#444',
-    border: 'none',
-    borderRadius: '4px',
-    color: 'white',
-    fontSize: '13px',
-    cursor: 'pointer',
-    marginBottom: '8px',
-  },
-  about: {
-    fontSize: '14px',
-    lineHeight: '1.6',
-  },
-  smallText: {
-    fontSize: '12px',
-    color: '#888',
-    marginTop: '8px',
-  },
-  tagRulesInfo: {
-    marginBottom: '16px',
-    padding: '12px',
-    backgroundColor: '#252525',
-    borderRadius: '4px',
-  },
-  tagRule: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '8px',
-    marginBottom: '8px',
-    fontSize: '13px',
-  },
-  tagSection: {
-    marginBottom: '8px',
-    backgroundColor: '#1a1a1a',
-    borderRadius: '6px',
-    overflow: 'hidden',
-  },
-  tagSectionHeader: {
-    width: '100%',
-    padding: '12px 14px',
-    backgroundColor: '#252525',
-    border: 'none',
-    borderRadius: '0',
-    color: 'white',
-    fontSize: '14px',
-    cursor: 'pointer',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  tagSectionLeft: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '10px',
-  },
-  tagSectionRight: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '12px',
-  },
-  tagSectionTitle: {
-    fontWeight: 'bold',
-  },
-  tagCount: {
-    fontSize: '16px',
-    fontWeight: 'bold',
-  },
-  expandIcon: {
-    fontSize: '18px',
-    color: '#888',
-    width: '20px',
-    textAlign: 'center',
-  },
-  emptySection: {
-    padding: '12px 16px',
-    color: '#666',
-    fontSize: '13px',
-    fontStyle: 'italic',
-  },
+  container: { paddingTop: '16px', color: 'white', width: '100%', maxWidth: '100%', overflow: 'hidden' },
+  message: { padding: '12px', backgroundColor: 'rgba(102, 126, 234, 0.2)', borderRadius: '4px', marginBottom: '16px', fontSize: '14px', border: '1px solid rgba(102, 126, 234, 0.5)', marginLeft: '16px', marginRight: '16px' },
+  section: { marginBottom: '24px', paddingBottom: '16px', borderBottom: '1px solid #333', width: '100%', overflow: 'hidden' },
+  sectionTitle: { margin: '0 0 12px 0', fontSize: '16px', fontWeight: 'bold', color: '#aaa', marginLeft: '16px' },
+  gameItemContent: { display: 'flex', alignItems: 'center', gap: '8px', width: '100%', overflow: 'hidden', flexFlow: 'row nowrap' },
+  smallDot: { width: '8px', height: '8px', borderRadius: '50%', flexShrink: 0 },
+  gameName: { fontSize: '13px', color: 'inherit', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'inline-block', verticalAlign: 'middle', maxWidth: 'calc(100% - 40px)', flexShrink: 1 },
+  manualBadge: { fontSize: '10px', color: '#888', backgroundColor: '#333', padding: '2px 6px', borderRadius: '3px', flexShrink: 0 },
+  tagSectionContent: { width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between' },
+  tagSectionLeft: { display: 'flex', alignItems: 'center', gap: '10px' },
+  tagSectionRight: { display: 'flex', alignItems: 'center', gap: '12px' },
+  tagSectionTitle: { fontWeight: 'bold' },
+  tagCount: { fontSize: '16px', fontWeight: 'bold' },
+  expandIcon: { fontSize: '18px', color: '#888', width: '20px', textAlign: 'center' },
+  emptySection: { padding: '12px 16px', color: '#666', fontSize: '13px', fontStyle: 'italic' },
+  tagDescription: { padding: '8px 16px 12px 16px', color: '#999', fontSize: '12px', fontStyle: 'italic', borderBottom: '1px solid #2a2a2a' },
+  about: { fontSize: '14px', lineHeight: '1.6', marginLeft: '16px', marginRight: '16px' },
+  aboutLine: { margin: '8px 0', color: '#ccc' },
+  donationText: { margin: '12px 0 0 0', fontSize: '12px', color: '#888', fontStyle: 'italic' }
 };

@@ -46,7 +46,7 @@ class Database:
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS game_tags (
                 appid TEXT PRIMARY KEY,
-                tag TEXT NOT NULL CHECK(tag IN ('completed', 'in_progress', 'mastered')),
+                tag TEXT NOT NULL,
                 is_manual BOOLEAN DEFAULT 0,
                 last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
@@ -87,6 +87,7 @@ class Database:
                 total_achievements INTEGER DEFAULT 0,
                 unlocked_achievements INTEGER DEFAULT 0,
                 is_hidden BOOLEAN DEFAULT 0,
+                rt_last_time_played INTEGER,
                 last_sync TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         """)
@@ -96,6 +97,8 @@ class Database:
         columns = [col[1] for col in cursor.fetchall()]
         if 'is_hidden' not in columns:
             cursor.execute("ALTER TABLE game_stats ADD COLUMN is_hidden BOOLEAN DEFAULT 0")
+        if 'rt_last_time_played' not in columns:
+            cursor.execute("ALTER TABLE game_stats ADD COLUMN rt_last_time_played INTEGER")
 
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS settings (
@@ -305,15 +308,16 @@ class Database:
         cursor.execute("""
             INSERT INTO game_stats (
                 appid, game_name, playtime_minutes,
-                total_achievements, unlocked_achievements, is_hidden, last_sync
+                total_achievements, unlocked_achievements, is_hidden, rt_last_time_played, last_sync
             )
-            VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+            VALUES (?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
             ON CONFLICT(appid) DO UPDATE SET
                 game_name = excluded.game_name,
                 playtime_minutes = excluded.playtime_minutes,
                 total_achievements = excluded.total_achievements,
                 unlocked_achievements = excluded.unlocked_achievements,
                 is_hidden = excluded.is_hidden,
+                rt_last_time_played = excluded.rt_last_time_played,
                 last_sync = CURRENT_TIMESTAMP
         """, (
             appid,
@@ -321,7 +325,8 @@ class Database:
             stats.get("playtime_minutes", 0),
             stats.get("total_achievements", 0),
             stats.get("unlocked_achievements", 0),
-            int(stats.get("is_hidden", False))
+            int(stats.get("is_hidden", False)),
+            stats.get("rt_last_time_played")
         ))
         conn.commit()
 
@@ -357,6 +362,12 @@ class Database:
             except (KeyError, IndexError):
                 is_hidden = False
 
+            # Handle case where rt_last_time_played might not exist yet (migration)
+            try:
+                rt_last_time_played = row["rt_last_time_played"]
+            except (KeyError, IndexError):
+                rt_last_time_played = None
+
             return {
                 "appid": row["appid"],
                 "game_name": row["game_name"],
@@ -364,6 +375,7 @@ class Database:
                 "total_achievements": row["total_achievements"],
                 "unlocked_achievements": row["unlocked_achievements"],
                 "is_hidden": is_hidden,
+                "rt_last_time_played": rt_last_time_played,
                 "last_sync": row["last_sync"]
             }
         return None
@@ -456,3 +468,58 @@ class Database:
                     settings[key] = value
 
         return settings
+
+    def _get_games_eligible_for_dropped_sync(self, conn, days_threshold: int):
+        """Get games that should be tagged as dropped (synchronous)"""
+        cursor = conn.cursor()
+
+        # Calculate timestamp threshold (current time - days)
+        import time
+        current_time = int(time.time())
+        threshold_timestamp = current_time - (days_threshold * 24 * 60 * 60)
+
+        # Query: Find games where:
+        # 1. rt_last_time_played exists and is older than threshold
+        # 2. Game is not hidden
+        # 3. Game is not manually tagged
+        # 4. Game is not completed or mastered (either has no tag, or is in_progress)
+        cursor.execute("""
+            SELECT gs.appid, gs.game_name, gs.rt_last_time_played, gt.tag, gt.is_manual
+            FROM game_stats gs
+            LEFT JOIN game_tags gt ON gs.appid = gt.appid
+            WHERE gs.rt_last_time_played IS NOT NULL
+                AND gs.rt_last_time_played > 0
+                AND gs.rt_last_time_played < ?
+                AND (gs.is_hidden = 0 OR gs.is_hidden IS NULL)
+                AND (gt.is_manual = 0 OR gt.is_manual IS NULL)
+                AND (gt.tag IS NULL OR gt.tag = 'in_progress')
+                AND (gt.tag != 'dropped' OR gt.tag IS NULL)
+        """, (threshold_timestamp,))
+
+        return cursor.fetchall()
+
+    async def get_games_eligible_for_dropped(self, days_threshold: int = 365) -> List[Dict[str, Any]]:
+        """Get games that should be tagged as dropped
+
+        Returns games that:
+        - Have rt_last_time_played older than days_threshold
+        - Are not hidden
+        - Are not manually tagged
+        - Are not completed/mastered (either no tag or in_progress)
+        - Are not already dropped
+        """
+        if not self.connection:
+            return []
+
+        rows = await asyncio.to_thread(self._get_games_eligible_for_dropped_sync, self.connection, days_threshold)
+
+        return [
+            {
+                "appid": row["appid"],
+                "game_name": row["game_name"],
+                "rt_last_time_played": row["rt_last_time_played"],
+                "current_tag": row["tag"] if len(row) > 3 else None,
+                "is_manual": bool(row["is_manual"]) if len(row) > 4 else False
+            }
+            for row in rows
+        ]

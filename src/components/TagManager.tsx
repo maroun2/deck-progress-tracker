@@ -5,6 +5,7 @@
 
 import React, { FC, useState, useEffect } from 'react';
 import { call } from '@decky/api';
+import { Focusable, DialogButton } from '@decky/ui';
 import { GameDetails } from '../types';
 import { TagIcon, TAG_ICON_COLORS } from './TagIcon';
 
@@ -107,7 +108,9 @@ export const TagManager: FC<TagManagerProps> = ({ appid, onClose }) => {
       <div style={styles.modal}>
         <div style={styles.content}>
           <div style={styles.error}>{error || 'Failed to load game details'}</div>
-          <button onClick={onClose} style={styles.button}>Close</button>
+          <Focusable>
+            <DialogButton onClick={onClose}>Close</DialogButton>
+          </Focusable>
         </div>
       </div>
     );
@@ -180,41 +183,50 @@ export const TagManager: FC<TagManagerProps> = ({ appid, onClose }) => {
           {/* Right side: Tag buttons */}
           <div style={styles.rightColumn}>
             <h3 style={styles.sectionTitle}>Set Tag</h3>
-            <div style={styles.tagButtonGroup}>
-              <button
-                onClick={() => setTag('mastered')}
+            <Focusable style={styles.tagButtonGroup} flow-children="down">
+              <Focusable
+                onActivate={() => setTag('mastered')}
                 style={{ ...styles.tagButton, backgroundColor: TAG_ICON_COLORS.mastered }}
               >
                 <TagIcon type="mastered" size={18} />
                 <span>Mastered</span>
-              </button>
-              <button
-                onClick={() => setTag('completed')}
+              </Focusable>
+              <Focusable
+                onActivate={() => setTag('completed')}
                 style={{ ...styles.tagButton, backgroundColor: TAG_ICON_COLORS.completed }}
               >
                 <TagIcon type="completed" size={18} />
                 <span>Completed</span>
-              </button>
-              <button
-                onClick={() => setTag('in_progress')}
+              </Focusable>
+              <Focusable
+                onActivate={() => setTag('in_progress')}
                 style={{ ...styles.tagButton, backgroundColor: TAG_ICON_COLORS.in_progress }}
               >
                 <TagIcon type="in_progress" size={18} />
                 <span>In Progress</span>
-              </button>
-            </div>
-            <div style={styles.buttonGroup}>
-              <button onClick={resetToAuto} style={styles.secondaryButton}>
+              </Focusable>
+              <Focusable
+                onActivate={() => setTag('dropped')}
+                style={{ ...styles.tagButton, backgroundColor: TAG_ICON_COLORS.dropped }}
+              >
+                <TagIcon type="dropped" size={18} />
+                <span>Dropped</span>
+              </Focusable>
+            </Focusable>
+            <Focusable style={styles.buttonGroup} flow-children="horizontal">
+              <DialogButton onClick={resetToAuto} style={styles.secondaryButton}>
                 Reset to Auto
-              </button>
-              <button onClick={removeTag} style={styles.secondaryButton}>
+              </DialogButton>
+              <DialogButton onClick={removeTag} style={styles.secondaryButton}>
                 Remove
-              </button>
-            </div>
+              </DialogButton>
+            </Focusable>
           </div>
         </div>
 
-        <button onClick={onClose} style={styles.closeButton}>Close</button>
+        <Focusable>
+          <DialogButton onClick={onClose} style={styles.closeButton}>Close</DialogButton>
+        </Focusable>
       </div>
     </div>
   );
@@ -335,7 +347,6 @@ const styles: Record<string, React.CSSProperties> = {
     color: 'white',
     fontSize: '13px',
     fontWeight: 'bold',
-    cursor: 'pointer',
     transition: 'opacity 0.2s',
   },
   secondaryButton: {
@@ -346,7 +357,6 @@ const styles: Record<string, React.CSSProperties> = {
     borderRadius: '4px',
     color: 'white',
     fontSize: '12px',
-    cursor: 'pointer',
     transition: 'background-color 0.2s',
   },
   closeButton: {
@@ -358,7 +368,6 @@ const styles: Record<string, React.CSSProperties> = {
     color: 'white',
     fontSize: '14px',
     fontWeight: 'bold',
-    cursor: 'pointer',
   },
   loading: {
     textAlign: 'center',
@@ -379,7 +388,6 @@ const styles: Record<string, React.CSSProperties> = {
     color: 'white',
     fontSize: '14px',
     fontWeight: 'bold',
-    cursor: 'pointer',
     marginTop: '12px',
   },
 };

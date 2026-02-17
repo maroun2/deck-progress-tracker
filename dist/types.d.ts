@@ -3,7 +3,7 @@
  */
 export interface GameTag {
     appid: string;
-    tag: 'completed' | 'in_progress' | 'mastered' | null;
+    tag: 'completed' | 'in_progress' | 'mastered' | 'dropped' | null;
     is_manual: boolean;
     last_updated: string;
 }
@@ -48,12 +48,13 @@ export interface TagStatistics {
     in_progress: number;
     mastered: number;
     backlog: number;
+    dropped: number;
     total: number;
 }
 export interface TaggedGame {
     appid: string;
     game_name: string;
-    tag: 'completed' | 'in_progress' | 'mastered';
+    tag: 'completed' | 'in_progress' | 'mastered' | 'dropped';
     is_manual: boolean;
 }
 export interface SyncResult {
