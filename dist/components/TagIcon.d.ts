@@ -1,5 +1,5 @@
 import { FC } from 'react';
-export type TagType = 'mastered' | 'completed' | 'in_progress' | 'backlog' | null;
+export type TagType = 'mastered' | 'completed' | 'in_progress' | 'backlog' | 'dropped' | null;
 interface TagIconProps {
     type: TagType;
     size?: number;
@@ -10,6 +10,7 @@ export declare const TAG_ICON_COLORS: {
     completed: string;
     in_progress: string;
     backlog: string;
+    dropped: string;
 };
 /**
  * TagIcon component - displays appropriate icon based on tag type

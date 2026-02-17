@@ -289,12 +289,20 @@ export const getAchievementData = async (appids: string[]): Promise<Record<strin
 };
 
 /**
- * Get playtime data for a list of appids from Steam's frontend API
+ * Game data structure including playtime and last played timestamp
+ */
+export interface GameData {
+  playtime_minutes: number;
+  rt_last_time_played: number | null;
+}
+
+/**
+ * Get playtime and last played data for a list of appids from Steam's frontend API
  * Uses window.appStore which is Steam's internal game data cache
  */
-export const getPlaytimeData = async (appids: string[]): Promise<Record<string, number>> => {
+export const getPlaytimeData = async (appids: string[]): Promise<Record<string, GameData>> => {
   log(`getPlaytimeData called with ${appids.length} appids`);
-  const playtimeMap: Record<string, number> = {};
+  const gameDataMap: Record<string, GameData> = {};
 
   // Access Steam's global appStore
   const appStore = (window as any).appStore;
@@ -302,7 +310,7 @@ export const getPlaytimeData = async (appids: string[]): Promise<Record<string, 
 
   if (!appStore) {
     log('appStore not available - cannot get playtime!');
-    return playtimeMap;
+    return gameDataMap;
   }
 
   log(`GetAppOverviewByAppID exists: ${typeof appStore.GetAppOverviewByAppID}`);
@@ -310,6 +318,7 @@ export const getPlaytimeData = async (appids: string[]): Promise<Record<string, 
   let successCount = 0;
   let failCount = 0;
   let withPlaytime = 0;
+  let withLastPlayed = 0;
   const sampleLogs: string[] = [];
 
   for (const appid of appids) {
@@ -317,12 +326,20 @@ export const getPlaytimeData = async (appids: string[]): Promise<Record<string, 
       const overview = appStore.GetAppOverviewByAppID(parseInt(appid));
       if (overview) {
         const playtime = overview.minutes_playtime_forever || 0;
-        playtimeMap[appid] = playtime;
+        const rtLastTimePlayed = overview.rt_last_time_played || null;
+
+        gameDataMap[appid] = {
+          playtime_minutes: playtime,
+          rt_last_time_played: rtLastTimePlayed
+        };
+
         successCount++;
         if (playtime > 0) withPlaytime++;
+        if (rtLastTimePlayed) withLastPlayed++;
 
         if (sampleLogs.length < 3) {
-          sampleLogs.push(`appid ${appid}: playtime=${playtime}min, name=${overview.display_name || 'unknown'}`);
+          const lastPlayedStr = rtLastTimePlayed ? new Date(rtLastTimePlayed * 1000).toISOString() : 'never';
+          sampleLogs.push(`appid ${appid}: playtime=${playtime}min, lastPlayed=${lastPlayedStr}, name=${overview.display_name || 'unknown'}`);
         }
       } else {
         failCount++;
@@ -334,11 +351,11 @@ export const getPlaytimeData = async (appids: string[]): Promise<Record<string, 
 
   // Log results
   for (const logMsg of sampleLogs) {
-    log(`Playtime sample - ${logMsg}`);
+    log(`Game data sample - ${logMsg}`);
   }
-  log(`getPlaytimeData results: success=${successCount}, failed=${failCount}, withPlaytime=${withPlaytime}`);
+  log(`getPlaytimeData results: success=${successCount}, failed=${failCount}, withPlaytime=${withPlaytime}, withLastPlayed=${withLastPlayed}`);
 
-  return playtimeMap;
+  return gameDataMap;
 };
 
 /**
@@ -542,10 +559,11 @@ const syncGames = async (appids: string[]): Promise<SyncResult> => {
   log(`Syncing ${appids.length} games`);
 
   try {
-    // Step 1: Get playtime data
-    const playtimeData = await getPlaytimeData(appids);
-    const withPlaytime = Object.values(playtimeData).filter(v => v > 0).length;
-    log(`Playtime: ${withPlaytime}/${appids.length} games`);
+    // Step 1: Get playtime and last played data
+    const gameData = await getPlaytimeData(appids);
+    const withPlaytime = Object.values(gameData).filter(v => v.playtime_minutes > 0).length;
+    const withLastPlayed = Object.values(gameData).filter(v => v.rt_last_time_played !== null).length;
+    log(`Game data: ${withPlaytime}/${appids.length} with playtime, ${withLastPlayed}/${appids.length} with last played`);
 
     // Step 2: Get achievement data (cache + API fallback)
     const achievementData = await getAchievementDataWithFallback(appids);
@@ -557,9 +575,9 @@ const syncGames = async (appids: string[]): Promise<SyncResult> => {
     log(`Names: ${Object.keys(gameNames).length}/${appids.length} games`);
 
     // Step 4: Send to backend
-    const result = await call<[{ playtime_data: Record<string, number>; achievement_data: Record<string, AchievementData>; game_names: Record<string, string> }], SyncResult>(
+    const result = await call<[{ game_data: Record<string, GameData>; achievement_data: Record<string, AchievementData>; game_names: Record<string, string> }], SyncResult>(
       'sync_library_with_playtime',
-      { playtime_data: playtimeData, achievement_data: achievementData, game_names: gameNames }
+      { game_data: gameData, achievement_data: achievementData, game_names: gameNames }
     );
 
     log(`Sync complete: ${result.synced}/${result.total} games, ${result.errors || 0} errors`);
@@ -597,12 +615,23 @@ export const syncLibraryWithFrontendData = async (): Promise<SyncResult> => {
     let appids: string[];
 
     if (useAllOwned) {
+      // Try to discover games from frontend with retries if appStore isn't ready
       appids = await getAllOwnedGameIds();
       log(`Discovered ${appids.length} owned games`);
 
-      // Fallback to backend if discovery fails
+      // Retry up to 3 times with 2 second delays if discovery fails (appStore not ready on initial load)
+      let retries = 0;
+      while (appids.length === 0 && retries < 3) {
+        retries++;
+        log(`Discovery failed (appStore may not be ready yet), retry ${retries}/3 in 2s...`);
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        appids = await getAllOwnedGameIds();
+        log(`Retry ${retries}: Discovered ${appids.length} owned games`);
+      }
+
+      // Final fallback to backend if discovery still fails after retries
       if (appids.length === 0) {
-        log('Discovery failed, using backend list');
+        log('Discovery failed after retries, using backend list');
         const gamesResult = await call<[], GameListResult>('get_all_games');
         if (gamesResult.success && gamesResult.games) {
           appids = gamesResult.games.map(g => g.appid);
