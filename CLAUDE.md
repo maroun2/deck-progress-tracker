@@ -1,4 +1,4 @@
-# Game Progress Tracker - Decky Plugin
+# Deck Progress Tracker - Decky Plugin
 
 ## Release
 
@@ -54,11 +54,11 @@ Every commit to `main` branch automatically builds a test artifact via GitHub Ac
 
 ### How to Download Test Builds:
 
-1. Go to: https://github.com/maroun2/game-progress-tracker/actions
+1. Go to: https://github.com/maroun2/deck-progress-tracker/actions
 2. Click the latest "Build Plugin Artifact" workflow run
 3. Scroll to bottom → Artifacts section
-4. Download: `game-progress-tracker` (contains versioned zip)
-5. Extract the zip file (named like `game-progress-tracker-1.3.6-abc1234.zip`)
+4. Download: `deck-progress-tracker` (contains versioned zip)
+5. Extract the zip file (named like `deck-progress-tracker-1.3.6-abc1234.zip`)
 6. Copy to Steam Deck: `~/homebrew/plugins/`
 7. Restart Decky Loader
 
@@ -83,7 +83,7 @@ Every commit to `main` branch automatically builds a test artifact via GitHub Ac
 3. Restart Decky Loader
 
 ### Logs:
-- Location: `/home/deck/homebrew/plugins/game-progress-tracker/logs/message.txt`
+- Location: `/home/deck/homebrew/plugins/deck-progress-tracker/logs/message.txt`
 - All frontend logs go to backend via `log_frontend()` - no CEF debugging needed
 
 ## CEF Debugging

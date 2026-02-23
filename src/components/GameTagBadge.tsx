@@ -14,7 +14,7 @@ import { syncSingleGameWithFrontendData } from '../lib/syncUtils';
 
 // Debug logging helper
 const log = (msg: string, data?: any) => {
-  const logMsg = `[GameProgressTracker][GameTagBadge] ${msg}`;
+  const logMsg = `[DeckProgressTracker][GameTagBadge] ${msg}`;
   if (data !== undefined) {
     console.log(logMsg, data);
   } else {

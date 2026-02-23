@@ -29,35 +29,35 @@ jobs:
 
       - name: Create plugin directory structure
         run: |
-          mkdir -p plugin-build/game-progress-tracker
-          cp -r dist plugin-build/game-progress-tracker/
-          cp -r backend plugin-build/game-progress-tracker/
-          cp main.py plugin-build/game-progress-tracker/
-          cp plugin.json plugin-build/game-progress-tracker/
-          cp package.json plugin-build/game-progress-tracker/
-          cp requirements.txt plugin-build/game-progress-tracker/
-          cp LICENSE plugin-build/game-progress-tracker/
-          cp README.md plugin-build/game-progress-tracker/
+          mkdir -p plugin-build/deck-progress-tracker
+          cp -r dist plugin-build/deck-progress-tracker/
+          cp -r backend plugin-build/deck-progress-tracker/
+          cp main.py plugin-build/deck-progress-tracker/
+          cp plugin.json plugin-build/deck-progress-tracker/
+          cp package.json plugin-build/deck-progress-tracker/
+          cp requirements.txt plugin-build/deck-progress-tracker/
+          cp LICENSE plugin-build/deck-progress-tracker/
+          cp README.md plugin-build/deck-progress-tracker/
 
       - name: Create version file
         run: |
-          echo "${{ github.ref_name }}" > plugin-build/game-progress-tracker/VERSION
+          echo "${{ github.ref_name }}" > plugin-build/deck-progress-tracker/VERSION
 
       - name: Create release zip
         run: |
           cd plugin-build
-          zip -r ../game-progress-tracker-${{ github.ref_name }}.zip game-progress-tracker
+          zip -r ../deck-progress-tracker-${{ github.ref_name }}.zip deck-progress-tracker
           cd ..
 
       - name: Verify zip contents
         run: |
-          unzip -l game-progress-tracker-${{ github.ref_name }}.zip
+          unzip -l deck-progress-tracker-${{ github.ref_name }}.zip
 
       - name: Generate release notes
         id: release_notes
         run: |
           cat > release_notes.md << 'EOF'
-          ## Game Progress Tracker ${{ github.ref_name }}
+          ## Deck Progress Tracker ${{ github.ref_name }}
 
           ### Installation
 
@@ -66,12 +66,12 @@ jobs:
           2. Go to Developer tab → Install Plugin from URL
           3. Enter this URL:
           ```
-          https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/game-progress-tracker-${{ github.ref_name }}.zip
+          https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/deck-progress-tracker-${{ github.ref_name }}.zip
           ```
           4. Click Install and wait for completion
 
           **Option 2: Download and Install Manually**
-          1. Download `game-progress-tracker-${{ github.ref_name }}.zip` below
+          1. Download `deck-progress-tracker-${{ github.ref_name }}.zip` below
           2. Extract to `~/homebrew/plugins/` on your Steam Deck
           3. Install Python dependencies: `pip install --user -r requirements.txt`
           4. Restart Decky Loader
@@ -101,7 +101,7 @@ jobs:
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
-          files: game-progress-tracker-${{ github.ref_name }}.zip
+          files: deck-progress-tracker-${{ github.ref_name }}.zip
           body_path: release_notes.md
           draft: false
           prerelease: false
@@ -111,7 +111,7 @@ jobs:
       - name: Update latest.zip (for static URL)
         uses: softprops/action-gh-release@v1
         with:
-          files: game-progress-tracker-${{ github.ref_name }}.zip
+          files: deck-progress-tracker-${{ github.ref_name }}.zip
           tag_name: latest
           name: Latest Release
           draft: false

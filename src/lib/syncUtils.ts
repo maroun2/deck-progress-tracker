@@ -7,7 +7,7 @@ import { call } from '@decky/api';
 
 // Debug logging helper
 const log = (msg: string, data?: any) => {
-  const logMsg = `[GameProgressTracker][syncUtils] ${msg}`;
+  const logMsg = `[DeckProgressTracker][syncUtils] ${msg}`;
   if (data !== undefined) {
     console.log(logMsg, data);
   } else {
@@ -19,7 +19,7 @@ const log = (msg: string, data?: any) => {
  * Log to backend (for debugging without CEF)
  */
 const logToBackend = async (level: 'info' | 'error' | 'warn', message: string) => {
-  console.log(`[GameProgressTracker] ${message}`);
+  console.log(`[DeckProgressTracker] ${message}`);
   try {
     await call<[{ level: string; message: string }], { success: boolean }>('log_frontend', { level, message });
   } catch (e) {

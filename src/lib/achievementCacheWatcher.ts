@@ -6,7 +6,7 @@
 import { syncSingleGameWithFrontendData } from './syncUtils';
 
 const log = (msg: string, data?: any) => {
-  const logMsg = `[GameProgressTracker][achievementCacheWatcher] ${msg}`;
+  const logMsg = `[DeckProgressTracker][achievementCacheWatcher] ${msg}`;
   if (data !== undefined) {
     console.log(logMsg, data);
   } else {

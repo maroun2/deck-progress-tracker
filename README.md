@@ -1,4 +1,4 @@
-# Game Progress Tracker
+# Deck Progress Tracker
 
 A Decky Loader plugin for Steam Deck that automatically tags your games based on completion status, playtime, and achievements.
 
@@ -27,7 +27,7 @@ A Decky Loader plugin for Steam Deck that automatically tags your games based on
 
 ## Screenshots
 
-![Game Progress Tracker Plugin UI](assets/plugin-screenshot.jpg)
+![Deck Progress Tracker Plugin UI](assets/plugin-screenshot.jpg)
 
 The plugin interface showing tag sections with game counts - Completed (16), Mastered (2), and Dropped (20) games are visible with their respective colored badges.
 
@@ -38,20 +38,20 @@ The plugin interface showing tag sections with game counts - Completed (16), Mas
 1. Open Decky Loader on your Steam Deck (QAM → Plugin icon)
 2. Navigate to Settings → Developer Mode
 3. Enable Developer Mode
-4. Install from URL: `https://github.com/maroun2/game-progress-tracker/releases/download/1.3.0/game-progress-tracker-1.3.0.zip`
+4. Install from URL: `https://github.com/maroun2/deck-progress-tracker/releases/download/1.3.0/deck-progress-tracker-1.3.0.zip`
 5. Restart Decky if prompted
 
 ### Manual Installation
 
-1. Download the latest release from [GitHub Releases](https://github.com/maroun2/game-progress-tracker/releases)
-2. Extract to: `~/homebrew/plugins/game-progress-tracker/`
+1. Download the latest release from [GitHub Releases](https://github.com/maroun2/deck-progress-tracker/releases)
+2. Extract to: `~/homebrew/plugins/deck-progress-tracker/`
 3. Restart Decky Loader
 
 ## Usage
 
 ### Initial Setup
 
-1. Open the plugin from Decky Loader (QAM → Plugin icon → Game Progress Tracker)
+1. Open the plugin from Decky Loader (QAM → Plugin icon → Deck Progress Tracker)
 2. Click "Sync Entire Library" to analyze all your games
 3. Wait for sync to complete (may take several minutes for large libraries)
 4. Real-time progress shows "Syncing: X/Y games"
@@ -127,8 +127,8 @@ The plugin uses a priority-based system where higher priority tags override lowe
 
 ```bash
 # Clone the repository
-git clone https://github.com/maroun2/game-progress-tracker.git
-cd game-progress-tracker
+git clone https://github.com/maroun2/deck-progress-tracker.git
+cd deck-progress-tracker
 
 # Install dependencies
 npm install
@@ -140,7 +140,7 @@ npm run build
 ## Project Structure
 
 ```
-game-progress-tracker/
+deck-progress-tracker/
 ├── backend/               # Python backend (in development)
 ├── src/                   # TypeScript frontend
 │   ├── components/        # React components
@@ -190,7 +190,7 @@ game-progress-tracker/
 
 1. Ensure plugin is enabled in Decky settings
 2. Run "Sync Library" from plugin settings
-3. Check `/home/deck/homebrew/plugins/game-progress-tracker/logs/message.txt` for errors
+3. Check `/home/deck/homebrew/plugins/deck-progress-tracker/logs/message.txt` for errors
 
 ### Incorrect tags
 
@@ -241,7 +241,7 @@ MIT License - see [LICENSE](LICENSE) file
 
 ## Support
 
-- **Issues:** [GitHub Issues](https://github.com/maroun2/game-progress-tracker/issues)
+- **Issues:** [GitHub Issues](https://github.com/maroun2/deck-progress-tracker/issues)
 - **Discord:** [Decky Loader Discord](https://deckbrew.xyz/discord)
 - **Documentation:** [Decky Wiki](https://wiki.deckbrew.xyz/)
 

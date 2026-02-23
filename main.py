@@ -1,5 +1,5 @@
 """
-Game Progress Tracker - Main Plugin Entry
+Deck Progress Tracker - Main Plugin Entry
 Decky Loader plugin for automatic game tagging
 """
 
@@ -33,7 +33,7 @@ def get_plugin_version():
 PLUGIN_VERSION = get_plugin_version()
 
 logger = decky.logger
-logger.info(f"=== Game Progress Tracker v{PLUGIN_VERSION} starting ===")
+logger.info(f"=== Deck Progress Tracker v{PLUGIN_VERSION} starting ===")
 logger.info(f"Plugin dir: {PLUGIN_DIR}")
 logger.info(f"Backend src: {BACKEND_SRC} exists={BACKEND_SRC.exists()}")
 
@@ -77,12 +77,12 @@ class Plugin:
 
     async def _main(self):
         """Initialize plugin on load"""
-        logger.info("Game Progress Tracker plugin starting...")
+        logger.info("Deck Progress Tracker plugin starting...")
 
         # Get plugin data directory
         self.plugin_dir = os.environ.get(
             "DECKY_PLUGIN_RUNTIME_DIR",
-            str(Path.home() / ".local" / "share" / "decky" / "game-progress-tracker")
+            str(Path.home() / ".local" / "share" / "decky" / "deck-progress-tracker")
         )
         Path(self.plugin_dir).mkdir(parents=True, exist_ok=True)
 

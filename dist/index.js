@@ -1,4 +1,4 @@
-const manifest = {"name":"Game Progress Tracker","author":"Maron","version":"1.3.1","api_version":1,"flags":["_root"],"publish":{"tags":["library","achievements","statistics","enhancement","progress-tracking"],"description":"Automatic game tagging based on achievements, playtime, and completion time. Track your progress with visual badges in the Steam library. Features 5 intelligent tags: Mastered, Completed, Dropped, In Progress, and Backlog.","image":"https://raw.githubusercontent.com/maroun2/game-progress-tracker/main/assets/plugin-screenshot.jpg"}};
+const manifest = {"name":"Deck Progress Tracker","author":"Maron","version":"1.3.1","api_version":1,"flags":["_root"],"publish":{"tags":["library","achievements","statistics","enhancement","progress-tracking"],"description":"Automatic game tagging based on achievements, playtime, and completion time. Track your progress with visual badges in the Steam library. Features 5 intelligent tags: Mastered, Completed, Dropped, In Progress, and Backlog.","image":"https://raw.githubusercontent.com/maroun2/deck-progress-tracker/main/assets/plugin-screenshot.jpg"}};
 const API_VERSION = 2;
 if (!manifest?.name) {
     throw new Error('[@decky/api]: Failed to find plugin manifest.');
@@ -148,7 +148,7 @@ const TagIcon = ({ type, size = 24, className }) => {
  */
 // Debug logging helper
 const log$7 = (msg, data) => {
-    const logMsg = `[GameProgressTracker][syncUtils] ${msg}`;
+    const logMsg = `[DeckProgressTracker][syncUtils] ${msg}`;
     if (data !== undefined) {
         console.log(logMsg, data);
     }
@@ -820,7 +820,7 @@ const styles$1 = {
  */
 // Debug logging helper
 const log$6 = (msg, data) => {
-    const logMsg = `[GameProgressTracker][GameTag] ${msg}`;
+    const logMsg = `[DeckProgressTracker][GameTag] ${msg}`;
     if (data !== undefined) {
         console.log(logMsg, data);
     }
@@ -908,7 +908,7 @@ const GameTag = ({ tag, onClick, compact = false }) => {
  */
 // Debug logging helper
 const log$5 = (msg, data) => {
-    const logMsg = `[GameProgressTracker][TagManager] ${msg}`;
+    const logMsg = `[DeckProgressTracker][TagManager] ${msg}`;
     if (data !== undefined) {
         console.log(logMsg, data);
     }
@@ -1224,7 +1224,7 @@ const styles = {
  */
 // Debug logging helper
 const log$4 = (msg, data) => {
-    const logMsg = `[GameProgressTracker][useGameTag] ${msg}`;
+    const logMsg = `[DeckProgressTracker][useGameTag] ${msg}`;
     if (data !== undefined) {
         console.log(logMsg, data);
     }
@@ -1325,7 +1325,7 @@ function useGameTag(appid) {
  */
 // Debug logging helper
 const log$3 = (msg, data) => {
-    const logMsg = `[GameProgressTracker][GameTagBadge] ${msg}`;
+    const logMsg = `[DeckProgressTracker][GameTagBadge] ${msg}`;
     if (data !== undefined) {
         console.log(logMsg, data);
     }
@@ -1487,7 +1487,7 @@ const GameTagBadge = ({ appid }) => {
  */
 // Debug logging helper
 const log$2 = (msg, data) => {
-    const logMsg = `[GameProgressTracker][patchLibraryApp] ${msg}`;
+    const logMsg = `[DeckProgressTracker][patchLibraryApp] ${msg}`;
     if (data !== undefined) {
         console.log(logMsg, data);
     }
@@ -1571,7 +1571,7 @@ function patchLibraryApp() {
  * Monitors URL changes and syncs achievements when user views "Your Stuff" tab
  */
 const log$1 = (msg, data) => {
-    const logMsg = `[GameProgressTracker][achievementCacheWatcher] ${msg}`;
+    const logMsg = `[DeckProgressTracker][achievementCacheWatcher] ${msg}`;
     if (data !== undefined) {
         console.log(logMsg, data);
     }
@@ -1650,14 +1650,14 @@ function stopAchievementCacheWatcher() {
 }
 
 /**
- * Game Progress Tracker - Main Plugin Entry
+ * Deck Progress Tracker - Main Plugin Entry
  * Decky Loader plugin for automatic game tagging
  *
  * Uses safe route patching pattern based on ProtonDB Badges plugin
  */
 // Debug logging helper
 const log = (msg, data) => {
-    const logMsg = `[GameProgressTracker] ${msg}`;
+    const logMsg = `[DeckProgressTracker] ${msg}`;
     if (data !== undefined) {
         console.log(logMsg, data);
     }
@@ -1698,7 +1698,7 @@ var index = definePlugin(() => {
                     ? `Synced ${result.synced} games. ${newTags} new tag${newTags > 1 ? 's' : ''} added!`
                     : `Synced ${result.synced} games. Open plugin to see your library.`;
                 toaster.toast({
-                    title: 'Game Progress Tracker',
+                    title: 'Deck Progress Tracker',
                     body: message,
                     duration: 5000,
                 });
@@ -1709,8 +1709,8 @@ var index = definePlugin(() => {
         }
     })();
     return {
-        name: 'Game Progress Tracker',
-        titleView: SP_REACT.createElement("div", { className: DFL.staticClasses.Title }, "Game Progress Tracker"),
+        name: 'Deck Progress Tracker',
+        titleView: SP_REACT.createElement("div", { className: DFL.staticClasses.Title }, "Deck Progress Tracker"),
         content: SP_REACT.createElement(Settings, null),
         icon: SP_REACT.createElement(FaTrophy, null),
         onDismount() {

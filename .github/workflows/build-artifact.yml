@@ -66,47 +66,47 @@ jobs:
 
       - name: Create plugin directory structure
         run: |
-          mkdir -p plugin-build/game-progress-tracker/backend/src
+          mkdir -p plugin-build/deck-progress-tracker/backend/src
 
           # Copy backend
-          cp backend/src/database.py plugin-build/game-progress-tracker/backend/src/
-          cp backend/src/steam_data.py plugin-build/game-progress-tracker/backend/src/
-          cp backend/src/hltb_service.py plugin-build/game-progress-tracker/backend/src/
-          cp backend/src/__init__.py plugin-build/game-progress-tracker/backend/src/
-          cp backend/__init__.py plugin-build/game-progress-tracker/backend/
+          cp backend/src/database.py plugin-build/deck-progress-tracker/backend/src/
+          cp backend/src/steam_data.py plugin-build/deck-progress-tracker/backend/src/
+          cp backend/src/hltb_service.py plugin-build/deck-progress-tracker/backend/src/
+          cp backend/src/__init__.py plugin-build/deck-progress-tracker/backend/src/
+          cp backend/__init__.py plugin-build/deck-progress-tracker/backend/
 
           # Copy other files (with updated versions)
-          cp -r dist plugin-build/game-progress-tracker/
-          cp main.py plugin-build/game-progress-tracker/
-          cp plugin.json plugin-build/game-progress-tracker/
-          cp package.json plugin-build/game-progress-tracker/
-          cp requirements.txt plugin-build/game-progress-tracker/
-          cp LICENSE plugin-build/game-progress-tracker/
-          cp README.md plugin-build/game-progress-tracker/
+          cp -r dist plugin-build/deck-progress-tracker/
+          cp main.py plugin-build/deck-progress-tracker/
+          cp plugin.json plugin-build/deck-progress-tracker/
+          cp package.json plugin-build/deck-progress-tracker/
+          cp requirements.txt plugin-build/deck-progress-tracker/
+          cp LICENSE plugin-build/deck-progress-tracker/
+          cp README.md plugin-build/deck-progress-tracker/
 
       - name: Create VERSION file
         run: |
           VERSION="${{ steps.version.outputs.version }}"
-          echo "$VERSION" > plugin-build/game-progress-tracker/VERSION
+          echo "$VERSION" > plugin-build/deck-progress-tracker/VERSION
           echo "VERSION file created with: $VERSION"
 
       - name: Verify directory contents
         run: |
           echo "=== Plugin directory contents ==="
-          ls -lah plugin-build/game-progress-tracker/
+          ls -lah plugin-build/deck-progress-tracker/
           echo ""
           echo "=== Version in package.json ==="
-          grep '"version"' plugin-build/game-progress-tracker/package.json
+          grep '"version"' plugin-build/deck-progress-tracker/package.json
           echo ""
           echo "=== Version in plugin.json ==="
-          grep '"version"' plugin-build/game-progress-tracker/plugin.json
+          grep '"version"' plugin-build/deck-progress-tracker/plugin.json
           echo ""
           echo "=== VERSION file ==="
-          cat plugin-build/game-progress-tracker/VERSION
+          cat plugin-build/deck-progress-tracker/VERSION
 
       - name: Upload artifact (GitHub will zip it automatically)
         uses: actions/upload-artifact@v4
         with:
-          name: game-progress-tracker-${{ steps.version.outputs.version }}
+          name: deck-progress-tracker-${{ steps.version.outputs.version }}
           path: plugin-build/
           retention-days: 90
