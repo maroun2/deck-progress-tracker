@@ -9,7 +9,7 @@ import { TagIcon, TAG_ICON_COLORS } from './TagIcon';
 
 // Debug logging helper
 const log = (msg: string, data?: any) => {
-  const logMsg = `[GameProgressTracker][GameTag] ${msg}`;
+  const logMsg = `[DeckProgressTracker][GameTag] ${msg}`;
   if (data !== undefined) {
     console.log(logMsg, data);
   } else {

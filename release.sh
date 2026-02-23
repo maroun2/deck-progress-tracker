@@ -8,7 +8,7 @@
 set -e  # Exit on error
 
 echo "======================================"
-echo "Game Progress Tracker - Release Script"
+echo "Deck Progress Tracker - Release Script"
 echo "======================================"
 
 # Check arguments
@@ -146,31 +146,31 @@ fi
 if [ "$SKIP_BUILD" = false ] || [ "$ONLY_MODE" = "package" ]; then
     echo "Step 3: Creating plugin package..."
     rm -rf plugin-build
-    rm -f game-progress-tracker-*.zip
+    rm -f deck-progress-tracker-*.zip
 
-    mkdir -p plugin-build/game-progress-tracker/backend/src
+    mkdir -p plugin-build/deck-progress-tracker/backend/src
 
     # Copy backend
-    cp backend/src/database.py plugin-build/game-progress-tracker/backend/src/
-    cp backend/src/steam_data.py plugin-build/game-progress-tracker/backend/src/
-    cp backend/src/hltb_service.py plugin-build/game-progress-tracker/backend/src/
-    cp backend/src/__init__.py plugin-build/game-progress-tracker/backend/src/
-    cp backend/__init__.py plugin-build/game-progress-tracker/backend/
+    cp backend/src/database.py plugin-build/deck-progress-tracker/backend/src/
+    cp backend/src/steam_data.py plugin-build/deck-progress-tracker/backend/src/
+    cp backend/src/hltb_service.py plugin-build/deck-progress-tracker/backend/src/
+    cp backend/src/__init__.py plugin-build/deck-progress-tracker/backend/src/
+    cp backend/__init__.py plugin-build/deck-progress-tracker/backend/
 
     # Copy other files
-    cp -r dist plugin-build/game-progress-tracker/
-    cp main.py plugin-build/game-progress-tracker/
-    cp plugin.json plugin-build/game-progress-tracker/
-    cp package.json plugin-build/game-progress-tracker/
-    cp requirements.txt plugin-build/game-progress-tracker/
-    cp LICENSE plugin-build/game-progress-tracker/
-    cp README.md plugin-build/game-progress-tracker/
-    echo "$VERSION" > plugin-build/game-progress-tracker/VERSION
+    cp -r dist plugin-build/deck-progress-tracker/
+    cp main.py plugin-build/deck-progress-tracker/
+    cp plugin.json plugin-build/deck-progress-tracker/
+    cp package.json plugin-build/deck-progress-tracker/
+    cp requirements.txt plugin-build/deck-progress-tracker/
+    cp LICENSE plugin-build/deck-progress-tracker/
+    cp README.md plugin-build/deck-progress-tracker/
+    echo "$VERSION" > plugin-build/deck-progress-tracker/VERSION
 
     # Create zip
-    ZIP_NAME="game-progress-tracker-${VERSION}.zip"
+    ZIP_NAME="deck-progress-tracker-${VERSION}.zip"
     cd plugin-build
-    zip -r "../$ZIP_NAME" game-progress-tracker
+    zip -r "../$ZIP_NAME" deck-progress-tracker
     cd ..
 
     SIZE=$(du -h "$ZIP_NAME" | cut -f1)
@@ -213,11 +213,11 @@ if [ "$SKIP_RELEASE" = false ]; then
     # Delete existing release if present
     gh release delete "$VERSION" --yes 2>/dev/null || true
 
-    INSTALL_URL="https://github.com/maroun2/steam-deck-game-tags/releases/download/${VERSION}/game-progress-tracker-${VERSION}.zip"
+    INSTALL_URL="https://github.com/maroun2/deck-progress-tracker/releases/download/${VERSION}/deck-progress-tracker-${VERSION}.zip"
 
     gh release create "$VERSION" "$ZIP_NAME" \
         --title "${VERSION} - ${RELEASE_TITLE}" \
-        --notes "## Game Progress Tracker ${VERSION}
+        --notes "## Deck Progress Tracker ${VERSION}
 
 ### Changes
 - ${RELEASE_TITLE}
@@ -239,5 +239,5 @@ echo "======================================"
 echo "Complete!"
 echo "======================================"
 echo "Version: $VERSION"
-[ "$SKIP_RELEASE" = false ] && echo "URL: https://github.com/maroun2/steam-deck-game-tags/releases/tag/$VERSION"
-[ "$SKIP_RELEASE" = false ] && echo "Install URL: https://github.com/maroun2/steam-deck-game-tags/releases/download/${VERSION}/game-progress-tracker-${VERSION}.zip"
+[ "$SKIP_RELEASE" = false ] && echo "URL: https://github.com/maroun2/deck-progress-tracker/releases/tag/$VERSION"
+[ "$SKIP_RELEASE" = false ] && echo "Install URL: https://github.com/maroun2/deck-progress-tracker/releases/download/${VERSION}/deck-progress-tracker-${VERSION}.zip"

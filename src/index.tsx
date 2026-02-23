@@ -1,5 +1,5 @@
 /**
- * Game Progress Tracker - Main Plugin Entry
+ * Deck Progress Tracker - Main Plugin Entry
  * Decky Loader plugin for automatic game tagging
  *
  * Uses safe route patching pattern based on ProtonDB Badges plugin
@@ -16,7 +16,7 @@ import { startAchievementCacheWatcher, stopAchievementCacheWatcher } from './lib
 
 // Debug logging helper
 const log = (msg: string, data?: any) => {
-  const logMsg = `[GameProgressTracker] ${msg}`;
+  const logMsg = `[DeckProgressTracker] ${msg}`;
   if (data !== undefined) {
     console.log(logMsg, data);
   } else {
@@ -62,7 +62,7 @@ export default definePlugin(() => {
           : `Synced ${result.synced} games. Open plugin to see your library.`;
 
         toaster.toast({
-          title: 'Game Progress Tracker',
+          title: 'Deck Progress Tracker',
           body: message,
           duration: 5000,
         });
@@ -73,8 +73,8 @@ export default definePlugin(() => {
   })();
 
   return {
-    name: 'Game Progress Tracker',
-    titleView: <div className={staticClasses.Title}>Game Progress Tracker</div>,
+    name: 'Deck Progress Tracker',
+    titleView: <div className={staticClasses.Title}>Deck Progress Tracker</div>,
     content: <Settings />,
     icon: <FaTrophy />,
     onDismount() {

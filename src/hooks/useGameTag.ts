@@ -8,7 +8,7 @@ import { GameTag } from '../types';
 
 // Debug logging helper
 const log = (msg: string, data?: any) => {
-  const logMsg = `[GameProgressTracker][useGameTag] ${msg}`;
+  const logMsg = `[DeckProgressTracker][useGameTag] ${msg}`;
   if (data !== undefined) {
     console.log(logMsg, data);
   } else {

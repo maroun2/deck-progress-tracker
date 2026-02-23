@@ -6,7 +6,7 @@ import { TagIcon, TagType } from './TagIcon';
 import { getAchievementData, getPlaytimeData, getGameNames, getAllOwnedGameIds, AchievementData } from '../lib/syncUtils';
 
 const logToBackend = async (level: 'info' | 'error' | 'warn', message: string) => {
-  console.log(`[GameProgressTracker] ${message}`);
+  console.log(`[DeckProgressTracker] ${message}`);
   try {
     await call('log_frontend', { level, message });
   } catch (e) {}

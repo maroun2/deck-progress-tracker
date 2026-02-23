@@ -17,7 +17,7 @@ import { GameTagBadge } from '../components/GameTagBadge';
 
 // Debug logging helper
 const log = (msg: string, data?: any) => {
-  const logMsg = `[GameProgressTracker][patchLibraryApp] ${msg}`;
+  const logMsg = `[DeckProgressTracker][patchLibraryApp] ${msg}`;
   if (data !== undefined) {
     console.log(logMsg, data);
   } else {
