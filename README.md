@@ -1,29 +1,16 @@
 # Deck Progress Tracker
 
-A Decky Loader plugin for Steam Deck that automatically tags your games based on completion status, playtime, and achievements.
+A Decky Loader plugin for Steam Deck that automatically tags your games based on achievements, playtime, and [HowLongToBeat](https://howlongtobeat.com/) data:
 
-## Features
+| Tag | Criteria |
+|-----|----------|
+| **Mastered** | 85%+ achievements unlocked |
+| **Completed** | Playtime ≥ HLTB main story time |
+| **In Progress** | Playtime ≥ 30 minutes |
+| **Dropped** | Not played for over 1 year |
+| **Backlog** | Not started yet |
 
-- **Intelligent 5-Tag System**
-  - **Mastered** - Games with 85%+ achievements unlocked
-  - **Completed** - Beat the main story (playtime ≥ HLTB main story time)
-  - **Dropped** - Games not played for over 1 year
-  - **In Progress** - Currently playing (playtime ≥ 30 minutes)
-  - **Backlog** - Not started yet (no playtime or minimal playtime)
-
-- **HowLongToBeat Integration** - Fetches game completion times to determine "Completed" status
-
-- **Full Gamepad Navigation** - Complete D-pad support for all UI elements with proper focus highlighting
-
-- **Manual Override** - Change any tag manually if automatic detection isn't accurate
-
-- **Visual Badges** - Tags display as colorful badges over game tiles in your Steam library
-
-- **Universal Sync Progress** - Real-time progress tracking during library sync
-
-- **Automated Build Workflow** - GitHub Actions for continuous artifact builds on every commit
-
-- **Persistent Storage** - All tags and settings saved in local SQLite database
+You can also manually override any tag if the automatic detection isn't right for you.
 
 ## Screenshots
 
@@ -34,6 +21,12 @@ The plugin dashboard showing a library of 809 games organized by tags - In Progr
 ![Game Detail View](assets/20260313182339_1.jpg)
 
 Game detail view for Castle Crashers showing statistics (playtime, achievements, HLTB data) and manual tag controls.
+
+## Sponsor
+
+If you find this plugin useful, consider supporting its development — it helps me keep it free, fix bugs, add new features, and stay compatible with Steam Deck updates.
+
+[![Support on Patreon](https://img.shields.io/badge/Support_on-Patreon-F96854?style=for-the-badge&logo=patreon&logoColor=white)](https://patreon.com/DeckProgressTracker)
 
 ## Installation
 
@@ -50,41 +43,6 @@ Game detail view for Castle Crashers showing statistics (playtime, achievements,
 1. Download the latest release from [GitHub Releases](https://github.com/maroun2/deck-progress-tracker/releases)
 2. Extract to: `~/homebrew/plugins/deck-progress-tracker/`
 3. Restart Decky Loader
-
-## Usage
-
-### Initial Setup
-
-1. Open the plugin from Decky Loader (QAM → Plugin icon → Deck Progress Tracker)
-2. Click "Sync Entire Library" to analyze all your games
-3. Wait for sync to complete (may take several minutes for large libraries)
-4. Real-time progress shows "Syncing: X/Y games"
-
-### Viewing Tags
-
-- Navigate to any game in your Steam library
-- Tags appear as colorful badges in the top-right corner of the game page
-- Click a tag to open the Tag Manager for manual adjustments
-
-### Managing Tags
-
-The plugin organizes games into expandable sections:
-
-1. Navigate with D-pad to any tag section (In Progress, Completed, Mastered, Dropped, Backlog)
-2. Press A to expand/collapse the section
-3. View all games in that category
-4. Press A on any game to navigate to its library page
-5. Games marked "manual" show a badge indicating manual override
-
-### Settings
-
-Access settings from the plugin menu:
-
-- **Enable Auto-Tagging** - Toggle automatic tag assignment
-- **Mastered Multiplier** - Adjust threshold for "Mastered" tag (default: 1.5x)
-- **In Progress Threshold** - Minimum playtime to mark as "In Progress" (default: 30 minutes)
-- **Game Sources** - Choose which games to sync (Installed, Non-Steam, All Owned)
-- **Sync Library** - Manually trigger a full library sync
 
 ## Tag Logic
 
@@ -118,120 +76,11 @@ The plugin uses a priority-based system where higher priority tags override lowe
 
 **Example**: A game with 90% achievements and 1+ year since last play will be tagged as **Mastered** (not Dropped), because Mastered has higher priority.
 
-## Development
+## Support
 
-### Prerequisites
-
-- Node.js 18+
-- npm
-- Python 3.10+
-- Steam Deck (for testing) or Decky Loader development environment
-
-### Setup
-
-```bash
-# Clone the repository
-git clone https://github.com/maroun2/deck-progress-tracker.git
-cd deck-progress-tracker
-
-# Install dependencies
-npm install
-
-# Build the plugin
-npm run build
-```
-
-## Project Structure
-
-```
-deck-progress-tracker/
-├── backend/               # Python backend (in development)
-├── src/                   # TypeScript frontend
-│   ├── components/        # React components
-│   ├── hooks/             # Custom React hooks
-│   ├── lib/               # Utility functions
-│   ├── index.tsx          # Plugin entry point
-│   └── types.ts           # TypeScript type definitions
-├── main.py                # Backend entry point
-├── plugin.json            # Plugin metadata
-├── package.json           # npm configuration
-└── rollup.config.mjs      # Build configuration
-```
-
-## Technical Details
-
-### Frontend Architecture
-- Built with TypeScript and React
-- Uses Decky Loader UI components (@decky/ui)
-  - `ButtonItem` for focusable interactive elements
-  - `PanelSectionRow` for proper layout structure
-  - `PanelSection` for grouping
-- Rollup for bundling
-- Real-time state updates with smart UI refreshing (10s intervals)
-- Full gamepad navigation with proper focus styling
-
-### Backend Architecture
-- Python asyncio for concurrent operations
-- SQLite for local data storage
-- HowLongToBeat API integration for game completion time data
-- Steam API integration for achievement and playtime data
-- Background tasks for daily dropped game detection
-- Centralized tag calculation in `calculate_auto_tag()` function
-
-### Communication
-- Frontend-backend communication via `@decky/api` call() function
-- All parameters passed as single dict to Python backend
-- Real-time sync progress updates via polling
-
-### Route Patching
-- ProtonDB-style safe patching with `afterPatch` and `findInReactTree`
-- Visual badges integrated into Steam library UI
-- Uses `createReactTreePatcher` for reliable UI modifications
-
-## Troubleshooting
-
-### Tags not appearing
-
-1. Ensure plugin is enabled in Decky settings
-2. Run "Sync Library" from plugin settings
-3. Check `/home/deck/homebrew/plugins/deck-progress-tracker/logs/message.txt` for errors
-
-### Incorrect tags
-
-1. Open the plugin settings to view tag details
-2. Verify achievement and playtime data is correct
-3. Manually override if needed by using manual tag assignment
-4. Tags follow priority order: Mastered > Completed > Dropped > In Progress > Backlog
-
-### HLTB data not found
-
-- Some games may not be in the HowLongToBeat database
-- "Completed" tag will not be assigned without HLTB data
-- Other tags (Mastered, In Progress, Dropped, Backlog) will still work
-
-### Performance issues
-
-- Large libraries (500+ games) may take time to sync
-- Sync runs in background with real-time progress updates
-- Sync shouldn't block UI interactions
-- Consider adjusting game sources in settings
-
-### Dropped tag not appearing
-
-- Dropped tag only applies to games not played for 365+ days
-- Does not apply to Mastered or Completed games (they have higher priority)
-- Background task runs daily to detect dropped games
-- Manual sync will also detect dropped games
-
-## Contributing
-
-Contributions welcome! Please:
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Test on Steam Deck if possible
-5. Submit a pull request
+- **Issues:** [GitHub Issues](https://github.com/maroun2/deck-progress-tracker/issues)
+- **Discord:** [Decky Loader Discord](https://deckbrew.xyz/discord)
+- **Documentation:** [Decky Wiki](https://wiki.deckbrew.xyz/)
 
 ## License
 
@@ -242,16 +91,6 @@ MIT License - see [LICENSE](LICENSE) file
 - Built with [Decky Loader](https://github.com/SteamDeckHomebrew/decky-loader)
 - Game completion data from [HowLongToBeat](https://howlongtobeat.com/)
 - Python HLTB integration via [howlongtobeatpy](https://github.com/ScrappyCocco/HowLongToBeat-PythonAPI)
-
-## Support
-
-- **Issues:** [GitHub Issues](https://github.com/maroun2/deck-progress-tracker/issues)
-- **Discord:** [Decky Loader Discord](https://deckbrew.xyz/discord)
-- **Documentation:** [Decky Wiki](https://wiki.deckbrew.xyz/)
-
-## Sponsor
-
-If you find this plugin useful, consider supporting development on [Patreon](https://patreon.com/DeckProgressTracker).
 
 ## Changelog
 
