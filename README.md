@@ -27,9 +27,13 @@ A Decky Loader plugin for Steam Deck that automatically tags your games based on
 
 ## Screenshots
 
-![Deck Progress Tracker Plugin UI](assets/plugin-screenshot.jpg)
+![Deck Progress Tracker Dashboard](assets/20260313182447_1.jpg)
 
-The plugin interface showing tag sections with game counts - Completed (16), Mastered (2), and Dropped (20) games are visible with their respective colored badges.
+The plugin dashboard showing a library of 809 games organized by tags - In Progress (21), Completed (18), Mastered (1), and Dropped (19).
+
+![Game Detail View](assets/20260313182339_1.jpg)
+
+Game detail view for Castle Crashers showing statistics (playtime, achievements, HLTB data) and manual tag controls.
 
 ## Installation
 
@@ -244,6 +248,10 @@ MIT License - see [LICENSE](LICENSE) file
 - **Issues:** [GitHub Issues](https://github.com/maroun2/deck-progress-tracker/issues)
 - **Discord:** [Decky Loader Discord](https://deckbrew.xyz/discord)
 - **Documentation:** [Decky Wiki](https://wiki.deckbrew.xyz/)
+
+## Sponsor
+
+If you find this plugin useful, consider supporting development on [Patreon](https://patreon.com/DeckProgressTracker).
 
 ## Changelog
 
