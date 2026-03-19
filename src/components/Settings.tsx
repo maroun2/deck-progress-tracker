@@ -237,14 +237,17 @@ export const Settings: FC = () => {
         </PanelSectionRow>
       </PanelSection>
 
-      <div style={styles.section}>
-        <h3 style={styles.sectionTitle}>About</h3>
+      <PanelSection title="About">
         <div style={styles.about}>
-          <p style={styles.aboutLine}>Game Progress Tracker v{__PLUGIN_VERSION__}</p>
+          <p style={styles.aboutLine}>Deck Progress Tracker v{__PLUGIN_VERSION__}</p>
           <p style={styles.aboutLine}>Data from HowLongToBeat & Steam</p>
-          <p style={styles.donationText}>Donations are appreciated</p>
         </div>
-      </div>
+        <PanelSectionRow>
+          <ButtonItem layout="below" onClick={() => Navigation.NavigateToExternalWeb('https://patreon.com/DeckProgressTracker')}>
+            Support on Patreon
+          </ButtonItem>
+        </PanelSectionRow>
+      </PanelSection>
     </div>
   );
 };
