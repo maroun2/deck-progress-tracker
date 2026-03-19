@@ -35,7 +35,7 @@ If you find this plugin useful, consider supporting its development — it helps
 1. Open Decky Loader on your Steam Deck (QAM → Plugin icon)
 2. Navigate to Settings → Developer Mode
 3. Enable Developer Mode
-4. Install from URL: `https://github.com/maroun2/deck-progress-tracker/releases/download/1.3.0/deck-progress-tracker-1.3.0.zip`
+4. Install from URL: `https://github.com/maroun2/deck-progress-tracker/releases/download/1.3.2/deck-progress-tracker-1.3.2.zip`
 5. Restart Decky if prompted
 
 ### Manual Installation
@@ -93,6 +93,17 @@ MIT License - see [LICENSE](LICENSE) file
 - Python HLTB integration via [howlongtobeatpy](https://github.com/ScrappyCocco/HowLongToBeat-PythonAPI)
 
 ## Changelog
+
+### 1.3.2 (2026-03-14)
+- **Improved:** Updated store image and README for Decky store submission
+- **Improved:** Simplified README with cleaner feature table and Patreon sponsor badge
+- **Improved:** Progressive sync with real-time progress updates
+- **Fixed:** Removed dead code and debug logging
+- **Technical:** Renamed project from Game Progress Tracker to Deck Progress Tracker
+
+### 1.3.1
+- **Fixed:** Reset to Auto tag not working when manual tag matches auto tag
+- **Improved:** Mastered tag icon changed to FaTrophy from react-icons
 
 ### 1.3.0 (2026-02-17)
 - **New:** Dropped tag system - automatic detection of games not played for 365+ days
