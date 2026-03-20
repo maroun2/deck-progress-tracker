@@ -379,7 +379,55 @@ class SteamDataService:
                     logger.error(f"Failed to parse {manifest_path}: {e}")
                     continue
 
-        logger.info(f"Found {len(games)} games in library")
+        installed_appids = {g["appid"] for g in games}
+        logger.info(f"Added {len(games)} installed games")
+
+        # Discover owned-but-not-installed games from localconfig.vdf
+        user_id = await self.get_steam_user_id()
+        if user_id and self.steam_path:
+            config_path = self.steam_path / "userdata" / user_id / "config" / "localconfig.vdf"
+            if config_path.exists():
+                try:
+                    data = load_vdf_file(config_path)
+                    user_config = data.get("UserLocalConfigStore", data.get("UserRoamingConfigStore", {}))
+                    software = user_config.get("Software", user_config.get("software", {}))
+                    valve = software.get("Valve", software.get("valve", {}))
+                    steam = valve.get("Steam", valve.get("steam", {}))
+                    apps = steam.get("apps", steam.get("Apps", {}))
+
+                    config_count = 0
+                    for appid_str, app_data in apps.items():
+                        # Filter: only positive integers, skip already-found games
+                        try:
+                            appid_int = int(appid_str)
+                        except (ValueError, TypeError):
+                            continue
+                        if appid_int <= 0 or appid_str in installed_appids:
+                            continue
+
+                        playtime = 0
+                        if isinstance(app_data, dict):
+                            for field in ["Playtime", "playtime", "PlaytimeForever", "playtime_forever",
+                                          "TotalPlayTime", "totalplaytime", "playtime2", "Playtime2"]:
+                                if field in app_data:
+                                    try:
+                                        playtime = int(app_data[field])
+                                        break
+                                    except (ValueError, TypeError):
+                                        pass
+
+                        games.append({
+                            "appid": appid_str,
+                            "name": f"Unknown ({appid_str})",
+                            "playtime_minutes": playtime
+                        })
+                        config_count += 1
+
+                    logger.info(f"Found {config_count} additional games from localconfig.vdf")
+                except Exception as e:
+                    logger.error(f"Failed to parse localconfig.vdf for game discovery: {e}")
+
+        logger.info(f"Found {len(games)} total games in library")
         return games
 
     async def get_game_stats_full(self, appid: str) -> Dict[str, Any]:
