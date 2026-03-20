@@ -1,4 +1,4 @@
-const manifest = {"name":"Deck Progress Tracker","author":"Maron","version":"1.3.2","api_version":1,"flags":["_root"],"publish":{"tags":["library","achievements","statistics","enhancement","progress-tracking"],"description":"Automatic game tagging based on achievements, playtime, and completion time. Track your progress with visual badges in the Steam library. Features 5 intelligent tags: Mastered, Completed, Dropped, In Progress, and Backlog.","image":"https://raw.githubusercontent.com/maroun2/deck-progress-tracker/main/assets/market_image.png"}};
+const manifest = {"name":"Deck Progress Tracker","author":"Maron","version":"1.3.3","api_version":1,"flags":["_root"],"publish":{"tags":["library","achievements","statistics","enhancement","progress-tracking"],"description":"Automatic game tagging based on achievements, playtime, and completion time. Track your progress with visual badges in the Steam library. Features 5 intelligent tags: Mastered, Completed, Dropped, In Progress, and Backlog.","image":"https://raw.githubusercontent.com/maroun2/deck-progress-tracker/main/assets/market_image.png"}};
 const API_VERSION = 2;
 if (!manifest?.name) {
     throw new Error('[@decky/api]: Failed to find plugin manifest.');
@@ -158,23 +158,75 @@ const getAllOwnedGameIds = async () => {
         try {
             const apps = await steamClient.Apps.GetAllApps();
             if (apps && apps.length > 0) {
-                return apps.map((a) => String(a.appid || a)).filter((id) => parseInt(id) > 0);
+                const ids = apps.map((a) => String(a.appid || a)).filter((id) => parseInt(id) > 0);
+                console.log(`[DPT] GetAllApps returned ${ids.length} games`);
+                return ids;
             }
+            console.log('[DPT] GetAllApps returned empty');
         }
         catch (e) {
-            // GetAllApps failed, fall through to appStore method
+            console.log('[DPT] GetAllApps failed:', e);
         }
     }
-    // Fallback: Try appStore if available
+    else {
+        console.log('[DPT] GetAllApps not available');
+    }
     const appStore = window.appStore;
-    if (!appStore) {
-        return [];
+    const collectionStore = window.collectionStore;
+    // Fallback 1: collectionStore.allAppsCollection
+    if (collectionStore?.allAppsCollection?.allApps) {
+        try {
+            const allApps = collectionStore.allAppsCollection.allApps;
+            if (allApps && allApps.length > 0) {
+                const ids = allApps.map((a) => String(a.appid || a)).filter((id) => parseInt(id) > 0);
+                console.log(`[DPT] collectionStore.allAppsCollection.allApps returned ${ids.length} games`);
+                return ids;
+            }
+            console.log('[DPT] collectionStore.allAppsCollection.allApps empty');
+        }
+        catch (e) {
+            console.log('[DPT] collectionStore.allAppsCollection failed:', e);
+        }
     }
-    // Try m_mapApps (Map of all apps)
-    if (appStore.m_mapApps instanceof Map) {
+    // Fallback 2: collectionStore.allGamesCollection
+    if (collectionStore?.allGamesCollection?.allApps) {
+        try {
+            const allApps = collectionStore.allGamesCollection.allApps;
+            if (allApps && allApps.length > 0) {
+                const ids = allApps.map((a) => String(a.appid || a)).filter((id) => parseInt(id) > 0);
+                console.log(`[DPT] collectionStore.allGamesCollection.allApps returned ${ids.length} games`);
+                return ids;
+            }
+            console.log('[DPT] collectionStore.allGamesCollection.allApps empty');
+        }
+        catch (e) {
+            console.log('[DPT] collectionStore.allGamesCollection failed:', e);
+        }
+    }
+    // Fallback 3: appStore.allApps getter
+    if (appStore?.allApps) {
+        try {
+            const allApps = appStore.allApps;
+            if (allApps && allApps.length > 0) {
+                const ids = allApps.map((a) => String(a.appid || a)).filter((id) => parseInt(id) > 0);
+                console.log(`[DPT] appStore.allApps returned ${ids.length} games`);
+                return ids;
+            }
+            console.log('[DPT] appStore.allApps empty');
+        }
+        catch (e) {
+            console.log('[DPT] appStore.allApps failed:', e);
+        }
+    }
+    // Fallback 4: appStore.m_mapApps (Map of all apps)
+    if (appStore?.m_mapApps instanceof Map) {
         const appids = Array.from(appStore.m_mapApps.keys()).map((id) => String(id));
-        return appids.filter((id) => parseInt(id) > 0);
+        const filtered = appids.filter((id) => parseInt(id) > 0);
+        console.log(`[DPT] appStore.m_mapApps returned ${filtered.length} games`);
+        if (filtered.length > 0)
+            return filtered;
     }
+    console.log('[DPT] All frontend game discovery methods failed');
     return [];
 };
 /**
@@ -403,19 +455,25 @@ const syncLibraryProgressive = async (onProgress) => {
         if (useAllOwned) {
             appids = await getAllOwnedGameIds();
             let retries = 0;
-            const maxRetries = 5;
-            const retryDelays = [2000, 3000, 4000, 5000, 6000];
+            const maxRetries = 8;
+            const retryDelays = [2000, 3000, 4000, 5000, 7000, 8000, 9000, 10000];
             while (appids.length === 0 && retries < maxRetries) {
                 const delay = retryDelays[retries];
                 retries++;
+                console.log(`[DPT] getAllOwnedGameIds retry ${retries}/${maxRetries}, waiting ${delay}ms`);
                 await new Promise(resolve => setTimeout(resolve, delay));
                 appids = await getAllOwnedGameIds();
             }
             if (appids.length === 0) {
+                console.log('[DPT] Frontend discovery failed after all retries, falling back to backend get_all_games');
                 const gamesResult = await call('get_all_games');
                 if (gamesResult.success && gamesResult.games) {
                     appids = gamesResult.games.map(g => g.appid);
+                    console.log(`[DPT] Backend fallback returned ${appids.length} games`);
                 }
+            }
+            else {
+                console.log(`[DPT] Frontend discovery succeeded with ${appids.length} games`);
             }
         }
         else {
@@ -666,14 +724,14 @@ const Settings = () => {
         SP_REACT.createElement(DFL.PanelSection, null,
             SP_REACT.createElement(DFL.PanelSectionRow, null,
                 SP_REACT.createElement(DFL.ButtonItem, { layout: "below", onClick: syncLibrary, disabled: syncing }, syncing ? 'Syncing...' : 'Sync Entire Library'))),
-        SP_REACT.createElement("div", { style: styles$1.section },
-            SP_REACT.createElement("h3", { style: styles$1.sectionTitle }, "About"),
+        SP_REACT.createElement(DFL.PanelSection, { title: "About" },
             SP_REACT.createElement("div", { style: styles$1.about },
                 SP_REACT.createElement("p", { style: styles$1.aboutLine },
-                    "Game Progress Tracker v",
-                    "1.3.2"),
-                SP_REACT.createElement("p", { style: styles$1.aboutLine }, "Data from HowLongToBeat & Steam"),
-                SP_REACT.createElement("p", { style: styles$1.donationText }, "Donations are appreciated")))));
+                    "Deck Progress Tracker v",
+                    "1.3.3"),
+                SP_REACT.createElement("p", { style: styles$1.aboutLine }, "Data from HowLongToBeat & Steam")),
+            SP_REACT.createElement(DFL.PanelSectionRow, null,
+                SP_REACT.createElement(DFL.ButtonItem, { layout: "below", onClick: () => DFL.Navigation.NavigateToExternalWeb('https://patreon.com/DeckProgressTracker') }, "Support on Patreon")))));
 };
 const styles$1 = {
     container: { paddingTop: '16px', color: 'white', width: '100%', maxWidth: '100%', overflow: 'hidden' },
