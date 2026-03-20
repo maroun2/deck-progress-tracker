@@ -35,7 +35,7 @@ If you find this plugin useful, consider supporting its development — it helps
 1. Open Decky Loader on your Steam Deck (QAM → Plugin icon)
 2. Navigate to Settings → Developer Mode
 3. Enable Developer Mode
-4. Install from URL: `https://github.com/maroun2/deck-progress-tracker/releases/download/1.3.2/deck-progress-tracker-1.3.2.zip`
+4. Install from URL: `https://github.com/maroun2/deck-progress-tracker/releases/download/1.3.3/deck-progress-tracker-1.3.3.zip`
 5. Restart Decky if prompted
 
 ### Manual Installation
@@ -93,6 +93,10 @@ MIT License - see [LICENSE](LICENSE) file
 - Python HLTB integration via [howlongtobeatpy](https://github.com/ScrappyCocco/HowLongToBeat-PythonAPI)
 
 ## Changelog
+
+### 1.3.3 (2026-03-20)
+- **Fixed:** Game discovery only finding ~159 installed games instead of all ~832 owned games
+- **Fixed:** `collectionStore` fallback was converting game objects to `[object Object]` instead of extracting appid
 
 ### 1.3.2 (2026-03-14)
 - **Improved:** Updated store image and README for Decky store submission
