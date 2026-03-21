@@ -239,7 +239,8 @@ export const Settings: FC = () => {
 
       <PanelSection title="About">
         <div style={styles.about}>
-          <p style={styles.aboutLine}>Deck Progress Tracker v{__PLUGIN_VERSION__}</p>
+          <p style={styles.aboutLine}>Deck Progress Tracker</p>
+          <p style={styles.aboutLine}>{__PLUGIN_VERSION__}</p>
           <p style={styles.aboutLine}>Data from HowLongToBeat & Steam</p>
         </div>
         <PanelSectionRow>
