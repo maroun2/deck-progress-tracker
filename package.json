@@ -15,7 +15,7 @@
     "achievements"
   ],
   "author": "Maron",
-  "license": "MIT",
+  "license": "BSD-3-Clause",
   "dependencies": {
     "@decky/api": "^1.1.2",
     "@decky/ui": "^4.6.2",
