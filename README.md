@@ -35,7 +35,7 @@ If you find this plugin useful, consider supporting its development — it helps
 1. Open Decky Loader on your Steam Deck (QAM → Plugin icon)
 2. Navigate to Settings → Developer Mode
 3. Enable Developer Mode
-4. Install from URL: `https://github.com/maroun2/deck-progress-tracker/releases/download/1.3.3/deck-progress-tracker-1.3.3.zip`
+4. Install from URL: `https://github.com/maroun2/deck-progress-tracker/releases/download/1.3.5/deck-progress-tracker-1.3.5.zip`
 5. Restart Decky if prompted
 
 ### Manual Installation
@@ -84,60 +84,10 @@ The plugin uses a priority-based system where higher priority tags override lowe
 
 ## License
 
-MIT License - see [LICENSE](LICENSE) file
+BSD-3-Clause License - see [LICENSE](LICENSE) file
 
 ## Credits
 
 - Built with [Decky Loader](https://github.com/SteamDeckHomebrew/decky-loader)
 - Game completion data from [HowLongToBeat](https://howlongtobeat.com/)
 - Python HLTB integration via [howlongtobeatpy](https://github.com/ScrappyCocco/HowLongToBeat-PythonAPI)
-
-## Changelog
-
-### 1.3.3 (2026-03-20)
-- **Fixed:** Game discovery only finding ~159 installed games instead of all ~832 owned games
-- **Fixed:** `collectionStore` fallback was converting game objects to `[object Object]` instead of extracting appid
-
-### 1.3.2 (2026-03-14)
-- **Improved:** Updated store image and README for Decky store submission
-- **Improved:** Simplified README with cleaner feature table and Patreon sponsor badge
-- **Improved:** Progressive sync with real-time progress updates
-- **Fixed:** Removed dead code and debug logging
-- **Technical:** Renamed project from Game Progress Tracker to Deck Progress Tracker
-
-### 1.3.1
-- **Fixed:** Reset to Auto tag not working when manual tag matches auto tag
-- **Improved:** Mastered tag icon changed to FaTrophy from react-icons
-
-### 1.3.0 (2026-02-17)
-- **New:** Dropped tag system - automatic detection of games not played for 365+ days
-- **New:** Full gamepad navigation with D-pad support for all UI elements
-- **New:** Universal sync progress tracking with real-time updates ("Syncing: X/Y games")
-- **New:** Automated build workflow via GitHub Actions (artifacts for every commit)
-- **New:** Backlog tag for games not yet started
-- **Improved:** Tag priority system (Mastered → Completed → Dropped → In Progress → Backlog)
-- **Improved:** UI components now use native Decky UI framework (ButtonItem, PanelSectionRow, PanelSection)
-- **Improved:** Better focus highlighting for Steam Deck navigation using native focus system
-- **Improved:** Centralized tag calculation logic in `calculate_auto_tag()` function
-- **Improved:** In Progress threshold reduced to 30 minutes (from 60 minutes)
-- **Fixed:** Dropped tag being overwritten during sync
-- **Fixed:** Dropped tag being lost when viewing game detail page
-- **Fixed:** State management improvements for better reliability
-- **Technical:** Removed custom focus styling to use Steam's native focus system
-- **Technical:** Better separation of concerns and reduced code duplication
-
-### 1.2.0
-- Enhanced UI with proper Decky components
-- Improved state management
-- Bug fixes and performance improvements
-
-### 1.1.0
-- Added manual tag override system
-- Improved HLTB integration
-- UI refinements
-
-### 1.0.0
-- Initial release
-- Automatic tagging system (Completed, In Progress, Mastered)
-- HLTB integration
-- Basic UI

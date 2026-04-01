@@ -182,9 +182,7 @@ fi
 if [ "$SKIP_COMMIT" = false ]; then
     echo "Step 4: Committing changes..."
     git add -A
-    git commit -m "${VERSION}: ${RELEASE_TITLE}
-
-Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>"
+    git commit -m "${VERSION}: ${RELEASE_TITLE}"
 
     if [ "$NO_PUSH" = false ]; then
         echo "  Pushing to origin..."
