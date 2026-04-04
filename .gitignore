@@ -10,7 +10,6 @@ __pycache__/
 *.pyd
 .Python
 *.so
-backend/src/__pycache__/
 
 # Environment
 .env
