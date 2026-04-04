@@ -148,14 +148,12 @@ if [ "$SKIP_BUILD" = false ] || [ "$ONLY_MODE" = "package" ]; then
     rm -rf plugin-build
     rm -f deck-progress-tracker-*.zip
 
-    mkdir -p plugin-build/deck-progress-tracker/backend/src
+    mkdir -p plugin-build/deck-progress-tracker/py_modules
 
-    # Copy backend
-    cp backend/src/database.py plugin-build/deck-progress-tracker/backend/src/
-    cp backend/src/steam_data.py plugin-build/deck-progress-tracker/backend/src/
-    cp backend/src/hltb_service.py plugin-build/deck-progress-tracker/backend/src/
-    cp backend/src/__init__.py plugin-build/deck-progress-tracker/backend/src/
-    cp backend/__init__.py plugin-build/deck-progress-tracker/backend/
+    # Copy backend modules
+    cp py_modules/database.py plugin-build/deck-progress-tracker/py_modules/
+    cp py_modules/steam_data.py plugin-build/deck-progress-tracker/py_modules/
+    cp py_modules/hltb_service.py plugin-build/deck-progress-tracker/py_modules/
 
     # Copy other files
     cp -r dist plugin-build/deck-progress-tracker/

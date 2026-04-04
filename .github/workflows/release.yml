@@ -29,9 +29,11 @@ jobs:
 
       - name: Create plugin directory structure
         run: |
-          mkdir -p plugin-build/deck-progress-tracker
+          mkdir -p plugin-build/deck-progress-tracker/py_modules
           cp -r dist plugin-build/deck-progress-tracker/
-          cp -r backend plugin-build/deck-progress-tracker/
+          cp py_modules/database.py plugin-build/deck-progress-tracker/py_modules/
+          cp py_modules/steam_data.py plugin-build/deck-progress-tracker/py_modules/
+          cp py_modules/hltb_service.py plugin-build/deck-progress-tracker/py_modules/
           cp main.py plugin-build/deck-progress-tracker/
           cp plugin.json plugin-build/deck-progress-tracker/
           cp package.json plugin-build/deck-progress-tracker/

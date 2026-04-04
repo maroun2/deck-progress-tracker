@@ -14,9 +14,8 @@ from typing import Optional, Dict, Any, List
 import decky
 import json
 
-# Setup paths - everything is in backend/src/
+# Setup paths
 PLUGIN_DIR = Path(decky.DECKY_PLUGIN_DIR)
-BACKEND_SRC = PLUGIN_DIR / "backend" / "src"
 
 # Read version from plugin.json
 def get_plugin_version():
@@ -35,23 +34,8 @@ PLUGIN_VERSION = get_plugin_version()
 logger = decky.logger
 logger.info(f"=== Deck Progress Tracker v{PLUGIN_VERSION} starting ===")
 logger.info(f"Plugin dir: {PLUGIN_DIR}")
-logger.info(f"Backend src: {BACKEND_SRC} exists={BACKEND_SRC.exists()}")
 
-# Add backend/src to path - all modules and dependencies are there
-if BACKEND_SRC.exists() and str(BACKEND_SRC) not in sys.path:
-    sys.path.insert(0, str(BACKEND_SRC))
-    logger.info(f"Added to sys.path: {BACKEND_SRC}")
-
-# List contents of backend/src specifically
-if BACKEND_SRC.exists():
-    src_contents = list(BACKEND_SRC.iterdir())
-    logger.info(f"backend/src/ contains {len(src_contents)} items:")
-    for item in src_contents[:30]:
-        logger.info(f"  - {item.name}")
-
-logger.info(f"sys.path: {sys.path[:5]}...")  # First 5 entries
-
-# Now import backend modules
+# Import backend modules
 try:
     from database import Database
     from steam_data import SteamDataService
