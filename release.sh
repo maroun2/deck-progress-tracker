@@ -116,6 +116,15 @@ if [ "$SKIP_VERSION" = false ]; then
     sed -i.bak "s/\"version\": \".*\"/\"version\": \"$VERSION_NUM\"/" plugin.json
     rm -f plugin.json.bak
 
+    # Update pnpm lockfile to match new version
+    if command -v pnpm &> /dev/null; then
+        pnpm install --lockfile-only
+    elif npx pnpm --version &> /dev/null; then
+        npx pnpm install --lockfile-only
+    else
+        echo "WARNING: pnpm not found, pnpm-lock.yaml may be out of date"
+    fi
+
     # Verify versions
     PACKAGE_VER=$(grep '"version"' package.json | head -1 | sed 's/.*"version": *"\([^"]*\)".*/\1/')
     PLUGIN_VER=$(grep '"version"' plugin.json | head -1 | sed 's/.*"version": *"\([^"]*\)".*/\1/')
