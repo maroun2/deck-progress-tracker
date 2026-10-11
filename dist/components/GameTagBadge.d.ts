@@ -11,7 +11,8 @@ interface GameTagBadgeProps {
 /**
  * GameTagBadge - Main component injected into library app page
  * Shows tag badge or "Add Tag" button, with TagManager modal
- * Positions on opposite side of ProtonDB (top-right vs their top-left default)
+ * Position is configurable via plugin settings (defaults to top-right,
+ * opposite side from ProtonDB's default top-left)
  */
 export declare const GameTagBadge: FC<GameTagBadgeProps>;
 export {};

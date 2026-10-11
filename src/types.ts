@@ -51,7 +51,14 @@ export interface PluginSettings {
   source_installed: boolean;
   source_non_steam: boolean;
   source_all_owned: boolean;  // Include all owned games (not just installed)
+  // Badge position on the game banner page
+  badge_position_h: 'left' | 'center' | 'right';
+  badge_position_v: 'top' | 'center' | 'bottom';
+  // UI language: 'auto' follows the system/browser locale
+  language: 'auto' | 'en' | 'pt-BR';
 }
+
+export const BADGE_SETTINGS_UPDATED_EVENT = 'deck-progress-tracker:badge-settings-updated';
 
 export interface TagStatistics {
   completed: number;

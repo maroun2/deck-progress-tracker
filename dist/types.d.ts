@@ -42,7 +42,11 @@ export interface PluginSettings {
     source_installed: boolean;
     source_non_steam: boolean;
     source_all_owned: boolean;
+    badge_position_h: 'left' | 'center' | 'right';
+    badge_position_v: 'top' | 'center' | 'bottom';
+    language: 'auto' | 'en' | 'pt-BR';
 }
+export declare const BADGE_SETTINGS_UPDATED_EVENT = "deck-progress-tracker:badge-settings-updated";
 export interface TagStatistics {
     completed: number;
     in_progress: number;

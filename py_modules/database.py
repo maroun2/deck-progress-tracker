@@ -116,7 +116,10 @@ class Database:
                 ('cache_ttl', '7200'),
                 ('source_installed', 'true'),
                 ('source_non_steam', 'true'),
-                ('source_all_owned', 'true')
+                ('source_all_owned', 'true'),
+                ('badge_position_h', 'right'),
+                ('badge_position_v', 'top'),
+                ('language', 'auto')
         """)
 
         conn.commit()

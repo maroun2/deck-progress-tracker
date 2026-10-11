@@ -8,6 +8,14 @@ import { call } from '@decky/api';
 import { Focusable, DialogButton } from '@decky/ui';
 import { GameDetails } from '../types';
 import { TagIcon, TAG_ICON_COLORS } from './TagIcon';
+import { useTranslation } from '../i18n';
+
+const TAG_LABEL_KEY = {
+  completed: 'tag.completed',
+  in_progress: 'tag.in_progress',
+  mastered: 'tag.mastered',
+  dropped: 'tag.dropped',
+} as const;
 
 interface TagManagerProps {
   appid: string;
@@ -15,6 +23,7 @@ interface TagManagerProps {
 }
 
 export const TagManager: FC<TagManagerProps> = ({ appid, onClose }) => {
+  const { t } = useTranslation();
   const [details, setDetails] = useState<GameDetails | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -31,7 +40,7 @@ export const TagManager: FC<TagManagerProps> = ({ appid, onClose }) => {
       const result = await call<[{ appid: string }], GameDetails>('get_game_details', { appid });
       setDetails(result);
     } catch (err: any) {
-      const errorMsg = err?.message || 'Failed to load game details';
+      const errorMsg = err?.message || t('tagManager.failedToLoad');
       setError(errorMsg);
       // Error occurred
     } finally {
@@ -44,7 +53,7 @@ export const TagManager: FC<TagManagerProps> = ({ appid, onClose }) => {
       const result = await call<[{ appid: string; tag: string }], { success: boolean; error?: string }>('set_manual_tag', { appid, tag });
       await fetchDetails();
     } catch (err: any) {
-      const errorMsg = err?.message || 'Failed to set tag';
+      const errorMsg = err?.message || t('tagManager.failedToSetTag');
       setError(errorMsg);
       // Error occurred
     }
@@ -55,7 +64,7 @@ export const TagManager: FC<TagManagerProps> = ({ appid, onClose }) => {
       const result = await call<[{ appid: string }], { success: boolean; error?: string }>('reset_to_auto_tag', { appid });
       await fetchDetails();
     } catch (err: any) {
-      const errorMsg = err?.message || 'Failed to reset tag';
+      const errorMsg = err?.message || t('tagManager.failedToReset');
       setError(errorMsg);
       // Error occurred
     }
@@ -66,7 +75,7 @@ export const TagManager: FC<TagManagerProps> = ({ appid, onClose }) => {
       const result = await call<[{ appid: string }], { success: boolean; error?: string }>('remove_tag', { appid });
       await fetchDetails();
     } catch (err: any) {
-      const errorMsg = err?.message || 'Failed to remove tag';
+      const errorMsg = err?.message || t('tagManager.failedToRemove');
       setError(errorMsg);
       // Error occurred
     }
@@ -76,7 +85,7 @@ export const TagManager: FC<TagManagerProps> = ({ appid, onClose }) => {
     return (
       <div style={styles.modal}>
         <div style={styles.content}>
-          <div style={styles.loading}>Loading...</div>
+          <div style={styles.loading}>{t('tagManager.loading')}</div>
         </div>
       </div>
     );
@@ -86,9 +95,9 @@ export const TagManager: FC<TagManagerProps> = ({ appid, onClose }) => {
     return (
       <div style={styles.modal}>
         <div style={styles.content}>
-          <div style={styles.error}>{error || 'Failed to load game details'}</div>
+          <div style={styles.error}>{error || t('tagManager.failedToLoad')}</div>
           <Focusable>
-            <DialogButton onClick={onClose}>Close</DialogButton>
+            <DialogButton onClick={onClose}>{t('tagManager.close')}</DialogButton>
           </Focusable>
         </div>
       </div>
@@ -104,15 +113,15 @@ export const TagManager: FC<TagManagerProps> = ({ appid, onClose }) => {
       <div style={styles.content} onClick={(e) => e.stopPropagation()}>
         {/* Header: Game name with current tag */}
         <div style={styles.header}>
-          <h2 style={styles.title}>{stats?.game_name || `Game ${appid}`}</h2>
+          <h2 style={styles.title}>{stats?.game_name || t('tagManager.gameFallback', { appid })}</h2>
           {tag?.tag && (
             <div style={styles.currentTagBadge}>
               <TagIcon type={tag.tag as any} size={20} />
               <span style={{ color: TAG_ICON_COLORS[tag.tag as keyof typeof TAG_ICON_COLORS] }}>
-                {tag.tag.replace('_', ' ').toUpperCase()}
+                {t(TAG_LABEL_KEY[tag.tag as keyof typeof TAG_LABEL_KEY]).toUpperCase()}
               </span>
               <span style={styles.tagType}>
-                {tag.is_manual ? '(Manual)' : '(Auto)'}
+                {tag.is_manual ? t('tagManager.manualTag') : t('tagManager.autoTag')}
               </span>
             </div>
           )}
@@ -122,15 +131,15 @@ export const TagManager: FC<TagManagerProps> = ({ appid, onClose }) => {
         <div style={styles.mainContent}>
           {/* Left side: Statistics */}
           <div style={styles.leftColumn}>
-            <h3 style={styles.sectionTitle}>Statistics</h3>
+            <h3 style={styles.sectionTitle}>{t('tagManager.statistics')}</h3>
             {stats && (
               <>
                 <div style={styles.statRow}>
-                  <span>Playtime:</span>
+                  <span>{t('tagManager.playtime')}</span>
                   <span>{Math.floor(stats.playtime_minutes / 60)}h {stats.playtime_minutes % 60}m</span>
                 </div>
                 <div style={styles.statRow}>
-                  <span>Achievements:</span>
+                  <span>{t('tagManager.achievements')}</span>
                   <span>{stats.unlocked_achievements}/{stats.total_achievements}</span>
                 </div>
               </>
@@ -138,14 +147,14 @@ export const TagManager: FC<TagManagerProps> = ({ appid, onClose }) => {
             {hltb && (
               <>
                 <div style={styles.statRow}>
-                  <span>HLTB Match:</span>
+                  <span>{t('tagManager.hltbMatch')}</span>
                   <span style={styles.hltbMatch}>
                     {hltb.matched_name} ({Math.round((hltb.similarity || 0) * 100)}%)
                   </span>
                 </div>
                 {hltb.main_story && (
                   <div style={styles.statRow}>
-                    <span>Main Story:</span>
+                    <span>{t('tagManager.mainStory')}</span>
                     <span>{hltb.main_story}h</span>
                   </div>
                 )}
@@ -153,58 +162,58 @@ export const TagManager: FC<TagManagerProps> = ({ appid, onClose }) => {
             )}
             {!hltb && (
               <div style={styles.statRow}>
-                <span>HLTB:</span>
-                <span style={styles.noData}>No data</span>
+                <span>{t('tagManager.hltb')}</span>
+                <span style={styles.noData}>{t('tagManager.noData')}</span>
               </div>
             )}
           </div>
 
           {/* Right side: Tag buttons */}
           <div style={styles.rightColumn}>
-            <h3 style={styles.sectionTitle}>Set Tag</h3>
+            <h3 style={styles.sectionTitle}>{t('tagManager.setTag')}</h3>
             <Focusable style={styles.tagButtonGroup} flow-children="down">
               <Focusable
                 onActivate={() => setTag('mastered')}
                 style={{ ...styles.tagButton, backgroundColor: TAG_ICON_COLORS.mastered }}
               >
                 <TagIcon type="mastered" size={18} />
-                <span>Mastered</span>
+                <span>{t('tag.mastered')}</span>
               </Focusable>
               <Focusable
                 onActivate={() => setTag('completed')}
                 style={{ ...styles.tagButton, backgroundColor: TAG_ICON_COLORS.completed }}
               >
                 <TagIcon type="completed" size={18} />
-                <span>Completed</span>
+                <span>{t('tag.completed')}</span>
               </Focusable>
               <Focusable
                 onActivate={() => setTag('in_progress')}
                 style={{ ...styles.tagButton, backgroundColor: TAG_ICON_COLORS.in_progress }}
               >
                 <TagIcon type="in_progress" size={18} />
-                <span>In Progress</span>
+                <span>{t('tag.in_progress')}</span>
               </Focusable>
               <Focusable
                 onActivate={() => setTag('dropped')}
                 style={{ ...styles.tagButton, backgroundColor: TAG_ICON_COLORS.dropped }}
               >
                 <TagIcon type="dropped" size={18} />
-                <span>Dropped</span>
+                <span>{t('tag.dropped')}</span>
               </Focusable>
             </Focusable>
             <Focusable style={styles.buttonGroup} flow-children="horizontal">
-              <DialogButton onClick={resetToAuto} style={styles.secondaryButton}>
-                Reset to Auto
-              </DialogButton>
-              <DialogButton onClick={removeTag} style={styles.secondaryButton}>
-                Remove
-              </DialogButton>
+              <Focusable onClick={resetToAuto} onActivate={resetToAuto} style={styles.secondaryButton}>
+                {t('tagManager.resetToAuto')}
+              </Focusable>
+              <Focusable onClick={removeTag} onActivate={removeTag} style={styles.secondaryButton}>
+                {t('tagManager.remove')}
+              </Focusable>
             </Focusable>
           </div>
         </div>
 
-        <Focusable>
-          <DialogButton onClick={onClose} style={styles.closeButton}>Close</DialogButton>
+        <Focusable onClick={onClose} onActivate={onClose} style={styles.closeButton}>
+          {t('tagManager.close')}
         </Focusable>
       </div>
     </div>
@@ -308,6 +317,7 @@ const styles: Record<string, React.CSSProperties> = {
   buttonGroup: {
     display: 'flex',
     gap: '6px',
+    width: '100%',
   },
   tagButtonGroup: {
     display: 'flex',
@@ -330,23 +340,34 @@ const styles: Record<string, React.CSSProperties> = {
   },
   secondaryButton: {
     flex: 1,
+    minWidth: 0,
+    boxSizing: 'border-box',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
     padding: '8px',
     backgroundColor: '#444',
-    border: 'none',
+    border: '2px solid transparent',
     borderRadius: '4px',
     color: 'white',
     fontSize: '12px',
+    textAlign: 'center',
     transition: 'background-color 0.2s',
   },
   closeButton: {
     width: '100%',
+    boxSizing: 'border-box',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
     padding: '12px',
     backgroundColor: '#555',
-    border: 'none',
+    border: '2px solid transparent',
     borderRadius: '4px',
     color: 'white',
     fontSize: '14px',
     fontWeight: 'bold',
+    textAlign: 'center',
   },
   loading: {
     textAlign: 'center',

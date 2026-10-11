@@ -1,13 +1,8 @@
 /**
- * GameTag Component
- * Displays a colored badge with icon for game tags
+ * Shared per-tag styling (background color) used by GameTagBadge.
  */
-import { VFC } from 'react';
-import { GameTag as GameTagType } from '../types';
-interface GameTagProps {
-    tag: GameTagType | null;
-    onClick?: () => void;
-    compact?: boolean;
+interface TagStyle {
+    background: string;
 }
-export declare const GameTag: VFC<GameTagProps>;
+export declare const TAG_STYLES: Record<string, TagStyle>;
 export {};
