@@ -2,8 +2,8 @@ name: Build and Release Plugin
 
 on:
   push:
-    tags:
-      - '*.*.*'  # Triggers on version tags like 1.0.0
+    branches:
+      - main
 
 permissions:
   contents: write
@@ -15,6 +15,13 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Get version from package.json
+        id: version
+        run: |
+          VERSION=$(grep '"version"' package.json | head -1 | sed 's/.*"version": *"\([^"]*\)".*/\1/')
+          echo "Version: $VERSION"
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -43,23 +50,23 @@ jobs:
 
       - name: Create version file
         run: |
-          echo "${{ github.ref_name }}" > plugin-build/deck-progress-tracker/VERSION
+          echo "${{ steps.version.outputs.version }}" > plugin-build/deck-progress-tracker/VERSION
 
       - name: Create release zip
         run: |
           cd plugin-build
-          zip -r ../deck-progress-tracker-${{ github.ref_name }}.zip deck-progress-tracker
+          zip -r ../deck-progress-tracker-${{ steps.version.outputs.version }}.zip deck-progress-tracker
           cd ..
 
       - name: Verify zip contents
         run: |
-          unzip -l deck-progress-tracker-${{ github.ref_name }}.zip
+          unzip -l deck-progress-tracker-${{ steps.version.outputs.version }}.zip
 
       - name: Generate release notes
         id: release_notes
         run: |
           cat > release_notes.md << 'EOF'
-          ## Deck Progress Tracker ${{ github.ref_name }}
+          ## Deck Progress Tracker ${{ steps.version.outputs.version }}
 
           ### Installation
 
@@ -68,12 +75,12 @@ jobs:
           2. Go to Developer tab → Install Plugin from URL
           3. Enter this URL:
           ```
-          https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/deck-progress-tracker-${{ github.ref_name }}.zip
+          https://github.com/${{ github.repository }}/releases/download/${{ steps.version.outputs.version }}/deck-progress-tracker-${{ steps.version.outputs.version }}.zip
           ```
           4. Click Install and wait for completion
 
           **Option 2: Download and Install Manually**
-          1. Download `deck-progress-tracker-${{ github.ref_name }}.zip` below
+          1. Download `deck-progress-tracker-${{ steps.version.outputs.version }}.zip` below
           2. Extract to `~/homebrew/plugins/` on your Steam Deck
           3. Install Python dependencies: `pip install --user -r requirements.txt`
           4. Restart Decky Loader
@@ -103,7 +110,9 @@ jobs:
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
-          files: deck-progress-tracker-${{ github.ref_name }}.zip
+          tag_name: ${{ steps.version.outputs.version }}
+          name: ${{ steps.version.outputs.version }}
+          files: deck-progress-tracker-${{ steps.version.outputs.version }}.zip
           body_path: release_notes.md
           draft: false
           prerelease: false
@@ -113,7 +122,7 @@ jobs:
       - name: Update latest.zip (for static URL)
         uses: softprops/action-gh-release@v1
         with:
-          files: deck-progress-tracker-${{ github.ref_name }}.zip
+          files: deck-progress-tracker-${{ steps.version.outputs.version }}.zip
           tag_name: latest
           name: Latest Release
           draft: false
