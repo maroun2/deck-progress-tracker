@@ -13,6 +13,7 @@ import { Settings } from './components/Settings';
 import patchLibraryApp from './lib/patchLibraryApp';
 import { syncLibraryProgressive } from './lib/syncUtils';
 import { startAchievementCacheWatcher, stopAchievementCacheWatcher } from './lib/achievementCacheWatcher';
+import { startPlaySessionTracking } from './lib/playSessionTracker';
 
 /**
  * Main Plugin Definition
@@ -29,6 +30,10 @@ export default definePlugin(() => {
 
   // Start achievement cache watcher (monitors when user views "Your Stuff" tab)
   startAchievementCacheWatcher();
+
+  // Track real game session start/stop, used as a reliable playtime
+  // fallback for non-Steam shortcuts (see src/lib/playSessionTracker.ts)
+  const stopPlaySessionTracking = startPlaySessionTracking();
 
   // Trigger sync with frontend data (replaces backend auto-sync)
   // This uses Steam's frontend API for real-time playtime and achievement data
@@ -108,6 +113,9 @@ export default definePlugin(() => {
     onDismount() {
       // Stop achievement cache watcher
       stopAchievementCacheWatcher();
+
+      // Stop play session tracking
+      stopPlaySessionTracking?.();
 
       // Clean up patches when plugin is unloaded
       if (libraryPatch) {

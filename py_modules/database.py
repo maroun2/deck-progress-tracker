@@ -88,6 +88,7 @@ class Database:
                 unlocked_achievements INTEGER DEFAULT 0,
                 is_hidden BOOLEAN DEFAULT 0,
                 rt_last_time_played INTEGER,
+                tracked_playtime_seconds INTEGER DEFAULT 0,
                 last_sync TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         """)
@@ -99,6 +100,8 @@ class Database:
             cursor.execute("ALTER TABLE game_stats ADD COLUMN is_hidden BOOLEAN DEFAULT 0")
         if 'rt_last_time_played' not in columns:
             cursor.execute("ALTER TABLE game_stats ADD COLUMN rt_last_time_played INTEGER")
+        if 'tracked_playtime_seconds' not in columns:
+            cursor.execute("ALTER TABLE game_stats ADD COLUMN tracked_playtime_seconds INTEGER DEFAULT 0")
 
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS settings (
@@ -366,6 +369,12 @@ class Database:
             except (KeyError, IndexError):
                 rt_last_time_played = None
 
+            # Handle case where tracked_playtime_seconds might not exist yet (migration)
+            try:
+                tracked_playtime_seconds = row["tracked_playtime_seconds"] or 0
+            except (KeyError, IndexError):
+                tracked_playtime_seconds = 0
+
             return {
                 "appid": row["appid"],
                 "game_name": row["game_name"],
@@ -374,9 +383,41 @@ class Database:
                 "unlocked_achievements": row["unlocked_achievements"],
                 "is_hidden": is_hidden,
                 "rt_last_time_played": rt_last_time_played,
+                "tracked_playtime_seconds": tracked_playtime_seconds,
                 "last_sync": row["last_sync"]
             }
         return None
+
+    def _add_tracked_playtime_sync(self, conn, appid: str, seconds: int, game_name: str):
+        cursor = conn.cursor()
+        initial_minutes = seconds // 60
+        cursor.execute("""
+            INSERT INTO game_stats (appid, game_name, tracked_playtime_seconds, playtime_minutes, last_sync)
+            VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)
+            ON CONFLICT(appid) DO UPDATE SET
+                tracked_playtime_seconds = game_stats.tracked_playtime_seconds + excluded.tracked_playtime_seconds,
+                playtime_minutes = MAX(
+                    game_stats.playtime_minutes,
+                    (game_stats.tracked_playtime_seconds + excluded.tracked_playtime_seconds) / 60
+                ),
+                last_sync = CURRENT_TIMESTAMP
+        """, (appid, game_name, seconds, initial_minutes))
+        conn.commit()
+
+    async def add_tracked_playtime(self, appid: str, seconds: int, game_name: str = "") -> bool:
+        """Accumulate real session time tracked via SteamClient game lifetime
+        notifications. Used as a reliable playtime source for non-Steam
+        shortcuts, since Steam's own minutes_playtime_forever doesn't update
+        consistently for them."""
+        if not self.connection or seconds <= 0:
+            return False
+
+        try:
+            await asyncio.to_thread(self._add_tracked_playtime_sync, self.connection, appid, seconds, game_name)
+            return True
+        except Exception as e:
+            logger.error(f"Failed to add tracked playtime for {appid}: {e}")
+            return False
 
     def _get_all_game_stats_sync(self, conn, include_hidden: bool = True):
         cursor = conn.cursor()

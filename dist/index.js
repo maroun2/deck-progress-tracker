@@ -1,4 +1,4 @@
-const manifest = {"name":"Deck Progress Tracker","author":"Maron","version":"1.4.0","api_version":1,"flags":[],"publish":{"tags":["library","achievements","statistics","enhancement","progress-tracking"],"description":"Automatic game tagging based on achievements, playtime, and completion time. Track your progress with visual badges in the Steam library. Features 5 intelligent tags: Mastered, Completed, Dropped, In Progress, and Backlog.","image":"https://raw.githubusercontent.com/maroun2/deck-progress-tracker/main/assets/market_image.png"}};
+const manifest = {"name":"Deck Progress Tracker","author":"Maron","version":"1.4.1","api_version":1,"flags":[],"publish":{"tags":["library","achievements","statistics","enhancement","progress-tracking"],"description":"Automatic game tagging based on achievements, playtime, and completion time. Track your progress with visual badges in the Steam library. Features 5 intelligent tags: Mastered, Completed, Dropped, In Progress, and Backlog.","image":"https://raw.githubusercontent.com/maroun2/deck-progress-tracker/main/assets/market_image.png"}};
 const API_VERSION = 2;
 if (!manifest?.name) {
     throw new Error('[@decky/api]: Failed to find plugin manifest.');
@@ -568,6 +568,10 @@ const en = {
     'settings.right': 'Right',
     'settings.top': 'Top',
     'settings.bottom': 'Bottom',
+    // Settings - Tagging
+    'settings.tagging': 'Tagging',
+    'settings.inProgressThreshold': 'In Progress threshold',
+    'settings.minutesSuffix': ' min',
     // Settings - Language
     'settings.language': 'Language',
     'settings.languageAuto': 'Automatic (System)',
@@ -642,6 +646,10 @@ const ptBR = {
     'settings.right': 'Direita',
     'settings.top': 'Topo',
     'settings.bottom': 'Baixo',
+    // Settings - Tagging
+    'settings.tagging': 'Marcação de Tags',
+    'settings.inProgressThreshold': 'Limite para "Em Progresso"',
+    'settings.minutesSuffix': ' min',
     // Settings - Language
     'settings.language': 'Idioma',
     'settings.languageAuto': 'Automático (Sistema)',
@@ -938,6 +946,13 @@ const Settings = () => {
         }
         catch (err) { }
     };
+    const updateInProgressThreshold = async (value) => {
+        setSettings(prev => ({ ...prev, in_progress_threshold: value }));
+        try {
+            await call('update_settings', { in_progress_threshold: value });
+        }
+        catch (err) { }
+    };
     const groupedGames = taggedGames.reduce((acc, g) => {
         if (!acc[g.tag])
             acc[g.tag] = [];
@@ -988,6 +1003,9 @@ const Settings = () => {
                     SP_REACT.createElement("span", null, t('settings.vertical')),
                     SP_REACT.createElement("div", { style: { width: positionDropdownWidth } },
                         SP_REACT.createElement(DFL.Dropdown, { rgOptions: BADGE_V_OPTIONS, selectedOption: settings.badge_position_v, onChange: (option) => updateBadgePosition('badge_position_v', option.data) }))))),
+        SP_REACT.createElement(DFL.PanelSection, { title: t('settings.tagging') },
+            SP_REACT.createElement(DFL.PanelSectionRow, null,
+                SP_REACT.createElement(DFL.SliderField, { label: t('settings.inProgressThreshold'), value: settings.in_progress_threshold, min: 1, max: 120, step: 1, editableValue: true, valueSuffix: t('settings.minutesSuffix'), onChange: updateInProgressThreshold }))),
         SP_REACT.createElement(DFL.PanelSection, { title: t('settings.language') },
             SP_REACT.createElement(DFL.PanelSectionRow, null,
                 SP_REACT.createElement("div", { style: { width: '100%' } },
@@ -998,7 +1016,7 @@ const Settings = () => {
         SP_REACT.createElement(DFL.PanelSection, { title: t('settings.about') },
             SP_REACT.createElement("div", { style: styles$1.about },
                 SP_REACT.createElement("p", { style: styles$1.aboutLine }, "Deck Progress Tracker"),
-                SP_REACT.createElement("p", { style: styles$1.aboutLine }, "1.4.0"),
+                SP_REACT.createElement("p", { style: styles$1.aboutLine }, "1.4.1"),
                 SP_REACT.createElement("p", { style: styles$1.aboutLine }, t('settings.aboutDataSource'))),
             SP_REACT.createElement(DFL.PanelSectionRow, null,
                 SP_REACT.createElement(DFL.ButtonItem, { layout: "below", onClick: () => DFL.Navigation.NavigateToExternalWeb('https://patreon.com/DeckProgressTracker') }, t('settings.supportPatreon'))))));
@@ -1776,6 +1794,61 @@ function stopAchievementCacheWatcher() {
 }
 
 /**
+ * Play Session Tracker
+ *
+ * Steam's own `minutes_playtime_forever` (read via appStore.GetAppOverviewByAppID)
+ * doesn't update reliably for non-Steam shortcuts. As a fallback, this tracks
+ * real session start/stop times via SteamClient's native game lifetime
+ * notifications - a stable global API, not fragile module-scanning - and
+ * reports elapsed session time to the backend, which only applies it for
+ * non-Steam appids (regular Steam games already have reliable playtime).
+ */
+const sessionStarts = new Map();
+function handleAppLifetimeNotification(data) {
+    if (data.bRunning) {
+        sessionStarts.set(data.unAppID, Date.now());
+        return;
+    }
+    const startedAt = sessionStarts.get(data.unAppID);
+    sessionStarts.delete(data.unAppID);
+    if (!startedAt) {
+        return;
+    }
+    const seconds = Math.round((Date.now() - startedAt) / 1000);
+    if (seconds <= 0) {
+        return;
+    }
+    call('record_play_session', { appid: String(data.unAppID), seconds }).catch(() => {
+        // Best-effort: a missed session just means this game's tracked
+        // playtime undercounts until the next successful session.
+    });
+}
+/**
+ * Starts listening for game start/stop events. Returns a cleanup function
+ * (or null if the SteamClient API isn't available), to call on unmount.
+ */
+function startPlaySessionTracking() {
+    try {
+        const steamClient = window.SteamClient;
+        const registration = steamClient?.GameSessions?.RegisterForAppLifetimeNotifications?.(handleAppLifetimeNotification);
+        if (!registration) {
+            return null;
+        }
+        return () => {
+            try {
+                registration.unregister?.();
+            }
+            catch (e) {
+                // Ignore cleanup errors
+            }
+        };
+    }
+    catch (e) {
+        return null;
+    }
+}
+
+/**
  * Deck Progress Tracker - Main Plugin Entry
  * Decky Loader plugin for automatic game tagging
  *
@@ -1795,6 +1868,9 @@ var index = definePlugin(() => {
     }
     // Start achievement cache watcher (monitors when user views "Your Stuff" tab)
     startAchievementCacheWatcher();
+    // Track real game session start/stop, used as a reliable playtime
+    // fallback for non-Steam shortcuts (see src/lib/playSessionTracker.ts)
+    const stopPlaySessionTracking = startPlaySessionTracking();
     // Trigger sync with frontend data (replaces backend auto-sync)
     // This uses Steam's frontend API for real-time playtime and achievement data
     // Add a delay before attempting sync to let Steam frontend initialize
@@ -1869,6 +1945,8 @@ var index = definePlugin(() => {
         onDismount() {
             // Stop achievement cache watcher
             stopAchievementCacheWatcher();
+            // Stop play session tracking
+            stopPlaySessionTracking?.();
             // Clean up patches when plugin is unloaded
             if (libraryPatch) {
                 try {

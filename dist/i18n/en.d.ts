@@ -21,6 +21,9 @@ export declare const en: {
     'settings.right': string;
     'settings.top': string;
     'settings.bottom': string;
+    'settings.tagging': string;
+    'settings.inProgressThreshold': string;
+    'settings.minutesSuffix': string;
     'settings.language': string;
     'settings.languageAuto': string;
     'settings.languageEnglish': string;
