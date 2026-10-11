@@ -29,6 +29,11 @@ export const ptBR: Record<TranslationKey, string> = {
   'settings.top': 'Topo',
   'settings.bottom': 'Baixo',
 
+  // Settings - Tagging
+  'settings.tagging': 'Marcação de Tags',
+  'settings.inProgressThreshold': 'Limite para "Em Progresso"',
+  'settings.minutesSuffix': ' min',
+
   // Settings - Language
   'settings.language': 'Idioma',
   'settings.languageAuto': 'Automático (Sistema)',

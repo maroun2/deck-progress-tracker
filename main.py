@@ -532,6 +532,32 @@ class Plugin:
             "total": self.sync_total
         }
 
+    async def record_play_session(self, appid_or_params, seconds: int = None, game_name: str = None) -> Dict[str, Any]:
+        """Record a real play session duration (from SteamClient game lifetime
+        notifications on the frontend). Only applied for non-Steam shortcuts,
+        since Steam already tracks regular games' playtime reliably."""
+        params = self._extract_params(appid_or_params, seconds=seconds, game_name=game_name)
+        appid = str(params.get('appid', ''))
+        seconds = int(params.get('seconds') or 0)
+        game_name = params.get('game_name') or ''
+
+        if not appid or seconds <= 0:
+            return {"success": False, "error": "Invalid appid or seconds"}
+
+        try:
+            appid_int = int(appid)
+            is_non_steam = appid_int > 2000000000
+        except (ValueError, TypeError):
+            is_non_steam = False
+
+        if not is_non_steam:
+            # Regular Steam games already get reliable playtime via appStore
+            return {"success": True, "skipped": True}
+
+        await self.db.add_tracked_playtime(appid, seconds, game_name)
+        logger.info(f"Recorded play session for non-Steam appid={appid}: +{seconds}s")
+        return {"success": True}
+
     async def sync_single_game_with_data(self, params: Dict[str, Any]) -> Dict[str, Any]:
         """Sync a single game with its complete data (progressive sync)
 
@@ -823,6 +849,21 @@ class Plugin:
             is_non_steam = appid_int > 2000000000
         except (ValueError, TypeError):
             is_non_steam = False
+
+        # The frontend's appStore overview doesn't reliably report playtime
+        # for non-Steam shortcuts. For those, never let it regress below
+        # either of our two reliable sources: the real value Steam itself
+        # keeps on disk (localconfig.vdf, keyed by the signed appid), or
+        # what we've tracked ourselves via game session start/stop
+        # notifications (see record_play_session).
+        if is_non_steam:
+            disk_minutes = await self.steam_service.get_game_playtime(appid)
+            tracked_minutes = (existing_stats.get('tracked_playtime_seconds', 0) or 0) // 60 if existing_stats else 0
+            best_known_minutes = max(disk_minutes, tracked_minutes)
+
+            if best_known_minutes > playtime_minutes:
+                logger.info(f"  Non-Steam game: using localconfig.vdf/tracked playtime ({best_known_minutes}min) over frontend value ({playtime_minutes}min)")
+                playtime_minutes = best_known_minutes
 
         # Fetch HLTB if needed (do this before building stats so we can set is_hidden)
         # Retry HLTB lookup if:

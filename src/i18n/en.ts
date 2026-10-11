@@ -27,6 +27,11 @@ export const en = {
   'settings.top': 'Top',
   'settings.bottom': 'Bottom',
 
+  // Settings - Tagging
+  'settings.tagging': 'Tagging',
+  'settings.inProgressThreshold': 'In Progress threshold',
+  'settings.minutesSuffix': ' min',
+
   // Settings - Language
   'settings.language': 'Language',
   'settings.languageAuto': 'Automatic (System)',

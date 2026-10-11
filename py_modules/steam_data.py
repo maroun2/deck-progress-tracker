@@ -131,7 +131,12 @@ class SteamDataService:
         return 0
 
     async def _extract_playtime_from_config(self, config_path: Path, appid: str) -> int:
-        """Extract playtime from a config file"""
+        """Extract playtime from a config file.
+
+        Confirmed against a real localconfig.vdf: non-Steam shortcut entries
+        under apps{} are keyed by the SIGNED (negative) 32-bit representation
+        of the appid, not the unsigned/positive one shown everywhere else
+        (URLs, shortcuts.vdf). The field itself is "Playtime" (minutes)."""
         try:
             data = load_vdf_file(config_path)
 
@@ -151,13 +156,21 @@ class SteamDataService:
             if not apps:
                 return 0
 
-            if appid in apps:
-                app_data = apps[appid]
+            # Non-Steam appids (>= 2^31) are stored keyed by their signed
+            # 32-bit twin. Try that first, then fall back to the appid as
+            # given (which is already correct for regular Steam games).
+            candidate_keys = [appid]
+            try:
+                signed_key = self._to_signed32(int(appid))
+                if signed_key != appid:
+                    candidate_keys.insert(0, signed_key)
+            except (ValueError, TypeError):
+                pass
 
+            for key in candidate_keys:
+                app_data = apps.get(key)
                 if isinstance(app_data, dict):
-                    # Try all known playtime field names
-                    for field in ["Playtime", "playtime", "PlaytimeForever", "playtime_forever",
-                                  "TotalPlayTime", "totalplaytime", "playtime2", "Playtime2"]:
+                    for field in ["Playtime", "PlaytimeForever"]:
                         if field in app_data:
                             try:
                                 return int(app_data[field])
@@ -169,6 +182,15 @@ class SteamDataService:
         except Exception as e:
             logger.error(f"Failed to parse config file: {e}")
             return 0
+
+    @staticmethod
+    def _to_signed32(appid_int: int) -> str:
+        """Convert an unsigned 32-bit appid to its signed (two's complement)
+        decimal string - the key format used for non-Steam shortcuts inside
+        localconfig.vdf's apps{} dict."""
+        unsigned = appid_int & 0xFFFFFFFF
+        signed = unsigned - 0x100000000 if unsigned >= 0x80000000 else unsigned
+        return str(signed)
 
     async def get_game_name(self, appid: str) -> str:
         """Get game name from appmanifest files or shortcuts.vdf for non-Steam games"""

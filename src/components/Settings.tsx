@@ -1,6 +1,6 @@
 import React, { FC, useState, useEffect, useRef } from 'react';
 import { call, toaster } from '@decky/api';
-import { PanelSection, PanelSectionRow, ButtonItem, Dropdown, Navigation } from '@decky/ui';
+import { PanelSection, PanelSectionRow, ButtonItem, Dropdown, SliderField, Navigation } from '@decky/ui';
 import { PluginSettings, TagStatistics, TaggedGame, BADGE_SETTINGS_UPDATED_EVENT } from '../types';
 import { TagIcon, TagType } from './TagIcon';
 import { syncLibraryProgressive } from '../lib/syncUtils';
@@ -218,6 +218,13 @@ export const Settings: FC = () => {
     } catch (err) {}
   };
 
+  const updateInProgressThreshold = async (value: number) => {
+    setSettings(prev => ({ ...prev, in_progress_threshold: value }));
+    try {
+      await call<[Record<string, number>], { success: boolean }>('update_settings', { in_progress_threshold: value });
+    } catch (err) {}
+  };
+
   const groupedGames = taggedGames.reduce((acc, g) => {
     if (!acc[g.tag]) acc[g.tag] = [];
     acc[g.tag].push(g);
@@ -304,6 +311,21 @@ export const Settings: FC = () => {
               />
             </div>
           </div>
+        </PanelSectionRow>
+      </PanelSection>
+
+      <PanelSection title={t('settings.tagging')}>
+        <PanelSectionRow>
+          <SliderField
+            label={t('settings.inProgressThreshold')}
+            value={settings.in_progress_threshold}
+            min={1}
+            max={120}
+            step={1}
+            editableValue
+            valueSuffix={t('settings.minutesSuffix')}
+            onChange={updateInProgressThreshold}
+          />
         </PanelSectionRow>
       </PanelSection>
 
