@@ -118,14 +118,3 @@ jobs:
           prerelease: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Update latest.zip (for static URL)
-        uses: softprops/action-gh-release@v1
-        with:
-          files: deck-progress-tracker-${{ steps.version.outputs.version }}.zip
-          tag_name: latest
-          name: Latest Release
-          draft: false
-          prerelease: false
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
