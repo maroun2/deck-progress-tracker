@@ -1,4 +1,4 @@
-const manifest = {"name":"Deck Progress Tracker","author":"Maron","version":"1.3.5","api_version":1,"flags":[],"publish":{"tags":["library","achievements","statistics","enhancement","progress-tracking"],"description":"Automatic game tagging based on achievements, playtime, and completion time. Track your progress with visual badges in the Steam library. Features 5 intelligent tags: Mastered, Completed, Dropped, In Progress, and Backlog.","image":"https://raw.githubusercontent.com/maroun2/deck-progress-tracker/main/assets/market_image.png"}};
+const manifest = {"name":"Deck Progress Tracker","author":"Maron","version":"1.4.0","api_version":1,"flags":[],"publish":{"tags":["library","achievements","statistics","enhancement","progress-tracking"],"description":"Automatic game tagging based on achievements, playtime, and completion time. Track your progress with visual badges in the Steam library. Features 5 intelligent tags: Mastered, Completed, Dropped, In Progress, and Backlog.","image":"https://raw.githubusercontent.com/maroun2/deck-progress-tracker/main/assets/market_image.png"}};
 const API_VERSION = 2;
 if (!manifest?.name) {
     throw new Error('[@decky/api]: Failed to find plugin manifest.');
@@ -88,6 +88,11 @@ function IconBase(props) {
 function FaTrophy (props) {
   return GenIcon({"tag":"svg","attr":{"viewBox":"0 0 576 512"},"child":[{"tag":"path","attr":{"d":"M552 64H448V24c0-13.3-10.7-24-24-24H152c-13.3 0-24 10.7-24 24v40H24C10.7 64 0 74.7 0 88v56c0 35.7 22.5 72.4 61.9 100.7 31.5 22.7 69.8 37.1 110 41.7C203.3 338.5 240 360 240 360v72h-48c-35.3 0-64 20.7-64 56v12c0 6.6 5.4 12 12 12h296c6.6 0 12-5.4 12-12v-12c0-35.3-28.7-56-64-56h-48v-72s36.7-21.5 68.1-73.6c40.3-4.6 78.6-19 110-41.7 39.3-28.3 61.9-65 61.9-100.7V88c0-13.3-10.7-24-24-24zM99.3 192.8C74.9 175.2 64 155.6 64 144v-16h64.2c1 32.6 5.8 61.2 12.8 86.2-15.1-5.2-29.2-12.4-41.7-21.4zM512 144c0 16.1-17.7 36.1-35.3 48.8-12.5 9-26.7 16.2-41.8 21.4 7-25 11.8-53.6 12.8-86.2H512v16z"},"child":[]}]})(props);
 }
+
+/**
+ * TypeScript type definitions for Game Progress Tracker
+ */
+const BADGE_SETTINGS_UPDATED_EVENT = 'deck-progress-tracker:badge-settings-updated';
 
 // Tag colors matching the existing theme
 const TAG_ICON_COLORS = {
@@ -537,6 +542,214 @@ const syncLibraryProgressive = async (onProgress) => {
     }
 };
 
+/**
+ * English (default/fallback) translations
+ */
+const en = {
+    // Settings - Library section
+    'settings.library': 'Library',
+    'settings.noGamesFound': 'No games found',
+    'settings.manual': 'manual',
+    // Settings - Sync
+    'settings.syncLibrary': 'Sync Entire Library',
+    'settings.syncing': 'Syncing...',
+    'settings.syncStarting': 'Starting sync...',
+    'settings.syncingProgress': 'Syncing: {current}/{total} games',
+    'settings.syncComplete': 'Sync complete! Library updated.',
+    'settings.syncCompleteDetailed': 'Sync complete! {synced} games updated{newTags}.',
+    'settings.syncCompleteNewTags': ', {count} new tags',
+    'settings.syncError': 'Sync error: {error}',
+    // Settings - Badge Position
+    'settings.badgePosition': 'Badge Position',
+    'settings.horizontal': 'Horizontal',
+    'settings.vertical': 'Vertical',
+    'settings.left': 'Left',
+    'settings.center': 'Center',
+    'settings.right': 'Right',
+    'settings.top': 'Top',
+    'settings.bottom': 'Bottom',
+    // Settings - Language
+    'settings.language': 'Language',
+    'settings.languageAuto': 'Automatic (System)',
+    'settings.languageEnglish': 'English',
+    'settings.languagePortuguese': 'Português (Brasil)',
+    // Settings - About
+    'settings.about': 'About',
+    'settings.aboutDataSource': 'Data from HowLongToBeat & Steam',
+    'settings.supportPatreon': 'Support on Patreon',
+    // Tags - labels
+    'tag.completed': 'Completed',
+    'tag.in_progress': 'In Progress',
+    'tag.backlog': 'Backlog',
+    'tag.mastered': 'Mastered',
+    'tag.dropped': 'Dropped',
+    // Tags - descriptions
+    'tag.completed.desc': 'Beat the main story (playtime ≥ HLTB main story time)',
+    'tag.in_progress.desc': 'Currently playing (playtime ≥ 30 minutes)',
+    'tag.backlog.desc': 'Not started yet (no playtime or minimal playtime)',
+    'tag.mastered.desc': 'Unlocked 85%+ of all achievements',
+    'tag.dropped.desc': 'Not played for over 1 year',
+    // Badge (on game banner)
+    'badge.addTag': 'Add Tag',
+    'badge.clickToAddTag': 'Click to add tag',
+    'badge.manualTagEdit': 'Manual tag - Click to edit',
+    'badge.autoTagEdit': 'Automatic tag - Click to edit',
+    // TagManager modal
+    'tagManager.loading': 'Loading...',
+    'tagManager.failedToLoad': 'Failed to load game details',
+    'tagManager.failedToSetTag': 'Failed to set tag',
+    'tagManager.failedToReset': 'Failed to reset tag',
+    'tagManager.failedToRemove': 'Failed to remove tag',
+    'tagManager.close': 'Close',
+    'tagManager.statistics': 'Statistics',
+    'tagManager.playtime': 'Playtime:',
+    'tagManager.achievements': 'Achievements:',
+    'tagManager.hltbMatch': 'HLTB Match:',
+    'tagManager.mainStory': 'Main Story:',
+    'tagManager.hltb': 'HLTB:',
+    'tagManager.noData': 'No data',
+    'tagManager.manualTag': '(Manual)',
+    'tagManager.autoTag': '(Auto)',
+    'tagManager.setTag': 'Set Tag',
+    'tagManager.resetToAuto': 'Reset to Auto',
+    'tagManager.remove': 'Remove',
+    'tagManager.gameFallback': 'Game {appid}',
+};
+
+/**
+ * Brazilian Portuguese translations
+ */
+const ptBR = {
+    // Settings - Library section
+    'settings.library': 'Biblioteca',
+    'settings.noGamesFound': 'Nenhum jogo encontrado',
+    'settings.manual': 'manual',
+    // Settings - Sync
+    'settings.syncLibrary': 'Sincronizar Biblioteca Inteira',
+    'settings.syncing': 'Sincronizando...',
+    'settings.syncStarting': 'Iniciando sincronização...',
+    'settings.syncingProgress': 'Sincronizando: {current}/{total} jogos',
+    'settings.syncComplete': 'Sincronização concluída! Biblioteca atualizada.',
+    'settings.syncCompleteDetailed': 'Sincronização concluída! {synced} jogos atualizados{newTags}.',
+    'settings.syncCompleteNewTags': ', {count} novas tags',
+    'settings.syncError': 'Erro na sincronização: {error}',
+    // Settings - Badge Position
+    'settings.badgePosition': 'Posição do Badge',
+    'settings.horizontal': 'Horizontal',
+    'settings.vertical': 'Vertical',
+    'settings.left': 'Esquerda',
+    'settings.center': 'Centro',
+    'settings.right': 'Direita',
+    'settings.top': 'Topo',
+    'settings.bottom': 'Baixo',
+    // Settings - Language
+    'settings.language': 'Idioma',
+    'settings.languageAuto': 'Automático (Sistema)',
+    'settings.languageEnglish': 'English',
+    'settings.languagePortuguese': 'Português (Brasil)',
+    // Settings - About
+    'settings.about': 'Sobre',
+    'settings.aboutDataSource': 'Dados do HowLongToBeat & Steam',
+    'settings.supportPatreon': 'Apoie no Patreon',
+    // Tags - labels
+    'tag.completed': 'Completo',
+    'tag.in_progress': 'Em Progresso',
+    'tag.backlog': 'Backlog',
+    'tag.mastered': 'Dominado',
+    'tag.dropped': 'Abandonado',
+    // Tags - descriptions
+    'tag.completed.desc': 'Terminou a história principal (tempo jogado ≥ tempo da história principal no HLTB)',
+    'tag.in_progress.desc': 'Jogando atualmente (tempo jogado ≥ 30 minutos)',
+    'tag.backlog.desc': 'Ainda não iniciado (sem tempo jogado ou tempo mínimo)',
+    'tag.mastered.desc': 'Desbloqueou 85%+ de todas as conquistas',
+    'tag.dropped.desc': 'Não jogado por mais de 1 ano',
+    // Badge (on game banner)
+    'badge.addTag': 'Adicionar Tag',
+    'badge.clickToAddTag': 'Clique para adicionar uma tag',
+    'badge.manualTagEdit': 'Tag manual - Clique para editar',
+    'badge.autoTagEdit': 'Tag automática - Clique para editar',
+    // TagManager modal
+    'tagManager.loading': 'Carregando...',
+    'tagManager.failedToLoad': 'Falha ao carregar detalhes do jogo',
+    'tagManager.failedToSetTag': 'Falha ao definir a tag',
+    'tagManager.failedToReset': 'Falha ao redefinir a tag',
+    'tagManager.failedToRemove': 'Falha ao remover a tag',
+    'tagManager.close': 'Fechar',
+    'tagManager.statistics': 'Estatísticas',
+    'tagManager.playtime': 'Tempo jogado:',
+    'tagManager.achievements': 'Conquistas:',
+    'tagManager.hltbMatch': 'Correspondência HLTB:',
+    'tagManager.mainStory': 'História Principal:',
+    'tagManager.hltb': 'HLTB:',
+    'tagManager.noData': 'Sem dados',
+    'tagManager.manualTag': '(Manual)',
+    'tagManager.autoTag': '(Automática)',
+    'tagManager.setTag': 'Definir Tag',
+    'tagManager.resetToAuto': 'Voltar ao Automático',
+    'tagManager.remove': 'Remover',
+    'tagManager.gameFallback': 'Jogo {appid}',
+};
+
+const DICTIONARIES = {
+    en,
+    'pt-BR': ptBR,
+};
+const LANGUAGE_UPDATED_EVENT = 'deck-progress-tracker:language-updated';
+function detectSystemLanguage() {
+    const systemLanguage = (navigator.language || 'en').toLowerCase();
+    return systemLanguage.startsWith('pt') ? 'pt-BR' : 'en';
+}
+let currentLanguage = detectSystemLanguage();
+let initialized = false;
+const listeners = new Set();
+async function resolveLanguage() {
+    try {
+        const result = await call('get_settings');
+        const preference = result.settings?.language || 'auto';
+        return preference === 'auto' ? detectSystemLanguage() : preference;
+    }
+    catch (e) {
+        return detectSystemLanguage();
+    }
+}
+async function refreshLanguage() {
+    currentLanguage = await resolveLanguage();
+    listeners.forEach((listener) => listener());
+}
+function ensureInitialized() {
+    if (initialized) {
+        return;
+    }
+    initialized = true;
+    refreshLanguage();
+    window.addEventListener(LANGUAGE_UPDATED_EVENT, refreshLanguage);
+}
+function translate(key, vars) {
+    const template = DICTIONARIES[currentLanguage][key] ?? en[key] ?? key;
+    if (!vars) {
+        return template;
+    }
+    return Object.entries(vars).reduce((acc, [name, value]) => acc.split(`{${name}}`).join(String(value)), template);
+}
+/**
+ * Subscribes to language changes (triggered via LANGUAGE_UPDATED_EVENT,
+ * dispatched by Settings after the user changes their preference).
+ */
+function subscribeToLanguage(listener) {
+    ensureInitialized();
+    listeners.add(listener);
+    return () => listeners.delete(listener);
+}
+/**
+ * React hook giving components a `t()` function that re-renders when the
+ * resolved language changes (system detection or manual override).
+ */
+function useTranslation() {
+    const [, forceRender] = SP_REACT.useState(0);
+    SP_REACT.useEffect(() => subscribeToLanguage(() => forceRender((n) => n + 1)), []);
+    return { t: translate, language: currentLanguage };
+}
+
 const TAG_COLORS = {
     completed: '#38ef7d',
     in_progress: '#764ba2',
@@ -544,21 +757,41 @@ const TAG_COLORS = {
     backlog: '#888',
     dropped: '#c9a171',
 };
-const TAG_LABELS = {
-    completed: 'Completed',
-    in_progress: 'In Progress',
-    backlog: 'Backlog',
-    mastered: 'Mastered',
-    dropped: 'Dropped',
+const TAG_LABEL_KEY$2 = {
+    completed: 'tag.completed',
+    in_progress: 'tag.in_progress',
+    backlog: 'tag.backlog',
+    mastered: 'tag.mastered',
+    dropped: 'tag.dropped',
 };
-const TAG_DESCRIPTIONS = {
-    completed: 'Beat the main story (playtime ≥ HLTB main story time)',
-    in_progress: 'Currently playing (playtime ≥ 30 minutes)',
-    backlog: 'Not started yet (no playtime or minimal playtime)',
-    mastered: 'Unlocked 85%+ of all achievements',
-    dropped: 'Not played for over 1 year',
+const TAG_DESCRIPTION_KEY = {
+    completed: 'tag.completed.desc',
+    in_progress: 'tag.in_progress.desc',
+    backlog: 'tag.backlog.desc',
+    mastered: 'tag.mastered.desc',
+    dropped: 'tag.dropped.desc',
 };
 const Settings = () => {
+    const { t } = useTranslation();
+    const BADGE_H_OPTIONS = [
+        { data: 'left', label: t('settings.left') },
+        { data: 'center', label: t('settings.center') },
+        { data: 'right', label: t('settings.right') },
+    ];
+    const BADGE_V_OPTIONS = [
+        { data: 'top', label: t('settings.top') },
+        { data: 'center', label: t('settings.center') },
+        { data: 'bottom', label: t('settings.bottom') },
+    ];
+    // Size both dropdowns off the longest option label (across both axes) so
+    // they always match, regardless of how long each language's words are.
+    const longestPositionLabelLength = Math.max(...BADGE_H_OPTIONS.map((o) => o.label.length), ...BADGE_V_OPTIONS.map((o) => o.label.length));
+    const positionDropdownWidth = `${longestPositionLabelLength + 4}ch`;
+    const LANGUAGE_OPTIONS = [
+        { data: 'auto', label: t('settings.languageAuto') },
+        { data: 'en', label: t('settings.languageEnglish') },
+        { data: 'pt-BR', label: t('settings.languagePortuguese') },
+    ];
     const [settings, setSettings] = SP_REACT.useState({
         auto_tag_enabled: true,
         mastered_multiplier: 1.5,
@@ -567,6 +800,9 @@ const Settings = () => {
         source_installed: true,
         source_non_steam: true,
         source_all_owned: true,
+        badge_position_h: 'right',
+        badge_position_v: 'top',
+        language: 'auto',
     });
     const [stats, setStats] = SP_REACT.useState(null);
     const [syncing, setSyncing] = SP_REACT.useState(false);
@@ -615,7 +851,7 @@ const Settings = () => {
                 if (res.success && res.syncing) {
                     // Backend is syncing - always show progress regardless of frontend state
                     // This handles sync from any source (manual, auto, initial load)
-                    setMessage(`Syncing: ${res.current}/${res.total} games`);
+                    setMessage(t('settings.syncingProgress', { current: res.current, total: res.total }));
                     setSyncing(true);
                     setWaitingForBackend(false);
                 }
@@ -632,7 +868,7 @@ const Settings = () => {
                     // If the sync wasn't initiated by the button (no finally block to handle it),
                     // we should still show completion
                     if (res.total && res.total > 0) {
-                        setMessage(`Sync complete! Library updated.`);
+                        setMessage(t('settings.syncComplete'));
                         setTimeout(() => setMessage(null), 5000);
                     }
                 }
@@ -657,11 +893,11 @@ const Settings = () => {
         try {
             setSyncing(true);
             setWaitingForBackend(false); // No longer waiting since we process immediately
-            setMessage('Starting sync...');
+            setMessage(t('settings.syncStarting'));
             // Use progressive sync with progress callback
             const result = await syncLibraryProgressive((current, total, gameName) => {
                 // Only show consistent progress numbers, no game names to avoid flickering
-                setMessage(`Syncing: ${current}/${total} games`);
+                setMessage(t('settings.syncingProgress', { current, total }));
                 // Periodically update UI to show new tags
                 if (current % 10 === 0 || current === total) {
                     smartUpdateUI();
@@ -669,19 +905,38 @@ const Settings = () => {
             });
             // Sync completed
             smartUpdateUI();
-            const msg = `Sync complete! ${result.synced} games updated${result.new_tags ? `, ${result.new_tags} new tags` : ''}.`;
+            const newTagsSuffix = result.new_tags
+                ? t('settings.syncCompleteNewTags', { count: result.new_tags })
+                : '';
+            const msg = t('settings.syncCompleteDetailed', { synced: result.synced ?? 0, newTags: newTagsSuffix });
             setMessage(msg);
             toaster.toast({ title: 'Deck Progress Tracker', body: msg, duration: 5000 });
             // Clear message after a delay
             setTimeout(() => setMessage(null), 10000);
         }
         catch (err) {
-            setMessage(`Sync error: ${err?.message || 'Unknown'}`);
+            setMessage(t('settings.syncError', { error: err?.message || 'Unknown' }));
         }
         finally {
             setSyncing(false);
             setWaitingForBackend(false);
         }
+    };
+    const updateBadgePosition = async (key, value) => {
+        setSettings(prev => ({ ...prev, [key]: value }));
+        try {
+            await call('update_settings', { [key]: value });
+            window.dispatchEvent(new CustomEvent(BADGE_SETTINGS_UPDATED_EVENT));
+        }
+        catch (err) { }
+    };
+    const updateLanguage = async (value) => {
+        setSettings(prev => ({ ...prev, language: value }));
+        try {
+            await call('update_settings', { language: value });
+            window.dispatchEvent(new CustomEvent(LANGUAGE_UPDATED_EVENT));
+        }
+        catch (err) { }
     };
     const groupedGames = taggedGames.reduce((acc, g) => {
         if (!acc[g.tag])
@@ -693,9 +948,10 @@ const Settings = () => {
         message && SP_REACT.createElement("div", { style: styles$1.message }, message),
         SP_REACT.createElement("div", { style: styles$1.section },
             SP_REACT.createElement("h3", { style: styles$1.sectionTitle },
-                "Library (",
+                t('settings.library'),
+                " (",
                 stats?.total || 0,
-                " games)"),
+                ")"),
             SP_REACT.createElement(DFL.PanelSection, null, ['in_progress', 'completed', 'mastered', 'dropped', 'backlog'].map(tagType => {
                 const isBacklog = tagType === 'backlog';
                 const games = isBacklog ? backlogGames : (groupedGames[tagType] || []);
@@ -707,30 +963,45 @@ const Settings = () => {
                             SP_REACT.createElement("div", { style: styles$1.tagSectionContent },
                                 SP_REACT.createElement("div", { style: styles$1.tagSectionLeft },
                                     SP_REACT.createElement(TagIcon, { type: tagType, size: 18 }),
-                                    SP_REACT.createElement("span", { style: styles$1.tagSectionTitle }, TAG_LABELS[tagType])),
+                                    SP_REACT.createElement("span", { style: styles$1.tagSectionTitle }, t(TAG_LABEL_KEY$2[tagType]))),
                                 SP_REACT.createElement("div", { style: styles$1.tagSectionRight },
                                     SP_REACT.createElement("span", { style: { ...styles$1.tagCount, color: TAG_COLORS[tagType] } }, count),
                                     SP_REACT.createElement("span", { style: styles$1.expandIcon }, isExpanded ? '−' : '+'))))),
-                    isExpanded && SP_REACT.createElement("div", { style: styles$1.tagDescription }, TAG_DESCRIPTIONS[tagType]),
+                    isExpanded && SP_REACT.createElement("div", { style: styles$1.tagDescription }, t(TAG_DESCRIPTION_KEY[tagType])),
                     isExpanded && games.length > 0 && games.map(game => (SP_REACT.createElement(DFL.PanelSectionRow, { key: game.appid },
                         SP_REACT.createElement(DFL.ButtonItem, { layout: "below", onClick: () => { DFL.Navigation.Navigate(`/library/app/${game.appid}`); DFL.Navigation.CloseSideMenus(); }, style: { width: '100%', overflow: 'hidden' } },
                             SP_REACT.createElement("div", { style: { display: 'table', tableLayout: 'fixed', width: '100%' } },
                                 SP_REACT.createElement("div", { style: styles$1.gameItemContent },
                                     SP_REACT.createElement("span", { style: { ...styles$1.smallDot, backgroundColor: TAG_COLORS[game.tag] } }),
                                     SP_REACT.createElement("span", { style: styles$1.gameName }, game.game_name),
-                                    game.is_manual && SP_REACT.createElement("span", { style: styles$1.manualBadge }, "manual"))))))),
-                    isExpanded && games.length === 0 && !loadingBacklog && SP_REACT.createElement("div", { style: styles$1.emptySection }, "No games found")));
+                                    game.is_manual && SP_REACT.createElement("span", { style: styles$1.manualBadge }, t('settings.manual')))))))),
+                    isExpanded && games.length === 0 && !loadingBacklog && SP_REACT.createElement("div", { style: styles$1.emptySection }, t('settings.noGamesFound'))));
             }))),
+        SP_REACT.createElement(DFL.PanelSection, { title: t('settings.badgePosition') },
+            SP_REACT.createElement(DFL.PanelSectionRow, null,
+                SP_REACT.createElement("div", { style: styles$1.dropdownRow },
+                    SP_REACT.createElement("span", null, t('settings.horizontal')),
+                    SP_REACT.createElement("div", { style: { width: positionDropdownWidth } },
+                        SP_REACT.createElement(DFL.Dropdown, { rgOptions: BADGE_H_OPTIONS, selectedOption: settings.badge_position_h, onChange: (option) => updateBadgePosition('badge_position_h', option.data) })))),
+            SP_REACT.createElement(DFL.PanelSectionRow, null,
+                SP_REACT.createElement("div", { style: styles$1.dropdownRow },
+                    SP_REACT.createElement("span", null, t('settings.vertical')),
+                    SP_REACT.createElement("div", { style: { width: positionDropdownWidth } },
+                        SP_REACT.createElement(DFL.Dropdown, { rgOptions: BADGE_V_OPTIONS, selectedOption: settings.badge_position_v, onChange: (option) => updateBadgePosition('badge_position_v', option.data) }))))),
+        SP_REACT.createElement(DFL.PanelSection, { title: t('settings.language') },
+            SP_REACT.createElement(DFL.PanelSectionRow, null,
+                SP_REACT.createElement("div", { style: { width: '100%' } },
+                    SP_REACT.createElement(DFL.Dropdown, { rgOptions: LANGUAGE_OPTIONS, selectedOption: settings.language, onChange: (option) => updateLanguage(option.data) })))),
         SP_REACT.createElement(DFL.PanelSection, null,
             SP_REACT.createElement(DFL.PanelSectionRow, null,
-                SP_REACT.createElement(DFL.ButtonItem, { layout: "below", onClick: syncLibrary, disabled: syncing }, syncing ? 'Syncing...' : 'Sync Entire Library'))),
-        SP_REACT.createElement(DFL.PanelSection, { title: "About" },
+                SP_REACT.createElement(DFL.ButtonItem, { layout: "below", onClick: syncLibrary, disabled: syncing }, syncing ? t('settings.syncing') : t('settings.syncLibrary')))),
+        SP_REACT.createElement(DFL.PanelSection, { title: t('settings.about') },
             SP_REACT.createElement("div", { style: styles$1.about },
                 SP_REACT.createElement("p", { style: styles$1.aboutLine }, "Deck Progress Tracker"),
-                SP_REACT.createElement("p", { style: styles$1.aboutLine }, "1.3.5"),
-                SP_REACT.createElement("p", { style: styles$1.aboutLine }, "Data from HowLongToBeat & Steam")),
+                SP_REACT.createElement("p", { style: styles$1.aboutLine }, "1.4.0"),
+                SP_REACT.createElement("p", { style: styles$1.aboutLine }, t('settings.aboutDataSource'))),
             SP_REACT.createElement(DFL.PanelSectionRow, null,
-                SP_REACT.createElement(DFL.ButtonItem, { layout: "below", onClick: () => DFL.Navigation.NavigateToExternalWeb('https://patreon.com/DeckProgressTracker') }, "Support on Patreon")))));
+                SP_REACT.createElement(DFL.ButtonItem, { layout: "below", onClick: () => DFL.Navigation.NavigateToExternalWeb('https://patreon.com/DeckProgressTracker') }, t('settings.supportPatreon'))))));
 };
 const styles$1 = {
     container: { paddingTop: '16px', color: 'white', width: '100%', maxWidth: '100%', overflow: 'hidden' },
@@ -742,6 +1013,7 @@ const styles$1 = {
     gameName: { fontSize: '13px', color: 'inherit', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'inline-block', verticalAlign: 'middle', maxWidth: 'calc(100% - 40px)', flexShrink: 1 },
     manualBadge: { fontSize: '10px', color: '#888', backgroundColor: '#333', padding: '2px 6px', borderRadius: '3px', flexShrink: 0 },
     tagSectionContent: { width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between' },
+    dropdownRow: { width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between' },
     tagSectionLeft: { display: 'flex', alignItems: 'center', gap: '10px' },
     tagSectionRight: { display: 'flex', alignItems: 'center', gap: '12px' },
     tagSectionTitle: { fontWeight: 'bold' },
@@ -755,84 +1027,35 @@ const styles$1 = {
 };
 
 /**
- * GameTag Component
- * Displays a colored badge with icon for game tags
+ * Shared per-tag styling (background color) used by GameTagBadge.
  */
 const TAG_STYLES = {
     completed: {
         background: 'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)',
-        label: 'Completed'
     },
     in_progress: {
         background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-        label: 'In Progress'
     },
     mastered: {
         background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
-        label: 'Mastered'
     },
     dropped: {
         background: 'linear-gradient(135deg, #b8956a 0%, #c9a171 100%)',
-        label: 'Dropped'
-    }
-};
-const GameTag = ({ tag, onClick, compact = false }) => {
-    if (!tag || !tag.tag) {
-        return null;
-    }
-    const style = TAG_STYLES[tag.tag];
-    if (!style) {
-        return null;
-    }
-    // Compact mode: just the icon with background circle
-    if (compact) {
-        const compactStyle = {
-            position: 'absolute',
-            top: '8px',
-            right: '8px',
-            background: 'rgba(0, 0, 0, 0.7)',
-            borderRadius: '50%',
-            padding: '4px',
-            boxShadow: '0 2px 4px rgba(0,0,0,0.4)',
-            zIndex: 1000,
-            cursor: onClick ? 'pointer' : 'default',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            userSelect: 'none',
-        };
-        return (SP_REACT.createElement("div", { onClick: onClick, style: compactStyle, title: style.label },
-            SP_REACT.createElement(TagIcon, { type: tag.tag, size: 16 })));
-    }
-    // Full mode: badge with icon and text
-    // Note: position is relative (not absolute) - parent handles placement
-    const containerStyle = {
-        position: 'relative',
-        display: 'inline-flex',
-        background: style.background,
-        color: 'white',
-        padding: '8px 16px',
-        borderRadius: '20px',
-        fontSize: '14px',
-        fontWeight: 'bold',
-        boxShadow: '0 4px 6px rgba(0,0,0,0.3)',
-        cursor: onClick ? 'pointer' : 'default',
-        alignItems: 'center',
-        gap: '8px',
-        userSelect: 'none',
-        transition: 'transform 0.2s ease',
-    };
-    return (SP_REACT.createElement("div", { onClick: onClick, style: containerStyle, title: tag.is_manual ? 'Manual tag - Click to edit' : 'Automatic tag - Click to edit' },
-        SP_REACT.createElement(TagIcon, { type: tag.tag, size: 18 }),
-        SP_REACT.createElement("span", null, style.label),
-        tag.is_manual && (SP_REACT.createElement("span", { style: { fontSize: '12px', opacity: 0.8 } }, "\u270E"))));
+    },
 };
 
 /**
  * TagManager Component
  * Modal for managing game tags manually
  */
+const TAG_LABEL_KEY$1 = {
+    completed: 'tag.completed',
+    in_progress: 'tag.in_progress',
+    mastered: 'tag.mastered',
+    dropped: 'tag.dropped',
+};
 const TagManager = ({ appid, onClose }) => {
+    const { t } = useTranslation();
     const [details, setDetails] = SP_REACT.useState(null);
     const [loading, setLoading] = SP_REACT.useState(true);
     const [error, setError] = SP_REACT.useState(null);
@@ -847,7 +1070,7 @@ const TagManager = ({ appid, onClose }) => {
             setDetails(result);
         }
         catch (err) {
-            const errorMsg = err?.message || 'Failed to load game details';
+            const errorMsg = err?.message || t('tagManager.failedToLoad');
             setError(errorMsg);
             // Error occurred
         }
@@ -861,7 +1084,7 @@ const TagManager = ({ appid, onClose }) => {
             await fetchDetails();
         }
         catch (err) {
-            const errorMsg = err?.message || 'Failed to set tag';
+            const errorMsg = err?.message || t('tagManager.failedToSetTag');
             setError(errorMsg);
             // Error occurred
         }
@@ -872,7 +1095,7 @@ const TagManager = ({ appid, onClose }) => {
             await fetchDetails();
         }
         catch (err) {
-            const errorMsg = err?.message || 'Failed to reset tag';
+            const errorMsg = err?.message || t('tagManager.failedToReset');
             setError(errorMsg);
             // Error occurred
         }
@@ -883,7 +1106,7 @@ const TagManager = ({ appid, onClose }) => {
             await fetchDetails();
         }
         catch (err) {
-            const errorMsg = err?.message || 'Failed to remove tag';
+            const errorMsg = err?.message || t('tagManager.failedToRemove');
             setError(errorMsg);
             // Error occurred
         }
@@ -891,14 +1114,14 @@ const TagManager = ({ appid, onClose }) => {
     if (loading) {
         return (SP_REACT.createElement("div", { style: styles.modal },
             SP_REACT.createElement("div", { style: styles.content },
-                SP_REACT.createElement("div", { style: styles.loading }, "Loading..."))));
+                SP_REACT.createElement("div", { style: styles.loading }, t('tagManager.loading')))));
     }
     if (error || !details || !details.success) {
         return (SP_REACT.createElement("div", { style: styles.modal },
             SP_REACT.createElement("div", { style: styles.content },
-                SP_REACT.createElement("div", { style: styles.error }, error || 'Failed to load game details'),
+                SP_REACT.createElement("div", { style: styles.error }, error || t('tagManager.failedToLoad')),
                 SP_REACT.createElement(DFL.Focusable, null,
-                    SP_REACT.createElement(DFL.DialogButton, { onClick: onClose }, "Close")))));
+                    SP_REACT.createElement(DFL.DialogButton, { onClick: onClose }, t('tagManager.close'))))));
     }
     const stats = details.stats;
     const tag = details.tag;
@@ -906,64 +1129,63 @@ const TagManager = ({ appid, onClose }) => {
     return (SP_REACT.createElement("div", { style: styles.modal, onClick: onClose },
         SP_REACT.createElement("div", { style: styles.content, onClick: (e) => e.stopPropagation() },
             SP_REACT.createElement("div", { style: styles.header },
-                SP_REACT.createElement("h2", { style: styles.title }, stats?.game_name || `Game ${appid}`),
+                SP_REACT.createElement("h2", { style: styles.title }, stats?.game_name || t('tagManager.gameFallback', { appid })),
                 tag?.tag && (SP_REACT.createElement("div", { style: styles.currentTagBadge },
                     SP_REACT.createElement(TagIcon, { type: tag.tag, size: 20 }),
-                    SP_REACT.createElement("span", { style: { color: TAG_ICON_COLORS[tag.tag] } }, tag.tag.replace('_', ' ').toUpperCase()),
-                    SP_REACT.createElement("span", { style: styles.tagType }, tag.is_manual ? '(Manual)' : '(Auto)')))),
+                    SP_REACT.createElement("span", { style: { color: TAG_ICON_COLORS[tag.tag] } }, t(TAG_LABEL_KEY$1[tag.tag]).toUpperCase()),
+                    SP_REACT.createElement("span", { style: styles.tagType }, tag.is_manual ? t('tagManager.manualTag') : t('tagManager.autoTag'))))),
             SP_REACT.createElement("div", { style: styles.mainContent },
                 SP_REACT.createElement("div", { style: styles.leftColumn },
-                    SP_REACT.createElement("h3", { style: styles.sectionTitle }, "Statistics"),
+                    SP_REACT.createElement("h3", { style: styles.sectionTitle }, t('tagManager.statistics')),
                     stats && (SP_REACT.createElement(SP_REACT.Fragment, null,
                         SP_REACT.createElement("div", { style: styles.statRow },
-                            SP_REACT.createElement("span", null, "Playtime:"),
+                            SP_REACT.createElement("span", null, t('tagManager.playtime')),
                             SP_REACT.createElement("span", null,
                                 Math.floor(stats.playtime_minutes / 60),
                                 "h ",
                                 stats.playtime_minutes % 60,
                                 "m")),
                         SP_REACT.createElement("div", { style: styles.statRow },
-                            SP_REACT.createElement("span", null, "Achievements:"),
+                            SP_REACT.createElement("span", null, t('tagManager.achievements')),
                             SP_REACT.createElement("span", null,
                                 stats.unlocked_achievements,
                                 "/",
                                 stats.total_achievements)))),
                     hltb && (SP_REACT.createElement(SP_REACT.Fragment, null,
                         SP_REACT.createElement("div", { style: styles.statRow },
-                            SP_REACT.createElement("span", null, "HLTB Match:"),
+                            SP_REACT.createElement("span", null, t('tagManager.hltbMatch')),
                             SP_REACT.createElement("span", { style: styles.hltbMatch },
                                 hltb.matched_name,
                                 " (",
                                 Math.round((hltb.similarity || 0) * 100),
                                 "%)")),
                         hltb.main_story && (SP_REACT.createElement("div", { style: styles.statRow },
-                            SP_REACT.createElement("span", null, "Main Story:"),
+                            SP_REACT.createElement("span", null, t('tagManager.mainStory')),
                             SP_REACT.createElement("span", null,
                                 hltb.main_story,
                                 "h"))))),
                     !hltb && (SP_REACT.createElement("div", { style: styles.statRow },
-                        SP_REACT.createElement("span", null, "HLTB:"),
-                        SP_REACT.createElement("span", { style: styles.noData }, "No data")))),
+                        SP_REACT.createElement("span", null, t('tagManager.hltb')),
+                        SP_REACT.createElement("span", { style: styles.noData }, t('tagManager.noData'))))),
                 SP_REACT.createElement("div", { style: styles.rightColumn },
-                    SP_REACT.createElement("h3", { style: styles.sectionTitle }, "Set Tag"),
+                    SP_REACT.createElement("h3", { style: styles.sectionTitle }, t('tagManager.setTag')),
                     SP_REACT.createElement(DFL.Focusable, { style: styles.tagButtonGroup, "flow-children": "down" },
                         SP_REACT.createElement(DFL.Focusable, { onActivate: () => setTag('mastered'), style: { ...styles.tagButton, backgroundColor: TAG_ICON_COLORS.mastered } },
                             SP_REACT.createElement(TagIcon, { type: "mastered", size: 18 }),
-                            SP_REACT.createElement("span", null, "Mastered")),
+                            SP_REACT.createElement("span", null, t('tag.mastered'))),
                         SP_REACT.createElement(DFL.Focusable, { onActivate: () => setTag('completed'), style: { ...styles.tagButton, backgroundColor: TAG_ICON_COLORS.completed } },
                             SP_REACT.createElement(TagIcon, { type: "completed", size: 18 }),
-                            SP_REACT.createElement("span", null, "Completed")),
+                            SP_REACT.createElement("span", null, t('tag.completed'))),
                         SP_REACT.createElement(DFL.Focusable, { onActivate: () => setTag('in_progress'), style: { ...styles.tagButton, backgroundColor: TAG_ICON_COLORS.in_progress } },
                             SP_REACT.createElement(TagIcon, { type: "in_progress", size: 18 }),
-                            SP_REACT.createElement("span", null, "In Progress")),
+                            SP_REACT.createElement("span", null, t('tag.in_progress'))),
                         SP_REACT.createElement(DFL.Focusable, { onActivate: () => setTag('dropped'), style: { ...styles.tagButton, backgroundColor: TAG_ICON_COLORS.dropped } },
                             SP_REACT.createElement(TagIcon, { type: "dropped", size: 18 }),
-                            SP_REACT.createElement("span", null, "Dropped"))),
+                            SP_REACT.createElement("span", null, t('tag.dropped')))),
                     SP_REACT.createElement(DFL.Focusable, { style: styles.buttonGroup, "flow-children": "horizontal" },
-                        SP_REACT.createElement(DFL.DialogButton, { onClick: resetToAuto, style: styles.secondaryButton }, "Reset to Auto"),
-                        SP_REACT.createElement(DFL.DialogButton, { onClick: removeTag, style: styles.secondaryButton }, "Remove")))),
-            SP_REACT.createElement(DFL.Focusable, null,
-                SP_REACT.createElement(DFL.DialogButton, { onClick: onClose, style: styles.closeButton }, "Close")))));
+                        SP_REACT.createElement(DFL.Focusable, { onClick: resetToAuto, onActivate: resetToAuto, style: styles.secondaryButton }, t('tagManager.resetToAuto')),
+                        SP_REACT.createElement(DFL.Focusable, { onClick: removeTag, onActivate: removeTag, style: styles.secondaryButton }, t('tagManager.remove'))))),
+            SP_REACT.createElement(DFL.Focusable, { onClick: onClose, onActivate: onClose, style: styles.closeButton }, t('tagManager.close')))));
 };
 const styles = {
     modal: {
@@ -1062,6 +1284,7 @@ const styles = {
     buttonGroup: {
         display: 'flex',
         gap: '6px',
+        width: '100%',
     },
     tagButtonGroup: {
         display: 'flex',
@@ -1084,23 +1307,34 @@ const styles = {
     },
     secondaryButton: {
         flex: 1,
+        minWidth: 0,
+        boxSizing: 'border-box',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
         padding: '8px',
         backgroundColor: '#444',
-        border: 'none',
+        border: '2px solid transparent',
         borderRadius: '4px',
         color: 'white',
         fontSize: '12px',
+        textAlign: 'center',
         transition: 'background-color 0.2s',
     },
     closeButton: {
         width: '100%',
+        boxSizing: 'border-box',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
         padding: '12px',
         backgroundColor: '#555',
-        border: 'none',
+        border: '2px solid transparent',
         borderRadius: '4px',
         color: 'white',
         fontSize: '14px',
         fontWeight: 'bold',
+        textAlign: 'center',
     },
     loading: {
         textAlign: 'center',
@@ -1216,69 +1450,123 @@ function useGameTag(appid) {
  * Designed to be injected via safe route patching
  * Uses same positioning pattern as ProtonDB Badges
  */
+const DEFAULT_BADGE_POSITION = {
+    badge_position_h: 'right',
+    badge_position_v: 'top',
+};
+// Approx rendered height of the badge/"Add Tag" button, used to keep
+// bottom/center vertical placements fully inside the visible banner area.
+const APPROX_BADGE_HEIGHT = 44;
+function buildContainerStyle(h, v, bannerHeight) {
+    const style = { position: 'absolute', zIndex: 10 };
+    if (h === 'center') {
+        style.left = '50%';
+        style.transform = 'translateX(-50%)';
+    }
+    else {
+        style[h] = '20px';
+    }
+    // The badge's positioning context is the whole (tall, scrollable) page
+    // container, not just the banner — so 'bottom'/'center' can't use CSS
+    // bottom/top:50% directly (that would anchor to the full page height).
+    // Instead, anchor everything from 'top' using the banner's measured
+    // pixel height so the badge stays inside the visible banner area.
+    if (v === 'top' || bannerHeight == null) {
+        style.top = '50px';
+    }
+    else if (v === 'center') {
+        style.top = `${Math.max(bannerHeight / 2 - APPROX_BADGE_HEIGHT / 2, 0)}px`;
+    }
+    else {
+        style.top = `${Math.max(bannerHeight - APPROX_BADGE_HEIGHT - 20, 0)}px`;
+    }
+    return style;
+}
 /**
- * Find the TopCapsule element by walking up the DOM tree
- * Same pattern used by ProtonDB Badges
+ * Find the Header (banner) element by walking up the DOM tree from our
+ * wrapper's sibling position inside InnerContainer.
  */
-function findTopCapsuleParent(ref) {
-    const children = ref?.parentElement?.children;
-    if (!children) {
+function findHeaderElement(ref) {
+    const siblings = ref?.parentElement?.children;
+    if (!siblings) {
         return null;
     }
-    // Find the Header container
-    let headerContainer;
-    for (const child of children) {
+    for (const child of siblings) {
         if (child.className.includes(DFL.appDetailsClasses.Header)) {
-            headerContainer = child;
-            break;
+            return child;
         }
     }
+    return null;
+}
+/**
+ * Find the TopCapsule element within the Header.
+ * Same pattern used by ProtonDB Badges.
+ */
+function findTopCapsuleParent(ref) {
+    const headerContainer = findHeaderElement(ref);
     if (!headerContainer) {
         return null;
     }
-    // Find TopCapsule within the header
-    let topCapsule = null;
     for (const child of headerContainer.children) {
         if (child.className.includes(DFL.appDetailsHeaderClasses.TopCapsule)) {
-            topCapsule = child;
-            break;
+            return child;
         }
     }
-    return topCapsule;
+    return null;
 }
-/**
- * Placeholder button when no tag exists
- */
-const AddTagButton = ({ onClick }) => {
-    const buttonStyle = {
-        display: 'inline-flex',
-        background: 'rgba(50, 50, 50, 0.9)',
-        color: '#aaa',
-        padding: '8px 16px',
-        borderRadius: '20px',
-        fontSize: '14px',
-        fontWeight: 'bold',
-        boxShadow: '0 4px 6px rgba(0,0,0,0.3)',
-        cursor: 'pointer',
-        alignItems: 'center',
-        gap: '8px',
-        userSelect: 'none',
-        border: '1px dashed #666',
-    };
-    return (SP_REACT.createElement("div", { onClick: onClick, style: buttonStyle, title: "Click to add tag" },
-        SP_REACT.createElement("span", { style: { fontSize: '16px' } }, "+"),
-        SP_REACT.createElement("span", null, "Add Tag")));
+// Visual style shared by the Button itself (not an inner div) so the
+// gamepad focus ring matches the badge's actual rounded shape.
+const BADGE_BORDER_RADIUS = '20px';
+const NO_TAG_STYLE = {
+    background: 'rgba(50, 50, 50, 0.9)',
+    color: '#aaa',
+    border: '1px dashed #666',
+};
+const TAG_LABEL_KEY = {
+    completed: 'tag.completed',
+    in_progress: 'tag.in_progress',
+    mastered: 'tag.mastered',
+    dropped: 'tag.dropped',
 };
 /**
  * GameTagBadge - Main component injected into library app page
  * Shows tag badge or "Add Tag" button, with TagManager modal
- * Positions on opposite side of ProtonDB (top-right vs their top-left default)
+ * Position is configurable via plugin settings (defaults to top-right,
+ * opposite side from ProtonDB's default top-left)
  */
 const GameTagBadge = ({ appid }) => {
+    const { t } = useTranslation();
     const { tag, loading, error, refetch } = useGameTag(appid);
     const [showManager, setShowManager] = SP_REACT.useState(false);
     const [show, setShow] = SP_REACT.useState(true);
+    const [position, setPosition] = SP_REACT.useState(DEFAULT_BADGE_POSITION);
+    const [bannerHeight, setBannerHeight] = SP_REACT.useState(null);
     const ref = SP_REACT.useRef(null);
+    SP_REACT.useLayoutEffect(() => {
+        const headerElement = findHeaderElement(ref.current);
+        if (headerElement) {
+            setBannerHeight(headerElement.getBoundingClientRect().height);
+        }
+    }, [loading]);
+    SP_REACT.useEffect(() => {
+        const fetchPosition = async () => {
+            try {
+                const result = await call('get_settings');
+                if (result.settings) {
+                    setPosition({
+                        badge_position_h: result.settings.badge_position_h || DEFAULT_BADGE_POSITION.badge_position_h,
+                        badge_position_v: result.settings.badge_position_v || DEFAULT_BADGE_POSITION.badge_position_v,
+                    });
+                }
+            }
+            catch (e) {
+                // Keep default position on failure
+            }
+        };
+        fetchPosition();
+        window.addEventListener(BADGE_SETTINGS_UPDATED_EVENT, fetchPosition);
+        return () => window.removeEventListener(BADGE_SETTINGS_UPDATED_EVENT, fetchPosition);
+    }, []);
     SP_REACT.useEffect(() => {
         // Sync this game's data when detail page is viewed
         // This ensures we have the latest playtime and achievement data
@@ -1330,16 +1618,32 @@ const GameTagBadge = ({ appid }) => {
         setShowManager(false);
         refetch();
     };
-    // Position on top-right (opposite side from ProtonDB's default top-left)
-    const containerStyle = {
-        position: 'absolute',
-        top: '50px',
-        right: '20px',
-        zIndex: 10,
-    };
-    return (SP_REACT.createElement("div", { ref: ref, style: containerStyle }, show && (SP_REACT.createElement(SP_REACT.Fragment, null,
-        tag && tag.tag ? (SP_REACT.createElement(GameTag, { tag: tag, onClick: handleClick })) : (SP_REACT.createElement(AddTagButton, { onClick: handleClick })),
-        showManager && (SP_REACT.createElement(TagManager, { appid: appid, onClose: handleClose }))))));
+    const containerStyle = buildContainerStyle(position.badge_position_h, position.badge_position_v, bannerHeight);
+    const tagStyle = tag && tag.tag ? TAG_STYLES[tag.tag] : null;
+    const tooltip = tagStyle
+        ? tag?.is_manual ? t('badge.manualTagEdit') : t('badge.autoTagEdit')
+        : t('badge.clickToAddTag');
+    return (SP_REACT.createElement(SP_REACT.Fragment, null,
+        SP_REACT.createElement("div", { ref: ref, style: containerStyle }, show && (SP_REACT.createElement(DFL.Button, { onClick: handleClick, ...{ title: tooltip }, style: {
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
+                padding: '8px 16px',
+                borderRadius: BADGE_BORDER_RADIUS,
+                fontSize: '14px',
+                fontWeight: 'bold',
+                color: tagStyle ? 'white' : NO_TAG_STYLE.color,
+                background: tagStyle ? tagStyle.background : NO_TAG_STYLE.background,
+                border: tagStyle ? 'none' : NO_TAG_STYLE.border,
+                boxShadow: '0 4px 6px rgba(0,0,0,0.3)',
+                minWidth: 'auto',
+            } }, tagStyle && tag && tag.tag ? (SP_REACT.createElement(SP_REACT.Fragment, null,
+            SP_REACT.createElement(TagIcon, { type: tag.tag, size: 18 }),
+            SP_REACT.createElement("span", null, t(TAG_LABEL_KEY[tag.tag])),
+            tag.is_manual && SP_REACT.createElement("span", { style: { fontSize: '12px', opacity: 0.8 } }, "\u270E"))) : (SP_REACT.createElement(SP_REACT.Fragment, null,
+            SP_REACT.createElement("span", { style: { fontSize: '16px' } }, "+"),
+            SP_REACT.createElement("span", null, t('badge.addTag'))))))),
+        show && showManager && (SP_REACT.createElement(TagManager, { appid: appid, onClose: handleClose }))));
 };
 
 /**

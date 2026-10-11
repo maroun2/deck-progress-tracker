@@ -1,9 +1,10 @@
 import React, { FC, useState, useEffect, useRef } from 'react';
 import { call, toaster } from '@decky/api';
-import { PanelSection, PanelSectionRow, ButtonItem, Navigation } from '@decky/ui';
-import { PluginSettings, TagStatistics, TaggedGame } from '../types';
+import { PanelSection, PanelSectionRow, ButtonItem, Dropdown, Navigation } from '@decky/ui';
+import { PluginSettings, TagStatistics, TaggedGame, BADGE_SETTINGS_UPDATED_EVENT } from '../types';
 import { TagIcon, TagType } from './TagIcon';
 import { syncLibraryProgressive } from '../lib/syncUtils';
+import { useTranslation, LANGUAGE_UPDATED_EVENT, TranslationKey } from '../i18n';
 
 const TAG_COLORS: Record<string, string> = {
   completed: '#38ef7d',
@@ -13,23 +14,51 @@ const TAG_COLORS: Record<string, string> = {
   dropped: '#c9a171',
 };
 
-const TAG_LABELS: Record<string, string> = {
-  completed: 'Completed',
-  in_progress: 'In Progress',
-  backlog: 'Backlog',
-  mastered: 'Mastered',
-  dropped: 'Dropped',
+const TAG_LABEL_KEY: Record<string, TranslationKey> = {
+  completed: 'tag.completed',
+  in_progress: 'tag.in_progress',
+  backlog: 'tag.backlog',
+  mastered: 'tag.mastered',
+  dropped: 'tag.dropped',
 };
 
-const TAG_DESCRIPTIONS: Record<string, string> = {
-  completed: 'Beat the main story (playtime ≥ HLTB main story time)',
-  in_progress: 'Currently playing (playtime ≥ 30 minutes)',
-  backlog: 'Not started yet (no playtime or minimal playtime)',
-  mastered: 'Unlocked 85%+ of all achievements',
-  dropped: 'Not played for over 1 year',
+const TAG_DESCRIPTION_KEY: Record<string, TranslationKey> = {
+  completed: 'tag.completed.desc',
+  in_progress: 'tag.in_progress.desc',
+  backlog: 'tag.backlog.desc',
+  mastered: 'tag.mastered.desc',
+  dropped: 'tag.dropped.desc',
 };
 
 export const Settings: FC = () => {
+  const { t } = useTranslation();
+
+  const BADGE_H_OPTIONS: Array<{ data: PluginSettings['badge_position_h']; label: string }> = [
+    { data: 'left', label: t('settings.left') },
+    { data: 'center', label: t('settings.center') },
+    { data: 'right', label: t('settings.right') },
+  ];
+
+  const BADGE_V_OPTIONS: Array<{ data: PluginSettings['badge_position_v']; label: string }> = [
+    { data: 'top', label: t('settings.top') },
+    { data: 'center', label: t('settings.center') },
+    { data: 'bottom', label: t('settings.bottom') },
+  ];
+
+  // Size both dropdowns off the longest option label (across both axes) so
+  // they always match, regardless of how long each language's words are.
+  const longestPositionLabelLength = Math.max(
+    ...BADGE_H_OPTIONS.map((o) => o.label.length),
+    ...BADGE_V_OPTIONS.map((o) => o.label.length)
+  );
+  const positionDropdownWidth = `${longestPositionLabelLength + 4}ch`;
+
+  const LANGUAGE_OPTIONS: Array<{ data: PluginSettings['language']; label: string }> = [
+    { data: 'auto', label: t('settings.languageAuto') },
+    { data: 'en', label: t('settings.languageEnglish') },
+    { data: 'pt-BR', label: t('settings.languagePortuguese') },
+  ];
+
   const [settings, setSettings] = useState<PluginSettings>({
     auto_tag_enabled: true,
     mastered_multiplier: 1.5,
@@ -38,6 +67,9 @@ export const Settings: FC = () => {
     source_installed: true,
     source_non_steam: true,
     source_all_owned: true,
+    badge_position_h: 'right',
+    badge_position_v: 'top',
+    language: 'auto',
   });
 
   const [stats, setStats] = useState<TagStatistics | null>(null);
@@ -94,7 +126,7 @@ export const Settings: FC = () => {
         if (res.success && res.syncing) {
           // Backend is syncing - always show progress regardless of frontend state
           // This handles sync from any source (manual, auto, initial load)
-          setMessage(`Syncing: ${res.current}/${res.total} games`);
+          setMessage(t('settings.syncingProgress', { current: res.current, total: res.total }));
           setSyncing(true);
           setWaitingForBackend(false);
         } else if (res.success && !res.syncing && syncing) {
@@ -112,7 +144,7 @@ export const Settings: FC = () => {
           // If the sync wasn't initiated by the button (no finally block to handle it),
           // we should still show completion
           if (res.total && res.total > 0) {
-            setMessage(`Sync complete! Library updated.`);
+            setMessage(t('settings.syncComplete'));
             setTimeout(() => setMessage(null), 5000);
           }
         }
@@ -138,12 +170,12 @@ export const Settings: FC = () => {
     try {
       setSyncing(true);
       setWaitingForBackend(false);  // No longer waiting since we process immediately
-      setMessage('Starting sync...');
+      setMessage(t('settings.syncStarting'));
 
       // Use progressive sync with progress callback
       const result = await syncLibraryProgressive((current, total, gameName) => {
         // Only show consistent progress numbers, no game names to avoid flickering
-        setMessage(`Syncing: ${current}/${total} games`);
+        setMessage(t('settings.syncingProgress', { current, total }));
 
         // Periodically update UI to show new tags
         if (current % 10 === 0 || current === total) {
@@ -153,18 +185,37 @@ export const Settings: FC = () => {
 
       // Sync completed
       smartUpdateUI();
-      const msg = `Sync complete! ${result.synced} games updated${result.new_tags ? `, ${result.new_tags} new tags` : ''}.`;
+      const newTagsSuffix = result.new_tags
+        ? t('settings.syncCompleteNewTags', { count: result.new_tags })
+        : '';
+      const msg = t('settings.syncCompleteDetailed', { synced: result.synced ?? 0, newTags: newTagsSuffix });
       setMessage(msg);
       toaster.toast({ title: 'Deck Progress Tracker', body: msg, duration: 5000 });
 
       // Clear message after a delay
       setTimeout(() => setMessage(null), 10000);
     } catch (err: any) {
-      setMessage(`Sync error: ${err?.message || 'Unknown'}`);
+      setMessage(t('settings.syncError', { error: err?.message || 'Unknown' }));
     } finally {
       setSyncing(false);
       setWaitingForBackend(false);
     }
+  };
+
+  const updateBadgePosition = async (key: 'badge_position_h' | 'badge_position_v', value: string) => {
+    setSettings(prev => ({ ...prev, [key]: value }));
+    try {
+      await call<[Record<string, string>], { success: boolean }>('update_settings', { [key]: value });
+      window.dispatchEvent(new CustomEvent(BADGE_SETTINGS_UPDATED_EVENT));
+    } catch (err) {}
+  };
+
+  const updateLanguage = async (value: PluginSettings['language']) => {
+    setSettings(prev => ({ ...prev, language: value }));
+    try {
+      await call<[Record<string, string>], { success: boolean }>('update_settings', { language: value });
+      window.dispatchEvent(new CustomEvent(LANGUAGE_UPDATED_EVENT));
+    } catch (err) {}
   };
 
   const groupedGames = taggedGames.reduce((acc, g) => {
@@ -178,7 +229,7 @@ export const Settings: FC = () => {
       {message && <div style={styles.message}>{message}</div>}
 
       <div style={styles.section}>
-        <h3 style={styles.sectionTitle}>Library ({stats?.total || 0} games)</h3>
+        <h3 style={styles.sectionTitle}>{t('settings.library')} ({stats?.total || 0})</h3>
         <PanelSection>
           {(['in_progress', 'completed', 'mastered', 'dropped', 'backlog'] as TagType[]).map(tagType => {
             const isBacklog = tagType === 'backlog';
@@ -193,7 +244,7 @@ export const Settings: FC = () => {
                     <div style={styles.tagSectionContent}>
                       <div style={styles.tagSectionLeft}>
                         <TagIcon type={tagType} size={18} />
-                        <span style={styles.tagSectionTitle}>{TAG_LABELS[tagType]}</span>
+                        <span style={styles.tagSectionTitle}>{t(TAG_LABEL_KEY[tagType])}</span>
                       </div>
                       <div style={styles.tagSectionRight}>
                         <span style={{ ...styles.tagCount, color: TAG_COLORS[tagType] }}>{count}</span>
@@ -203,8 +254,8 @@ export const Settings: FC = () => {
                   </ButtonItem>
                 </PanelSectionRow>
 
-                {isExpanded && <div style={styles.tagDescription}>{TAG_DESCRIPTIONS[tagType]}</div>}
-                
+                {isExpanded && <div style={styles.tagDescription}>{t(TAG_DESCRIPTION_KEY[tagType])}</div>}
+
                 {isExpanded && games.length > 0 && games.map(game => (
                   <PanelSectionRow key={game.appid}>
                     <ButtonItem
@@ -216,36 +267,75 @@ export const Settings: FC = () => {
                         <div style={styles.gameItemContent}>
                           <span style={{ ...styles.smallDot, backgroundColor: TAG_COLORS[game.tag] }} />
                           <span style={styles.gameName}>{game.game_name}</span>
-                          {game.is_manual && <span style={styles.manualBadge}>manual</span>}
+                          {game.is_manual && <span style={styles.manualBadge}>{t('settings.manual')}</span>}
                         </div>
                       </div>
                     </ButtonItem>
                   </PanelSectionRow>
                 ))}
-                {isExpanded && games.length === 0 && !loadingBacklog && <div style={styles.emptySection}>No games found</div>}
+                {isExpanded && games.length === 0 && !loadingBacklog && <div style={styles.emptySection}>{t('settings.noGamesFound')}</div>}
               </React.Fragment>
             );
           })}
         </PanelSection>
       </div>
 
+      <PanelSection title={t('settings.badgePosition')}>
+        <PanelSectionRow>
+          <div style={styles.dropdownRow}>
+            <span>{t('settings.horizontal')}</span>
+            <div style={{ width: positionDropdownWidth }}>
+              <Dropdown
+                rgOptions={BADGE_H_OPTIONS}
+                selectedOption={settings.badge_position_h}
+                onChange={(option) => updateBadgePosition('badge_position_h', option.data)}
+              />
+            </div>
+          </div>
+        </PanelSectionRow>
+        <PanelSectionRow>
+          <div style={styles.dropdownRow}>
+            <span>{t('settings.vertical')}</span>
+            <div style={{ width: positionDropdownWidth }}>
+              <Dropdown
+                rgOptions={BADGE_V_OPTIONS}
+                selectedOption={settings.badge_position_v}
+                onChange={(option) => updateBadgePosition('badge_position_v', option.data)}
+              />
+            </div>
+          </div>
+        </PanelSectionRow>
+      </PanelSection>
+
+      <PanelSection title={t('settings.language')}>
+        <PanelSectionRow>
+          <div style={{ width: '100%' }}>
+            <Dropdown
+              rgOptions={LANGUAGE_OPTIONS}
+              selectedOption={settings.language}
+              onChange={(option) => updateLanguage(option.data)}
+            />
+          </div>
+        </PanelSectionRow>
+      </PanelSection>
+
       <PanelSection>
         <PanelSectionRow>
           <ButtonItem layout="below" onClick={syncLibrary} disabled={syncing}>
-            {syncing ? 'Syncing...' : 'Sync Entire Library'}
+            {syncing ? t('settings.syncing') : t('settings.syncLibrary')}
           </ButtonItem>
         </PanelSectionRow>
       </PanelSection>
 
-      <PanelSection title="About">
+      <PanelSection title={t('settings.about')}>
         <div style={styles.about}>
           <p style={styles.aboutLine}>Deck Progress Tracker</p>
           <p style={styles.aboutLine}>{__PLUGIN_VERSION__}</p>
-          <p style={styles.aboutLine}>Data from HowLongToBeat & Steam</p>
+          <p style={styles.aboutLine}>{t('settings.aboutDataSource')}</p>
         </div>
         <PanelSectionRow>
           <ButtonItem layout="below" onClick={() => Navigation.NavigateToExternalWeb('https://patreon.com/DeckProgressTracker')}>
-            Support on Patreon
+            {t('settings.supportPatreon')}
           </ButtonItem>
         </PanelSectionRow>
       </PanelSection>
@@ -263,6 +353,7 @@ const styles: Record<string, React.CSSProperties> = {
   gameName: { fontSize: '13px', color: 'inherit', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'inline-block', verticalAlign: 'middle', maxWidth: 'calc(100% - 40px)', flexShrink: 1 },
   manualBadge: { fontSize: '10px', color: '#888', backgroundColor: '#333', padding: '2px 6px', borderRadius: '3px', flexShrink: 0 },
   tagSectionContent: { width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between' },
+  dropdownRow: { width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between' },
   tagSectionLeft: { display: 'flex', alignItems: 'center', gap: '10px' },
   tagSectionRight: { display: 'flex', alignItems: 'center', gap: '12px' },
   tagSectionTitle: { fontWeight: 'bold' },

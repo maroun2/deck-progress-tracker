@@ -5,75 +5,110 @@
  * Uses same positioning pattern as ProtonDB Badges
  */
 
-import React, { useState, useEffect, useRef, FC } from 'react';
-import { appDetailsClasses, appDetailsHeaderClasses } from '@decky/ui';
-import { GameTag } from './GameTag';
+import React, { useState, useEffect, useLayoutEffect, useRef, FC } from 'react';
+import { call } from '@decky/api';
+import { appDetailsClasses, appDetailsHeaderClasses, Button } from '@decky/ui';
+import { TAG_STYLES } from './GameTag';
+import { TagIcon } from './TagIcon';
 import { TagManager } from './TagManager';
 import { useGameTag } from '../hooks/useGameTag';
 import { syncSingleGameWithFrontendData } from '../lib/syncUtils';
+import { PluginSettings, BADGE_SETTINGS_UPDATED_EVENT } from '../types';
+import { useTranslation } from '../i18n';
+
+const DEFAULT_BADGE_POSITION: Pick<PluginSettings, 'badge_position_h' | 'badge_position_v'> = {
+  badge_position_h: 'right',
+  badge_position_v: 'top',
+};
+
+// Approx rendered height of the badge/"Add Tag" button, used to keep
+// bottom/center vertical placements fully inside the visible banner area.
+const APPROX_BADGE_HEIGHT = 44;
+
+function buildContainerStyle(
+  h: PluginSettings['badge_position_h'],
+  v: PluginSettings['badge_position_v'],
+  bannerHeight: number | null
+): React.CSSProperties {
+  const style: React.CSSProperties = { position: 'absolute', zIndex: 10 };
+
+  if (h === 'center') {
+    style.left = '50%';
+    style.transform = 'translateX(-50%)';
+  } else {
+    style[h] = '20px';
+  }
+
+  // The badge's positioning context is the whole (tall, scrollable) page
+  // container, not just the banner — so 'bottom'/'center' can't use CSS
+  // bottom/top:50% directly (that would anchor to the full page height).
+  // Instead, anchor everything from 'top' using the banner's measured
+  // pixel height so the badge stays inside the visible banner area.
+  if (v === 'top' || bannerHeight == null) {
+    style.top = '50px';
+  } else if (v === 'center') {
+    style.top = `${Math.max(bannerHeight / 2 - APPROX_BADGE_HEIGHT / 2, 0)}px`;
+  } else {
+    style.top = `${Math.max(bannerHeight - APPROX_BADGE_HEIGHT - 20, 0)}px`;
+  }
+
+  return style;
+}
 
 /**
- * Find the TopCapsule element by walking up the DOM tree
- * Same pattern used by ProtonDB Badges
+ * Find the Header (banner) element by walking up the DOM tree from our
+ * wrapper's sibling position inside InnerContainer.
  */
-function findTopCapsuleParent(ref: HTMLDivElement | null): Element | null {
-  const children = ref?.parentElement?.children;
-  if (!children) {
+function findHeaderElement(ref: HTMLDivElement | null): Element | null {
+  const siblings = ref?.parentElement?.children;
+  if (!siblings) {
     return null;
   }
 
-  // Find the Header container
-  let headerContainer: Element | undefined;
-  for (const child of children) {
+  for (const child of siblings) {
     if (child.className.includes(appDetailsClasses.Header)) {
-      headerContainer = child;
-      break;
+      return child;
     }
   }
 
+  return null;
+}
+
+/**
+ * Find the TopCapsule element within the Header.
+ * Same pattern used by ProtonDB Badges.
+ */
+function findTopCapsuleParent(ref: HTMLDivElement | null): Element | null {
+  const headerContainer = findHeaderElement(ref);
   if (!headerContainer) {
     return null;
   }
 
-  // Find TopCapsule within the header
-  let topCapsule: Element | null = null;
   for (const child of headerContainer.children) {
     if (child.className.includes(appDetailsHeaderClasses.TopCapsule)) {
-      topCapsule = child;
-      break;
+      return child;
     }
   }
 
-  return topCapsule;
+  return null;
 }
 
-/**
- * Placeholder button when no tag exists
- */
-const AddTagButton: FC<{ onClick: () => void }> = ({ onClick }) => {
-  const buttonStyle: React.CSSProperties = {
-    display: 'inline-flex',
-    background: 'rgba(50, 50, 50, 0.9)',
-    color: '#aaa',
-    padding: '8px 16px',
-    borderRadius: '20px',
-    fontSize: '14px',
-    fontWeight: 'bold',
-    boxShadow: '0 4px 6px rgba(0,0,0,0.3)',
-    cursor: 'pointer',
-    alignItems: 'center',
-    gap: '8px',
-    userSelect: 'none',
-    border: '1px dashed #666',
-  };
+// Visual style shared by the Button itself (not an inner div) so the
+// gamepad focus ring matches the badge's actual rounded shape.
+const BADGE_BORDER_RADIUS = '20px';
 
-  return (
-    <div onClick={onClick} style={buttonStyle} title="Click to add tag">
-      <span style={{ fontSize: '16px' }}>+</span>
-      <span>Add Tag</span>
-    </div>
-  );
+const NO_TAG_STYLE = {
+  background: 'rgba(50, 50, 50, 0.9)',
+  color: '#aaa',
+  border: '1px dashed #666',
 };
+
+const TAG_LABEL_KEY = {
+  completed: 'tag.completed',
+  in_progress: 'tag.in_progress',
+  mastered: 'tag.mastered',
+  dropped: 'tag.dropped',
+} as const;
 
 interface GameTagBadgeProps {
   appid: string;
@@ -82,13 +117,45 @@ interface GameTagBadgeProps {
 /**
  * GameTagBadge - Main component injected into library app page
  * Shows tag badge or "Add Tag" button, with TagManager modal
- * Positions on opposite side of ProtonDB (top-right vs their top-left default)
+ * Position is configurable via plugin settings (defaults to top-right,
+ * opposite side from ProtonDB's default top-left)
  */
 export const GameTagBadge: FC<GameTagBadgeProps> = ({ appid }) => {
+  const { t } = useTranslation();
   const { tag, loading, error, refetch } = useGameTag(appid);
   const [showManager, setShowManager] = useState(false);
   const [show, setShow] = useState(true);
+  const [position, setPosition] = useState(DEFAULT_BADGE_POSITION);
+  const [bannerHeight, setBannerHeight] = useState<number | null>(null);
   const ref = useRef<HTMLDivElement | null>(null);
+
+  useLayoutEffect(() => {
+    const headerElement = findHeaderElement(ref.current);
+    if (headerElement) {
+      setBannerHeight((headerElement as HTMLElement).getBoundingClientRect().height);
+    }
+  }, [loading]);
+
+  useEffect(() => {
+    const fetchPosition = async () => {
+      try {
+        const result = await call<[], { settings: PluginSettings }>('get_settings');
+        if (result.settings) {
+          setPosition({
+            badge_position_h: result.settings.badge_position_h || DEFAULT_BADGE_POSITION.badge_position_h,
+            badge_position_v: result.settings.badge_position_v || DEFAULT_BADGE_POSITION.badge_position_v,
+          });
+        }
+      } catch (e) {
+        // Keep default position on failure
+      }
+    };
+
+    fetchPosition();
+
+    window.addEventListener(BADGE_SETTINGS_UPDATED_EVENT, fetchPosition);
+    return () => window.removeEventListener(BADGE_SETTINGS_UPDATED_EVENT, fetchPosition);
+  }, []);
 
   useEffect(() => {
     // Sync this game's data when detail page is viewed
@@ -151,31 +218,56 @@ export const GameTagBadge: FC<GameTagBadgeProps> = ({ appid }) => {
     refetch();
   };
 
-  // Position on top-right (opposite side from ProtonDB's default top-left)
-  const containerStyle: React.CSSProperties = {
-    position: 'absolute',
-    top: '50px',
-    right: '20px',
-    zIndex: 10,
-  };
+  const containerStyle = buildContainerStyle(position.badge_position_h, position.badge_position_v, bannerHeight);
+  const tagStyle = tag && tag.tag ? TAG_STYLES[tag.tag] : null;
+  const tooltip = tagStyle
+    ? tag?.is_manual ? t('badge.manualTagEdit') : t('badge.autoTagEdit')
+    : t('badge.clickToAddTag');
 
   return (
-    <div ref={ref} style={containerStyle}>
-      {show && (
-        <>
-          {tag && tag.tag ? (
-            <GameTag tag={tag} onClick={handleClick} />
-          ) : (
-            <AddTagButton onClick={handleClick} />
-          )}
-          {showManager && (
-            <TagManager
-              appid={appid}
-              onClose={handleClose}
-            />
-          )}
-        </>
+    <>
+      <div ref={ref} style={containerStyle}>
+        {show && (
+          <Button
+            onClick={handleClick}
+            {...({ title: tooltip } as object)}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '8px',
+              padding: '8px 16px',
+              borderRadius: BADGE_BORDER_RADIUS,
+              fontSize: '14px',
+              fontWeight: 'bold',
+              color: tagStyle ? 'white' : NO_TAG_STYLE.color,
+              background: tagStyle ? tagStyle.background : NO_TAG_STYLE.background,
+              border: tagStyle ? 'none' : NO_TAG_STYLE.border,
+              boxShadow: '0 4px 6px rgba(0,0,0,0.3)',
+              minWidth: 'auto',
+            }}
+          >
+            {tagStyle && tag && tag.tag ? (
+              <>
+                <TagIcon type={tag.tag} size={18} />
+                <span>{t(TAG_LABEL_KEY[tag.tag])}</span>
+                {tag.is_manual && <span style={{ fontSize: '12px', opacity: 0.8 }}>✎</span>}
+              </>
+            ) : (
+              <>
+                <span style={{ fontSize: '16px' }}>+</span>
+                <span>{t('badge.addTag')}</span>
+              </>
+            )}
+          </Button>
+        )}
+      </div>
+      {/* Rendered outside the (possibly transform: translate(...)) positioned
+          wrapper above: a `transform` on an ancestor makes it the containing
+          block for `position: fixed` descendants, which would shrink this
+          modal's overlay down to the badge's own box instead of the viewport. */}
+      {show && showManager && (
+        <TagManager appid={appid} onClose={handleClose} />
       )}
-    </div>
+    </>
   );
 };
