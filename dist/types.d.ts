@@ -38,7 +38,7 @@ export interface GameDetails {
 }
 export interface PluginSettings {
     auto_tag_enabled: boolean;
-    mastered_multiplier: number;
+    mastered_threshold: number;
     in_progress_threshold: number;
     cache_ttl: number;
     source_installed: boolean;

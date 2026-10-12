@@ -61,7 +61,7 @@ export const Settings: FC = () => {
 
   const [settings, setSettings] = useState<PluginSettings>({
     auto_tag_enabled: true,
-    mastered_multiplier: 1.5,
+    mastered_threshold: 85,
     in_progress_threshold: 30,
     cache_ttl: 7200,
     source_installed: true,
@@ -234,6 +234,13 @@ export const Settings: FC = () => {
     } catch (err) {}
   };
 
+  const updateMasteredThreshold = async (value: number) => {
+    setSettings(prev => ({ ...prev, mastered_threshold: value }));
+    try {
+      await call<[Record<string, number>], { success: boolean }>('update_settings', { mastered_threshold: value });
+    } catch (err) {}
+  };
+
   const groupedGames = taggedGames.reduce((acc, g) => {
     if (!acc[g.tag]) acc[g.tag] = [];
     acc[g.tag].push(g);
@@ -270,7 +277,11 @@ export const Settings: FC = () => {
                   </ButtonItem>
                 </PanelSectionRow>
 
-                {isExpanded && <div style={styles.tagDescription}>{t(TAG_DESCRIPTION_KEY[tagType])}</div>}
+                {isExpanded && (
+                  <div style={styles.tagDescription}>
+                    {t(TAG_DESCRIPTION_KEY[tagType], tagType === 'mastered' ? { threshold: settings.mastered_threshold } : undefined)}
+                  </div>
+                )}
 
                 {isExpanded && games.length > 0 && games.map(game => (
                   <PanelSectionRow key={game.appid}>
@@ -349,6 +360,19 @@ export const Settings: FC = () => {
             editableValue
             valueSuffix={t('settings.minutesSuffix')}
             onChange={updateInProgressThreshold}
+          />
+        </PanelSectionRow>
+        <PanelSectionRow>
+          <SliderField
+            label={t('settings.masteredThreshold')}
+            description={t('settings.masteredThresholdDesc')}
+            value={settings.mastered_threshold}
+            min={50}
+            max={100}
+            step={1}
+            editableValue
+            valueSuffix="%"
+            onChange={updateMasteredThreshold}
           />
         </PanelSectionRow>
       </PanelSection>

@@ -33,6 +33,8 @@ export const en = {
   'settings.tagging': 'Tagging',
   'settings.inProgressThreshold': 'In Progress threshold',
   'settings.minutesSuffix': ' min',
+  'settings.masteredThreshold': 'Mastered threshold',
+  'settings.masteredThresholdDesc': 'Minimum percentage of achievements unlocked for a game to be tagged Mastered.',
 
   // Settings - Language
   'settings.language': 'Language',
@@ -56,7 +58,7 @@ export const en = {
   'tag.completed.desc': 'Beat the main story (playtime ≥ HLTB main story time)',
   'tag.in_progress.desc': 'Currently playing (playtime ≥ 30 minutes)',
   'tag.backlog.desc': 'Not started yet (no playtime or minimal playtime)',
-  'tag.mastered.desc': 'Unlocked 85%+ of all achievements',
+  'tag.mastered.desc': 'Unlocked {threshold}%+ of all achievements',
   'tag.dropped.desc': 'Not played for over 1 year',
 
   // Badge (on game banner)

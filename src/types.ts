@@ -48,7 +48,8 @@ export interface GameDetails {
 
 export interface PluginSettings {
   auto_tag_enabled: boolean;
-  mastered_multiplier: number;
+  // Minimum achievement percentage required for the Mastered tag
+  mastered_threshold: number;
   in_progress_threshold: number;
   cache_ttl: number;
   // Game source settings
