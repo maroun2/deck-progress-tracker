@@ -245,7 +245,7 @@ class Plugin:
         """Calculate automatic tag based on game stats
 
         Tag priority:
-        1. Mastered: >=85% achievements unlocked
+        1. Mastered: achievement percentage >= mastered_threshold (default 85%)
         2. Completed: playtime >= main_story time from HLTB
         3. Dropped: Not played for over 1 year (only if not mastered/completed)
         4. In Progress: playtime >= threshold (default 30 min)
@@ -263,8 +263,9 @@ class Plugin:
         # Get settings
         settings = await self.db.get_all_settings()
         in_progress_threshold = settings.get('in_progress_threshold', 30)  # Default 30 min
+        mastered_threshold = settings.get('mastered_threshold', 85)  # Default 85%
 
-        # Priority 1: Mastered (>=85% achievements)
+        # Priority 1: Mastered (achievement percentage >= mastered_threshold)
         # Calculate percentage from total/unlocked since it's not stored in DB
         total_achievements = stats.get('total_achievements', 0)
         unlocked_achievements = stats.get('unlocked_achievements', 0)
@@ -273,7 +274,7 @@ class Plugin:
         else:
             achievement_percentage = 0
 
-        if achievement_percentage >= 85:
+        if achievement_percentage >= mastered_threshold:
             return "mastered"
 
         # Priority 2: Completed (beat main story - playtime >= main_story)

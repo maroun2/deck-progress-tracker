@@ -26,6 +26,8 @@ export declare const en: {
     'settings.tagging': string;
     'settings.inProgressThreshold': string;
     'settings.minutesSuffix': string;
+    'settings.masteredThreshold': string;
+    'settings.masteredThresholdDesc': string;
     'settings.language': string;
     'settings.languageAuto': string;
     'settings.languageEnglish': string;

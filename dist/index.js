@@ -1,4 +1,4 @@
-const manifest = {"name":"Deck Progress Tracker","author":"Maron","version":"1.4.4","api_version":1,"flags":[],"publish":{"tags":["library","achievements","statistics","enhancement","progress-tracking"],"description":"Automatic game tagging based on achievements, playtime, and completion time. Track your progress with visual badges in the Steam library. Features 5 intelligent tags: Mastered, Completed, Dropped, In Progress, and Backlog.","image":"https://raw.githubusercontent.com/maroun2/deck-progress-tracker/main/assets/market_image.png"}};
+const manifest = {"name":"Deck Progress Tracker","author":"Maron","version":"1.4.5","api_version":1,"flags":[],"publish":{"tags":["library","achievements","statistics","enhancement","progress-tracking"],"description":"Automatic game tagging based on achievements, playtime, and completion time. Track your progress with visual badges in the Steam library. Features 5 intelligent tags: Mastered, Completed, Dropped, In Progress, and Backlog.","image":"https://raw.githubusercontent.com/maroun2/deck-progress-tracker/main/assets/market_image.png"}};
 const API_VERSION = 2;
 if (!manifest?.name) {
     throw new Error('[@decky/api]: Failed to find plugin manifest.');
@@ -604,6 +604,8 @@ const en = {
     'settings.tagging': 'Tagging',
     'settings.inProgressThreshold': 'In Progress threshold',
     'settings.minutesSuffix': ' min',
+    'settings.masteredThreshold': 'Mastered threshold',
+    'settings.masteredThresholdDesc': 'Minimum percentage of achievements unlocked for a game to be tagged Mastered.',
     // Settings - Language
     'settings.language': 'Language',
     'settings.languageAuto': 'Automatic (System)',
@@ -623,7 +625,7 @@ const en = {
     'tag.completed.desc': 'Beat the main story (playtime ≥ HLTB main story time)',
     'tag.in_progress.desc': 'Currently playing (playtime ≥ 30 minutes)',
     'tag.backlog.desc': 'Not started yet (no playtime or minimal playtime)',
-    'tag.mastered.desc': 'Unlocked 85%+ of all achievements',
+    'tag.mastered.desc': 'Unlocked {threshold}%+ of all achievements',
     'tag.dropped.desc': 'Not played for over 1 year',
     // Badge (on game banner)
     'badge.addTag': 'Add Tag',
@@ -689,6 +691,8 @@ const ptBR = {
     'settings.tagging': 'Marcação de Tags',
     'settings.inProgressThreshold': 'Limite para "Em Progresso"',
     'settings.minutesSuffix': ' min',
+    'settings.masteredThreshold': 'Limite para "Dominado"',
+    'settings.masteredThresholdDesc': 'Percentual mínimo de conquistas desbloqueadas para o jogo ser marcado como Dominado.',
     // Settings - Language
     'settings.language': 'Idioma',
     'settings.languageAuto': 'Automático (Sistema)',
@@ -708,7 +712,7 @@ const ptBR = {
     'tag.completed.desc': 'Terminou a história principal (tempo jogado ≥ tempo da história principal no HLTB)',
     'tag.in_progress.desc': 'Jogando atualmente (tempo jogado ≥ 30 minutos)',
     'tag.backlog.desc': 'Ainda não iniciado (sem tempo jogado ou tempo mínimo)',
-    'tag.mastered.desc': 'Desbloqueou 85%+ de todas as conquistas',
+    'tag.mastered.desc': 'Desbloqueou {threshold}%+ de todas as conquistas',
     'tag.dropped.desc': 'Não jogado por mais de 1 ano',
     // Badge (on game banner)
     'badge.addTag': 'Adicionar Tag',
@@ -846,7 +850,7 @@ const Settings = () => {
     ];
     const [settings, setSettings] = SP_REACT.useState({
         auto_tag_enabled: true,
-        mastered_multiplier: 1.5,
+        mastered_threshold: 85,
         in_progress_threshold: 30,
         cache_ttl: 7200,
         source_installed: true,
@@ -1006,6 +1010,13 @@ const Settings = () => {
         }
         catch (err) { }
     };
+    const updateMasteredThreshold = async (value) => {
+        setSettings(prev => ({ ...prev, mastered_threshold: value }));
+        try {
+            await call('update_settings', { mastered_threshold: value });
+        }
+        catch (err) { }
+    };
     const groupedGames = taggedGames.reduce((acc, g) => {
         if (!acc[g.tag])
             acc[g.tag] = [];
@@ -1035,7 +1046,7 @@ const Settings = () => {
                                 SP_REACT.createElement("div", { style: styles$1.tagSectionRight },
                                     SP_REACT.createElement("span", { style: { ...styles$1.tagCount, color: TAG_COLORS[tagType] } }, count),
                                     SP_REACT.createElement("span", { style: styles$1.expandIcon }, isExpanded ? '−' : '+'))))),
-                    isExpanded && SP_REACT.createElement("div", { style: styles$1.tagDescription }, t(TAG_DESCRIPTION_KEY[tagType])),
+                    isExpanded && (SP_REACT.createElement("div", { style: styles$1.tagDescription }, t(TAG_DESCRIPTION_KEY[tagType], tagType === 'mastered' ? { threshold: settings.mastered_threshold } : undefined))),
                     isExpanded && games.length > 0 && games.map(game => (SP_REACT.createElement(DFL.PanelSectionRow, { key: game.appid },
                         SP_REACT.createElement(DFL.ButtonItem, { layout: "below", onClick: () => { DFL.Navigation.Navigate(`/library/app/${game.appid}`); DFL.Navigation.CloseSideMenus(); }, style: { width: '100%', overflow: 'hidden' } },
                             SP_REACT.createElement("div", { style: { display: 'table', tableLayout: 'fixed', width: '100%' } },
@@ -1061,7 +1072,9 @@ const Settings = () => {
                     SP_REACT.createElement(DFL.SliderField, { label: t('settings.avoidOverlap'), description: t('settings.avoidOverlapDesc'), value: settings.badge_overlap_offset, min: 0, max: 100, step: 1, editableValue: true, valueSuffix: "px", onChange: updateBadgeOverlapOffset })))),
         SP_REACT.createElement(DFL.PanelSection, { title: t('settings.tagging') },
             SP_REACT.createElement(DFL.PanelSectionRow, null,
-                SP_REACT.createElement(DFL.SliderField, { label: t('settings.inProgressThreshold'), value: settings.in_progress_threshold, min: 1, max: 120, step: 1, editableValue: true, valueSuffix: t('settings.minutesSuffix'), onChange: updateInProgressThreshold }))),
+                SP_REACT.createElement(DFL.SliderField, { label: t('settings.inProgressThreshold'), value: settings.in_progress_threshold, min: 1, max: 120, step: 1, editableValue: true, valueSuffix: t('settings.minutesSuffix'), onChange: updateInProgressThreshold })),
+            SP_REACT.createElement(DFL.PanelSectionRow, null,
+                SP_REACT.createElement(DFL.SliderField, { label: t('settings.masteredThreshold'), description: t('settings.masteredThresholdDesc'), value: settings.mastered_threshold, min: 50, max: 100, step: 1, editableValue: true, valueSuffix: "%", onChange: updateMasteredThreshold }))),
         SP_REACT.createElement(DFL.PanelSection, { title: t('settings.language') },
             SP_REACT.createElement(DFL.PanelSectionRow, null,
                 SP_REACT.createElement("div", { style: { width: '100%' } },
@@ -1072,7 +1085,7 @@ const Settings = () => {
         SP_REACT.createElement(DFL.PanelSection, { title: t('settings.about') },
             SP_REACT.createElement("div", { style: styles$1.about },
                 SP_REACT.createElement("p", { style: styles$1.aboutLine }, "Deck Progress Tracker"),
-                SP_REACT.createElement("p", { style: styles$1.aboutLine }, "1.4.4"),
+                SP_REACT.createElement("p", { style: styles$1.aboutLine }, "1.4.5"),
                 SP_REACT.createElement("p", { style: styles$1.aboutLine }, t('settings.aboutDataSource'))),
             SP_REACT.createElement(DFL.PanelSectionRow, null,
                 SP_REACT.createElement(DFL.ButtonItem, { layout: "below", onClick: () => DFL.Navigation.NavigateToExternalWeb('https://patreon.com/DeckProgressTracker') }, t('settings.supportPatreon'))))));

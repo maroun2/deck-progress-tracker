@@ -35,6 +35,8 @@ export const ptBR: Record<TranslationKey, string> = {
   'settings.tagging': 'Marcação de Tags',
   'settings.inProgressThreshold': 'Limite para "Em Progresso"',
   'settings.minutesSuffix': ' min',
+  'settings.masteredThreshold': 'Limite para "Dominado"',
+  'settings.masteredThresholdDesc': 'Percentual mínimo de conquistas desbloqueadas para o jogo ser marcado como Dominado.',
 
   // Settings - Language
   'settings.language': 'Idioma',
@@ -58,7 +60,7 @@ export const ptBR: Record<TranslationKey, string> = {
   'tag.completed.desc': 'Terminou a história principal (tempo jogado ≥ tempo da história principal no HLTB)',
   'tag.in_progress.desc': 'Jogando atualmente (tempo jogado ≥ 30 minutos)',
   'tag.backlog.desc': 'Ainda não iniciado (sem tempo jogado ou tempo mínimo)',
-  'tag.mastered.desc': 'Desbloqueou 85%+ de todas as conquistas',
+  'tag.mastered.desc': 'Desbloqueou {threshold}%+ de todas as conquistas',
   'tag.dropped.desc': 'Não jogado por mais de 1 ano',
 
   // Badge (on game banner)
