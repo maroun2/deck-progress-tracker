@@ -34,11 +34,13 @@ export declare const getAllOwnedGameIds: () => Promise<string[]>;
  */
 export declare const getAchievementData: (appids: string[]) => Promise<Record<string, AchievementData>>;
 /**
- * Game data structure including playtime and last played timestamp
+ * Game data structure including playtime, last played timestamp, and
+ * whether it's a Steam tool/app rather than a real game.
  */
 export interface GameData {
     playtime_minutes: number;
     rt_last_time_played: number | null;
+    is_tool: boolean;
 }
 /**
  * Get playtime and last played data for a list of appids from Steam's frontend API
