@@ -174,6 +174,26 @@ if [ "$SKIP_BUILD" = false ] || [ "$ONLY_MODE" = "package" ]; then
     cp README.md plugin-build/deck-progress-tracker/
     echo "$VERSION" > plugin-build/deck-progress-tracker/VERSION
 
+    # Vendor Python dependencies into the zip itself, since Decky Loader
+    # does NOT install requirements.txt for plugins - it's on the plugin to
+    # bring its own. Decky Loader itself runs on a PyInstaller-frozen
+    # Python 3.11 (NOT the system's python3, which may be a newer version)
+    # with a pruned stdlib (only modules Decky Loader itself imports are
+    # bundled) - so target cp311 specifically, and also bundle the handful
+    # of stdlib modules known to be missing from that frozen environment.
+    echo "  Vendoring Python dependencies..."
+    python3 -m pip install \
+        --target plugin-build/deck-progress-tracker/py_modules/vendor \
+        --platform manylinux2014_x86_64 \
+        --implementation cp \
+        --python-version 3.11 \
+        --abi cp311 \
+        --only-binary=:all: \
+        --no-compile \
+        -r requirements.txt
+    rm -rf plugin-build/deck-progress-tracker/py_modules/vendor/bin
+    cp -r py_modules/stdlib_shims/html plugin-build/deck-progress-tracker/py_modules/vendor/
+
     # Create zip
     ZIP_NAME="deck-progress-tracker-${VERSION}.zip"
     cd plugin-build
