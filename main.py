@@ -17,6 +17,48 @@ import json
 # Setup paths
 PLUGIN_DIR = Path(decky.DECKY_PLUGIN_DIR)
 
+# Decky Loader does NOT install requirements.txt for plugins - it's each
+# plugin's own responsibility. Third-party deps (howlongtobeatpy, aiohttp,
+# etc.) are vendored directly in the zip under py_modules/vendor, built for
+# this specific Python version/platform (see release.sh / CI workflows).
+VENDOR_DIR = PLUGIN_DIR / "py_modules" / "vendor"
+if VENDOR_DIR.exists():
+    sys.path.insert(0, str(VENDOR_DIR))
+
+    # Decky Loader's own frozen Python 3.11 bootstrap already imports a
+    # pruned stdlib `html` package (only what Decky Loader itself needs,
+    # missing html.parser) before our code ever runs. That partial package
+    # is already cached in sys.modules, so sys.path alone can't fix
+    # submodule lookups for it - extend its __path__ directly so Python
+    # finds our bundled html/parser.py (see py_modules/stdlib_shims).
+    try:
+        import html as _html_pkg
+        vendor_html_dir = str(VENDOR_DIR / "html")
+        if vendor_html_dir not in _html_pkg.__path__:
+            _html_pkg.__path__.append(vendor_html_dir)
+    except Exception as _html_patch_error:
+        decky.logger.error(f"Failed to patch html package search path: {_html_patch_error}")
+
+    # Decky Loader's frozen Python can't find a system CA bundle for SSL
+    # verification (outbound HTTPS requests, e.g. to howlongtobeat.com, fail
+    # with CERTIFICATE_VERIFY_FAILED). Neither SSL_CERT_FILE/DIR env vars nor
+    # patching ssl.create_default_context fixed this: aiohttp builds its
+    # default verified SSLContext ONCE, at module-import time, and caches it
+    # in aiohttp.connector._SSL_CONTEXT_VERIFIED - any later patch of the
+    # *function* that built it is irrelevant, since the cached *object* is
+    # what every request actually reuses. Overwrite that cached object
+    # directly instead, with a context built from our vendored certifi
+    # bundle (confirmed as the maintainer-endorsed fix in aio-libs/aiohttp
+    # issues #3180 and #7287 - env vars/monkeypatching the function are
+    # explicitly called out there as unreliable for this exact reason).
+    try:
+        import ssl
+        import certifi
+        import aiohttp.connector as _aiohttp_connector
+        _aiohttp_connector._SSL_CONTEXT_VERIFIED = ssl.create_default_context(cafile=certifi.where())
+    except Exception as _certifi_patch_error:
+        decky.logger.error(f"Failed to configure certifi CA bundle for aiohttp: {_certifi_patch_error}")
+
 # Read version from plugin.json
 def get_plugin_version():
     try:
@@ -600,7 +642,11 @@ class Plugin:
                 self.sync_total = total_count
 
             # Extract game data
-            playtime_minutes = int(game_data.get('playtime_minutes', 0))
+            # Some non-Steam shortcuts report playtime as a fractional-minute
+            # string (e.g. "234.7") rather than a clean integer - go through
+            # float() first so this never crashes the whole sync for that
+            # one game (which would otherwise also skip its HLTB lookup).
+            playtime_minutes = int(float(game_data.get('playtime_minutes', 0) or 0))
             rt_last_time_played = game_data.get('rt_last_time_played')
 
             # Extract achievement data if present
@@ -725,11 +771,13 @@ class Plugin:
                 # Extract game data from new structure
                 game_info = game_data.get(appid, {})
                 if isinstance(game_info, dict):
-                    playtime_minutes = int(game_info.get('playtime_minutes', 0))
+                    # Some non-Steam shortcuts report a fractional-minute
+                    # string (e.g. "234.7") rather than a clean integer.
+                    playtime_minutes = int(float(game_info.get('playtime_minutes', 0) or 0))
                     rt_last_time_played = game_info.get('rt_last_time_played')
-                elif isinstance(game_info, (int, float)):
-                    # Backwards compatibility: if old format passes just int/float
-                    playtime_minutes = int(game_info)
+                elif isinstance(game_info, (int, float, str)):
+                    # Backwards compatibility: if old format passes just int/float/str
+                    playtime_minutes = int(float(game_info or 0))
                     rt_last_time_played = None
                 else:
                     logger.warning(f"Unexpected game_info type for {appid}: {type(game_info)} = {game_info}")

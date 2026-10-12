@@ -2,8 +2,8 @@ name: Build and Release Plugin
 
 on:
   push:
-    branches:
-      - main
+    tags:
+      - '*.*.*'  # Triggers on version tags like 1.0.0
 
 permissions:
   contents: write
@@ -15,13 +15,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
-      - name: Get version from package.json
-        id: version
-        run: |
-          VERSION=$(grep '"version"' package.json | head -1 | sed 's/.*"version": *"\([^"]*\)".*/\1/')
-          echo "Version: $VERSION"
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -50,28 +43,48 @@ jobs:
 
       - name: Create version file
         run: |
-          echo "${{ steps.version.outputs.version }}" > plugin-build/deck-progress-tracker/VERSION
+          echo "${{ github.ref_name }}" > plugin-build/deck-progress-tracker/VERSION
+
+      - name: Vendor Python dependencies
+        run: |
+          # Decky Loader does NOT install requirements.txt for plugins, so
+          # bundle backend deps (howlongtobeatpy, aiohttp, etc.) directly in
+          # the zip. Decky Loader itself runs on a PyInstaller-frozen
+          # Python 3.11 (not the system's python3) with a pruned stdlib -
+          # target cp311, and also bundle the stdlib modules known missing
+          # from that frozen environment (see py_modules/stdlib_shims).
+          python3 -m pip install \
+            --target plugin-build/deck-progress-tracker/py_modules/vendor \
+            --platform manylinux2014_x86_64 \
+            --implementation cp \
+            --python-version 3.11 \
+            --abi cp311 \
+            --only-binary=:all: \
+            --no-compile \
+            -r requirements.txt
+          rm -rf plugin-build/deck-progress-tracker/py_modules/vendor/bin
+          cp -r py_modules/stdlib_shims/html plugin-build/deck-progress-tracker/py_modules/vendor/
 
       - name: Create release zip
         run: |
           cd plugin-build
-          zip -r ../deck-progress-tracker-${{ steps.version.outputs.version }}.zip deck-progress-tracker
+          zip -r ../deck-progress-tracker-${{ github.ref_name }}.zip deck-progress-tracker
           cd ..
           # Also publish under a fixed filename, so GitHub's stable
           # "latest release" alias (releases/latest/download/<filename>)
           # keeps working across versions instead of breaking every time
           # the versioned filename changes.
-          cp deck-progress-tracker-${{ steps.version.outputs.version }}.zip deck-progress-tracker.zip
+          cp deck-progress-tracker-${{ github.ref_name }}.zip deck-progress-tracker.zip
 
       - name: Verify zip contents
         run: |
-          unzip -l deck-progress-tracker-${{ steps.version.outputs.version }}.zip
+          unzip -l deck-progress-tracker-${{ github.ref_name }}.zip
 
       - name: Generate release notes
         id: release_notes
         run: |
           cat > release_notes.md << 'EOF'
-          ## Deck Progress Tracker ${{ steps.version.outputs.version }}
+          ## Deck Progress Tracker ${{ github.ref_name }}
 
           ### Installation
 
@@ -85,7 +98,7 @@ jobs:
           4. Click Install and wait for completion
 
           **Option 2: Download and Install Manually**
-          1. Download `deck-progress-tracker-${{ steps.version.outputs.version }}.zip` below
+          1. Download `deck-progress-tracker-${{ github.ref_name }}.zip` below
           2. Extract to `~/homebrew/plugins/` on your Steam Deck
           3. Install Python dependencies: `pip install --user -r requirements.txt`
           4. Restart Decky Loader
@@ -115,10 +128,8 @@ jobs:
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ steps.version.outputs.version }}
-          name: ${{ steps.version.outputs.version }}
           files: |
-            deck-progress-tracker-${{ steps.version.outputs.version }}.zip
+            deck-progress-tracker-${{ github.ref_name }}.zip
             deck-progress-tracker.zip
           body_path: release_notes.md
           draft: false

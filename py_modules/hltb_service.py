@@ -33,7 +33,19 @@ class HLTBService:
                 return None
 
         try:
-            results = await self._hltb.async_search(game_name)
+            # Official titles (esp. Nintendo/Switch) often use a typographic
+            # en/em dash ("–"/"—") instead of a plain hyphen - HLTB's search
+            # backend returns ZERO results for the whole query when that's
+            # present (confirmed: "Dragon Quest XI S: Echoes of an Elusive
+            # Age – Definitive Edition" -> no results at all, vs similarity
+            # 1.0 with a plain hyphen). Normalize before searching.
+            search_name = game_name.replace("–", "-").replace("—", "-")
+
+            # Case-insensitive: ROM/non-Steam game names are often ALL CAPS
+            # (e.g. Switch titles like "CHRONO TRIGGER"), which would
+            # otherwise tank the similarity score against HLTB's normally
+            # cased title and drop below the match threshold.
+            results = await self._hltb.async_search(search_name, similarity_case_sensitive=False)
             if not results:
                 return None
 
