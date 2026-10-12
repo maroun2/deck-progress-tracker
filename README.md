@@ -31,9 +31,25 @@ Steam tools and apps (dedicated servers, SDKs, redistributables, etc.) are autom
 
 The plugin dashboard showing a library of 809 games organized by tags - In Progress (21), Completed (18), Mastered (1), and Dropped (19).
 
-![Game Detail View](assets/20260313182339_1.jpg)
+![Tag Dialog](assets/dialog-improved.png)
 
-Game detail view for Castle Crashers showing statistics (playtime, achievements, HLTB data) and manual tag controls.
+The tag management dialog with improved contrast, showing statistics, HLTB match, and manual tag controls.
+
+![Manual HLTB Search](assets/search-hltb.png)
+
+Manual HowLongToBeat search, letting you pick the correct match when the automatic search is missing or picked the wrong game.
+
+![Configurable Badge Position](assets/new-position-for-badge.png)
+
+The progress badge repositioned to the top-left of the game banner, avoiding another plugin's badge in the default corner.
+
+![Tagging Settings](assets/new-tagging-options-in-progress-mastered-threeshold.png)
+
+Configurable thresholds for the In Progress and Mastered tags.
+
+![Customize Tags](assets/tags-customization.png)
+
+Custom labels and colors for each tag.
 
 ## Sponsor
 
