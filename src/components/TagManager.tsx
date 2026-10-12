@@ -146,7 +146,7 @@ export const TagManager: FC<TagManagerProps> = ({ appid, onClose }) => {
             )}
             {hltb && (
               <>
-                <div style={styles.statRow}>
+                <div style={styles.statRowStacked}>
                   <span>{t('tagManager.hltbMatch')}</span>
                   <span style={styles.hltbMatch}>
                     {hltb.matched_name} ({Math.round((hltb.similarity || 0) * 100)}%)
@@ -293,13 +293,18 @@ const styles: Record<string, React.CSSProperties> = {
     padding: '6px 0',
     fontSize: '13px',
   },
+  statRowStacked: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '2px',
+    padding: '6px 0',
+    fontSize: '13px',
+  },
   hltbMatch: {
     fontSize: '12px',
     color: '#888',
-    maxWidth: '120px',
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-    whiteSpace: 'nowrap',
+    whiteSpace: 'normal',
+    wordBreak: 'break-word',
   },
   noData: {
     color: '#666',
