@@ -332,7 +332,6 @@ export const Settings: FC = () => {
               step={1}
               editableValue
               valueSuffix="px"
-              disabled={settings.badge_position_v === 'center'}
               onChange={updateBadgeOverlapOffset}
             />
           </div>

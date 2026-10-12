@@ -7,6 +7,10 @@ interface TagIconProps {
   type: TagType;
   size?: number;
   className?: string;
+  // Override the default tag color - use this when the icon is drawn on
+  // top of a background that's already the tag color (badge, button),
+  // since the icon would otherwise blend into it. Pass 'white' there.
+  color?: string;
 }
 
 // Tag colors matching the existing theme
@@ -83,10 +87,10 @@ const XCircleIcon: FC<{ size: number; color: string }> = ({ size, color }) => (
 /**
  * TagIcon component - displays appropriate icon based on tag type
  */
-export const TagIcon: FC<TagIconProps> = ({ type, size = 24, className }) => {
+export const TagIcon: FC<TagIconProps> = ({ type, size = 24, className, color: colorOverride }) => {
   if (!type) return null;
 
-  const color = TAG_ICON_COLORS[type] || TAG_ICON_COLORS.backlog;
+  const color = colorOverride || TAG_ICON_COLORS[type] || TAG_ICON_COLORS.backlog;
 
   const iconStyle: React.CSSProperties = {
     display: 'inline-flex',

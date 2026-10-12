@@ -1,4 +1,4 @@
-const manifest = {"name":"Deck Progress Tracker","author":"Maron","version":"1.4.4","api_version":1,"flags":[],"publish":{"tags":["library","achievements","statistics","enhancement","progress-tracking"],"description":"Automatic game tagging based on achievements, playtime, and completion time. Track your progress with visual badges in the Steam library. Features 5 intelligent tags: Mastered, Completed, Dropped, In Progress, and Backlog.","image":"https://raw.githubusercontent.com/maroun2/deck-progress-tracker/main/assets/market_image.png"}};
+const manifest = {"name":"Deck Progress Tracker","author":"Maron","version":"1.4.3","api_version":1,"flags":[],"publish":{"tags":["library","achievements","statistics","enhancement","progress-tracking"],"description":"Automatic game tagging based on achievements, playtime, and completion time. Track your progress with visual badges in the Steam library. Features 5 intelligent tags: Mastered, Completed, Dropped, In Progress, and Backlog.","image":"https://raw.githubusercontent.com/maroun2/deck-progress-tracker/main/assets/market_image.png"}};
 const API_VERSION = 2;
 if (!manifest?.name) {
     throw new Error('[@decky/api]: Failed to find plugin manifest.');
@@ -129,10 +129,10 @@ const XCircleIcon = ({ size, color }) => (SP_REACT.createElement("svg", { width:
 /**
  * TagIcon component - displays appropriate icon based on tag type
  */
-const TagIcon = ({ type, size = 24, className }) => {
+const TagIcon = ({ type, size = 24, className, color: colorOverride }) => {
     if (!type)
         return null;
-    const color = TAG_ICON_COLORS[type] || TAG_ICON_COLORS.backlog;
+    const color = colorOverride || TAG_ICON_COLORS[type] || TAG_ICON_COLORS.backlog;
     const iconStyle = {
         display: 'inline-flex',
         alignItems: 'center',
@@ -568,8 +568,8 @@ const en = {
     'settings.right': 'Right',
     'settings.top': 'Top',
     'settings.bottom': 'Bottom',
-    'settings.avoidOverlap': 'Nudge toward center',
-    'settings.avoidOverlapDesc': 'Offsets the badge toward the center by this many pixels (only applies to Top/Bottom), to avoid overlapping another plugin\'s badge in the same corner.',
+    'settings.avoidOverlap': 'Vertical nudge',
+    'settings.avoidOverlapDesc': 'Shifts the badge vertically by this many pixels, to avoid overlapping another plugin\'s badge in the same spot.',
     // Settings - Tagging
     'settings.tagging': 'Tagging',
     'settings.inProgressThreshold': 'In Progress threshold',
@@ -653,8 +653,8 @@ const ptBR = {
     'settings.right': 'Direita',
     'settings.top': 'Topo',
     'settings.bottom': 'Baixo',
-    'settings.avoidOverlap': 'Deslocar em direção ao centro',
-    'settings.avoidOverlapDesc': 'Desloca o badge em direção ao centro por essa quantidade de pixels (só se aplica a Topo/Baixo), para evitar sobrepor o badge de outro plugin no mesmo canto.',
+    'settings.avoidOverlap': 'Deslocamento vertical',
+    'settings.avoidOverlapDesc': 'Desloca o badge verticalmente por essa quantidade de pixels, para evitar sobrepor o badge de outro plugin no mesmo local.',
     // Settings - Tagging
     'settings.tagging': 'Marcação de Tags',
     'settings.inProgressThreshold': 'Limite para "Em Progresso"',
@@ -1028,7 +1028,7 @@ const Settings = () => {
                         SP_REACT.createElement(DFL.Dropdown, { rgOptions: BADGE_V_OPTIONS, selectedOption: settings.badge_position_v, onChange: (option) => updateBadgePosition('badge_position_v', option.data) })))),
             SP_REACT.createElement(DFL.PanelSectionRow, null,
                 SP_REACT.createElement("div", { style: styles$1.avoidOverlapRow },
-                    SP_REACT.createElement(DFL.SliderField, { label: t('settings.avoidOverlap'), description: t('settings.avoidOverlapDesc'), value: settings.badge_overlap_offset, min: 0, max: 100, step: 1, editableValue: true, valueSuffix: "px", disabled: settings.badge_position_v === 'center', onChange: updateBadgeOverlapOffset })))),
+                    SP_REACT.createElement(DFL.SliderField, { label: t('settings.avoidOverlap'), description: t('settings.avoidOverlapDesc'), value: settings.badge_overlap_offset, min: 0, max: 100, step: 1, editableValue: true, valueSuffix: "px", onChange: updateBadgeOverlapOffset })))),
         SP_REACT.createElement(DFL.PanelSection, { title: t('settings.tagging') },
             SP_REACT.createElement(DFL.PanelSectionRow, null,
                 SP_REACT.createElement(DFL.SliderField, { label: t('settings.inProgressThreshold'), value: settings.in_progress_threshold, min: 1, max: 120, step: 1, editableValue: true, valueSuffix: t('settings.minutesSuffix'), onChange: updateInProgressThreshold }))),
@@ -1042,7 +1042,7 @@ const Settings = () => {
         SP_REACT.createElement(DFL.PanelSection, { title: t('settings.about') },
             SP_REACT.createElement("div", { style: styles$1.about },
                 SP_REACT.createElement("p", { style: styles$1.aboutLine }, "Deck Progress Tracker"),
-                SP_REACT.createElement("p", { style: styles$1.aboutLine }, "1.4.4"),
+                SP_REACT.createElement("p", { style: styles$1.aboutLine }, "1.4.3"),
                 SP_REACT.createElement("p", { style: styles$1.aboutLine }, t('settings.aboutDataSource'))),
             SP_REACT.createElement(DFL.PanelSectionRow, null,
                 SP_REACT.createElement(DFL.ButtonItem, { layout: "below", onClick: () => DFL.Navigation.NavigateToExternalWeb('https://patreon.com/DeckProgressTracker') }, t('settings.supportPatreon'))))));
@@ -1074,18 +1074,21 @@ const styles$1 = {
 /**
  * Shared per-tag styling (background color) used by GameTagBadge.
  */
+// Darkened from the original lighter gradients to meet WCAG 2.1 non-text
+// contrast (>=3:1 against the white icon/text drawn on top) - the original
+// stops (#38ef7d, #c9a171, #f093fb) were too close to white to read well.
 const TAG_STYLES = {
     completed: {
-        background: 'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)',
+        background: 'linear-gradient(135deg, #0d7a6f 0%, #1fa85c 100%)',
     },
     in_progress: {
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        background: 'linear-gradient(135deg, #5568d3 0%, #5f3d85 100%)',
     },
     mastered: {
-        background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+        background: 'linear-gradient(135deg, #d6579f 0%, #c23a52 100%)',
     },
     dropped: {
-        background: 'linear-gradient(135deg, #b8956a 0%, #c9a171 100%)',
+        background: 'linear-gradient(135deg, #8a6a47 0%, #a67f55 100%)',
     },
 };
 
@@ -1104,6 +1107,11 @@ const TagManager = ({ appid, onClose }) => {
     const [details, setDetails] = SP_REACT.useState(null);
     const [loading, setLoading] = SP_REACT.useState(true);
     const [error, setError] = SP_REACT.useState(null);
+    const [manualSearchOpen, setManualSearchOpen] = SP_REACT.useState(false);
+    const [manualQuery, setManualQuery] = SP_REACT.useState('');
+    const [manualResults, setManualResults] = SP_REACT.useState([]);
+    const [manualSearching, setManualSearching] = SP_REACT.useState(false);
+    const [manualError, setManualError] = SP_REACT.useState(null);
     SP_REACT.useEffect(() => {
         fetchDetails();
     }, [appid]);
@@ -1154,6 +1162,54 @@ const TagManager = ({ appid, onClose }) => {
             const errorMsg = err?.message || t('tagManager.failedToRemove');
             setError(errorMsg);
             // Error occurred
+        }
+    };
+    const toggleManualSearch = () => {
+        setManualSearchOpen((open) => {
+            const next = !open;
+            if (next && !manualQuery) {
+                setManualQuery(details?.stats?.game_name || '');
+            }
+            if (!next) {
+                setManualResults([]);
+                setManualError(null);
+            }
+            return next;
+        });
+    };
+    const runManualSearch = async () => {
+        if (!manualQuery.trim())
+            return;
+        try {
+            setManualSearching(true);
+            setManualError(null);
+            const result = await call('search_hltb_candidates', { query: manualQuery.trim() });
+            if (result.success) {
+                setManualResults(result.candidates || []);
+                if (!result.candidates || result.candidates.length === 0) {
+                    setManualError(t('tagManager.manualSearchNoResults'));
+                }
+            }
+            else {
+                setManualError(result.error || t('tagManager.manualSearchNoResults'));
+            }
+        }
+        catch (err) {
+            setManualError(err?.message || t('tagManager.manualSearchNoResults'));
+        }
+        finally {
+            setManualSearching(false);
+        }
+    };
+    const selectManualMatch = async (candidate) => {
+        try {
+            await call('set_manual_hltb_match', { appid, candidate });
+            setManualSearchOpen(false);
+            setManualResults([]);
+            await fetchDetails();
+        }
+        catch (err) {
+            setManualError(err?.message || t('tagManager.manualSearchNoResults'));
         }
     };
     if (loading) {
@@ -1211,21 +1267,34 @@ const TagManager = ({ appid, onClose }) => {
                                 "h"))))),
                     !hltb && (SP_REACT.createElement("div", { style: styles.statRow },
                         SP_REACT.createElement("span", null, t('tagManager.hltb')),
-                        SP_REACT.createElement("span", { style: styles.noData }, t('tagManager.noData'))))),
+                        SP_REACT.createElement("span", { style: styles.noData }, t('tagManager.noData')))),
+                    SP_REACT.createElement(DFL.Focusable, { onClick: toggleManualSearch, onActivate: toggleManualSearch, style: styles.manualSearchToggle }, manualSearchOpen ? t('tagManager.manualSearchClose') : t('tagManager.manualSearchOpen')),
+                    manualSearchOpen && (SP_REACT.createElement("div", { style: styles.manualSearchPanel },
+                        SP_REACT.createElement(DFL.TextField, { value: manualQuery, onChange: (e) => setManualQuery(e.target.value) }),
+                        SP_REACT.createElement(DFL.Focusable, { onClick: runManualSearch, onActivate: runManualSearch, style: styles.secondaryButton }, manualSearching ? t('tagManager.manualSearching') : t('tagManager.manualSearchButton')),
+                        manualError && SP_REACT.createElement("div", { style: styles.manualSearchError }, manualError),
+                        manualResults.length > 0 && (SP_REACT.createElement(DFL.Focusable, { style: styles.manualResultsList, "flow-children": "down" }, manualResults.map((candidate, idx) => (SP_REACT.createElement(DFL.Focusable, { key: idx, onClick: () => selectManualMatch(candidate), onActivate: () => selectManualMatch(candidate), style: styles.manualResultItem },
+                            SP_REACT.createElement("div", { style: styles.manualResultName }, candidate.matched_name),
+                            SP_REACT.createElement("div", { style: styles.manualResultMeta },
+                                candidate.release_year ? `${candidate.release_year} · ` : '',
+                                Math.round((candidate.similarity || 0) * 100),
+                                "%",
+                                candidate.main_story ? ` · ${candidate.main_story}h` : ''),
+                            candidate.platforms && candidate.platforms.length > 0 && (SP_REACT.createElement("div", { style: styles.manualResultPlatforms }, candidate.platforms.join(', '))))))))))),
                 SP_REACT.createElement("div", { style: styles.rightColumn },
                     SP_REACT.createElement("h3", { style: styles.sectionTitle }, t('tagManager.setTag')),
                     SP_REACT.createElement(DFL.Focusable, { style: styles.tagButtonGroup, "flow-children": "down" },
-                        SP_REACT.createElement(DFL.Focusable, { onActivate: () => setTag('mastered'), style: { ...styles.tagButton, backgroundColor: TAG_ICON_COLORS.mastered } },
-                            SP_REACT.createElement(TagIcon, { type: "mastered", size: 18 }),
+                        SP_REACT.createElement(DFL.Focusable, { onActivate: () => setTag('mastered'), style: { ...styles.tagButton, background: TAG_STYLES.mastered.background } },
+                            SP_REACT.createElement(TagIcon, { type: "mastered", size: 18, color: "white" }),
                             SP_REACT.createElement("span", null, t('tag.mastered'))),
-                        SP_REACT.createElement(DFL.Focusable, { onActivate: () => setTag('completed'), style: { ...styles.tagButton, backgroundColor: TAG_ICON_COLORS.completed } },
-                            SP_REACT.createElement(TagIcon, { type: "completed", size: 18 }),
+                        SP_REACT.createElement(DFL.Focusable, { onActivate: () => setTag('completed'), style: { ...styles.tagButton, background: TAG_STYLES.completed.background } },
+                            SP_REACT.createElement(TagIcon, { type: "completed", size: 18, color: "white" }),
                             SP_REACT.createElement("span", null, t('tag.completed'))),
-                        SP_REACT.createElement(DFL.Focusable, { onActivate: () => setTag('in_progress'), style: { ...styles.tagButton, backgroundColor: TAG_ICON_COLORS.in_progress } },
-                            SP_REACT.createElement(TagIcon, { type: "in_progress", size: 18 }),
+                        SP_REACT.createElement(DFL.Focusable, { onActivate: () => setTag('in_progress'), style: { ...styles.tagButton, background: TAG_STYLES.in_progress.background } },
+                            SP_REACT.createElement(TagIcon, { type: "in_progress", size: 18, color: "white" }),
                             SP_REACT.createElement("span", null, t('tag.in_progress'))),
-                        SP_REACT.createElement(DFL.Focusable, { onActivate: () => setTag('dropped'), style: { ...styles.tagButton, backgroundColor: TAG_ICON_COLORS.dropped } },
-                            SP_REACT.createElement(TagIcon, { type: "dropped", size: 18 }),
+                        SP_REACT.createElement(DFL.Focusable, { onActivate: () => setTag('dropped'), style: { ...styles.tagButton, background: TAG_STYLES.dropped.background } },
+                            SP_REACT.createElement(TagIcon, { type: "dropped", size: 18, color: "white" }),
                             SP_REACT.createElement("span", null, t('tag.dropped')))),
                     SP_REACT.createElement(DFL.Focusable, { style: styles.buttonGroup, "flow-children": "horizontal" },
                         SP_REACT.createElement(DFL.Focusable, { onClick: resetToAuto, onActivate: resetToAuto, style: styles.secondaryButton }, t('tagManager.resetToAuto')),
@@ -1321,6 +1390,57 @@ const styles = {
     noData: {
         color: '#666',
         fontStyle: 'italic',
+    },
+    manualSearchToggle: {
+        marginTop: '10px',
+        padding: '6px 10px',
+        fontSize: '12px',
+        color: '#aaa',
+        backgroundColor: '#2a2a2a',
+        border: '2px solid transparent',
+        borderRadius: '4px',
+        textAlign: 'center',
+    },
+    manualSearchPanel: {
+        marginTop: '8px',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '8px',
+    },
+    manualSearchError: {
+        fontSize: '12px',
+        color: '#ff6b6b',
+        fontStyle: 'italic',
+    },
+    manualResultsList: {
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '6px',
+        maxHeight: '160px',
+        overflowY: 'auto',
+    },
+    manualResultItem: {
+        padding: '8px',
+        backgroundColor: '#2a2a2a',
+        border: '2px solid transparent',
+        borderRadius: '4px',
+        cursor: 'pointer',
+    },
+    manualResultName: {
+        fontSize: '13px',
+        fontWeight: 'bold',
+        color: 'white',
+    },
+    manualResultMeta: {
+        fontSize: '11px',
+        color: '#888',
+        marginTop: '2px',
+    },
+    manualResultPlatforms: {
+        fontSize: '10px',
+        color: '#666',
+        fontStyle: 'italic',
+        marginTop: '2px',
     },
     tagType: {
         fontSize: '11px',
@@ -1528,7 +1648,7 @@ function buildContainerStyle(h, v, bannerHeight, overlapOffset) {
         style.top = v === 'top' ? `${50 + overlapOffset}px` : '50px';
     }
     else if (v === 'center') {
-        style.top = `${Math.max(bannerHeight / 2 - APPROX_BADGE_HEIGHT / 2, 0)}px`;
+        style.top = `${Math.max(bannerHeight / 2 - APPROX_BADGE_HEIGHT / 2 + overlapOffset, 0)}px`;
     }
     else {
         style.top = `${Math.max(bannerHeight - APPROX_BADGE_HEIGHT - 20 - overlapOffset, 0)}px`;
@@ -1692,7 +1812,7 @@ const GameTagBadge = ({ appid }) => {
                 boxShadow: '0 4px 6px rgba(0,0,0,0.3)',
                 minWidth: 'auto',
             } }, tagStyle && tag && tag.tag ? (SP_REACT.createElement(SP_REACT.Fragment, null,
-            SP_REACT.createElement(TagIcon, { type: tag.tag, size: 18 }),
+            SP_REACT.createElement(TagIcon, { type: tag.tag, size: 18, color: "white" }),
             SP_REACT.createElement("span", null, t(TAG_LABEL_KEY[tag.tag])),
             tag.is_manual && SP_REACT.createElement("span", { style: { fontSize: '12px', opacity: 0.8 } }, "\u270E"))) : (SP_REACT.createElement(SP_REACT.Fragment, null,
             SP_REACT.createElement("span", { style: { fontSize: '16px' } }, "+"),

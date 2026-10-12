@@ -4,6 +4,7 @@ interface TagIconProps {
     type: TagType;
     size?: number;
     className?: string;
+    color?: string;
 }
 export declare const TAG_ICON_COLORS: {
     mastered: string;

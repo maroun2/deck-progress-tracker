@@ -5,9 +5,10 @@
 
 import React, { FC, useState, useEffect } from 'react';
 import { call } from '@decky/api';
-import { Focusable, DialogButton } from '@decky/ui';
-import { GameDetails } from '../types';
+import { Focusable, DialogButton, TextField } from '@decky/ui';
+import { GameDetails, HLTBData } from '../types';
 import { TagIcon, TAG_ICON_COLORS } from './TagIcon';
+import { TAG_STYLES } from './GameTag';
 import { useTranslation } from '../i18n';
 
 const TAG_LABEL_KEY = {
@@ -27,6 +28,12 @@ export const TagManager: FC<TagManagerProps> = ({ appid, onClose }) => {
   const [details, setDetails] = useState<GameDetails | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const [manualSearchOpen, setManualSearchOpen] = useState(false);
+  const [manualQuery, setManualQuery] = useState('');
+  const [manualResults, setManualResults] = useState<HLTBData[]>([]);
+  const [manualSearching, setManualSearching] = useState(false);
+  const [manualError, setManualError] = useState<string | null>(null);
 
   useEffect(() => {
     fetchDetails();
@@ -78,6 +85,58 @@ export const TagManager: FC<TagManagerProps> = ({ appid, onClose }) => {
       const errorMsg = err?.message || t('tagManager.failedToRemove');
       setError(errorMsg);
       // Error occurred
+    }
+  };
+
+  const toggleManualSearch = () => {
+    setManualSearchOpen((open) => {
+      const next = !open;
+      if (next && !manualQuery) {
+        setManualQuery(details?.stats?.game_name || '');
+      }
+      if (!next) {
+        setManualResults([]);
+        setManualError(null);
+      }
+      return next;
+    });
+  };
+
+  const runManualSearch = async () => {
+    if (!manualQuery.trim()) return;
+    try {
+      setManualSearching(true);
+      setManualError(null);
+      const result = await call<[{ query: string }], { success: boolean; candidates?: HLTBData[]; error?: string }>(
+        'search_hltb_candidates',
+        { query: manualQuery.trim() }
+      );
+      if (result.success) {
+        setManualResults(result.candidates || []);
+        if (!result.candidates || result.candidates.length === 0) {
+          setManualError(t('tagManager.manualSearchNoResults'));
+        }
+      } else {
+        setManualError(result.error || t('tagManager.manualSearchNoResults'));
+      }
+    } catch (err: any) {
+      setManualError(err?.message || t('tagManager.manualSearchNoResults'));
+    } finally {
+      setManualSearching(false);
+    }
+  };
+
+  const selectManualMatch = async (candidate: HLTBData) => {
+    try {
+      await call<[{ appid: string; candidate: HLTBData }], { success: boolean }>(
+        'set_manual_hltb_match',
+        { appid, candidate }
+      );
+      setManualSearchOpen(false);
+      setManualResults([]);
+      await fetchDetails();
+    } catch (err: any) {
+      setManualError(err?.message || t('tagManager.manualSearchNoResults'));
     }
   };
 
@@ -166,6 +225,57 @@ export const TagManager: FC<TagManagerProps> = ({ appid, onClose }) => {
                 <span style={styles.noData}>{t('tagManager.noData')}</span>
               </div>
             )}
+
+            <Focusable
+              onClick={toggleManualSearch}
+              onActivate={toggleManualSearch}
+              style={styles.manualSearchToggle}
+            >
+              {manualSearchOpen ? t('tagManager.manualSearchClose') : t('tagManager.manualSearchOpen')}
+            </Focusable>
+
+            {manualSearchOpen && (
+              <div style={styles.manualSearchPanel}>
+                <TextField
+                  value={manualQuery}
+                  onChange={(e) => setManualQuery(e.target.value)}
+                />
+                <Focusable
+                  onClick={runManualSearch}
+                  onActivate={runManualSearch}
+                  style={styles.secondaryButton}
+                >
+                  {manualSearching ? t('tagManager.manualSearching') : t('tagManager.manualSearchButton')}
+                </Focusable>
+
+                {manualError && <div style={styles.manualSearchError}>{manualError}</div>}
+
+                {manualResults.length > 0 && (
+                  <Focusable style={styles.manualResultsList} flow-children="down">
+                    {manualResults.map((candidate, idx) => (
+                      <Focusable
+                        key={idx}
+                        onClick={() => selectManualMatch(candidate)}
+                        onActivate={() => selectManualMatch(candidate)}
+                        style={styles.manualResultItem}
+                      >
+                        <div style={styles.manualResultName}>{candidate.matched_name}</div>
+                        <div style={styles.manualResultMeta}>
+                          {candidate.release_year ? `${candidate.release_year} · ` : ''}
+                          {Math.round((candidate.similarity || 0) * 100)}%
+                          {candidate.main_story ? ` · ${candidate.main_story}h` : ''}
+                        </div>
+                        {candidate.platforms && candidate.platforms.length > 0 && (
+                          <div style={styles.manualResultPlatforms}>
+                            {candidate.platforms.join(', ')}
+                          </div>
+                        )}
+                      </Focusable>
+                    ))}
+                  </Focusable>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Right side: Tag buttons */}
@@ -174,30 +284,30 @@ export const TagManager: FC<TagManagerProps> = ({ appid, onClose }) => {
             <Focusable style={styles.tagButtonGroup} flow-children="down">
               <Focusable
                 onActivate={() => setTag('mastered')}
-                style={{ ...styles.tagButton, backgroundColor: TAG_ICON_COLORS.mastered }}
+                style={{ ...styles.tagButton, background: TAG_STYLES.mastered.background }}
               >
-                <TagIcon type="mastered" size={18} />
+                <TagIcon type="mastered" size={18} color="white" />
                 <span>{t('tag.mastered')}</span>
               </Focusable>
               <Focusable
                 onActivate={() => setTag('completed')}
-                style={{ ...styles.tagButton, backgroundColor: TAG_ICON_COLORS.completed }}
+                style={{ ...styles.tagButton, background: TAG_STYLES.completed.background }}
               >
-                <TagIcon type="completed" size={18} />
+                <TagIcon type="completed" size={18} color="white" />
                 <span>{t('tag.completed')}</span>
               </Focusable>
               <Focusable
                 onActivate={() => setTag('in_progress')}
-                style={{ ...styles.tagButton, backgroundColor: TAG_ICON_COLORS.in_progress }}
+                style={{ ...styles.tagButton, background: TAG_STYLES.in_progress.background }}
               >
-                <TagIcon type="in_progress" size={18} />
+                <TagIcon type="in_progress" size={18} color="white" />
                 <span>{t('tag.in_progress')}</span>
               </Focusable>
               <Focusable
                 onActivate={() => setTag('dropped')}
-                style={{ ...styles.tagButton, backgroundColor: TAG_ICON_COLORS.dropped }}
+                style={{ ...styles.tagButton, background: TAG_STYLES.dropped.background }}
               >
-                <TagIcon type="dropped" size={18} />
+                <TagIcon type="dropped" size={18} color="white" />
                 <span>{t('tag.dropped')}</span>
               </Focusable>
             </Focusable>
@@ -309,6 +419,57 @@ const styles: Record<string, React.CSSProperties> = {
   noData: {
     color: '#666',
     fontStyle: 'italic',
+  },
+  manualSearchToggle: {
+    marginTop: '10px',
+    padding: '6px 10px',
+    fontSize: '12px',
+    color: '#aaa',
+    backgroundColor: '#2a2a2a',
+    border: '2px solid transparent',
+    borderRadius: '4px',
+    textAlign: 'center',
+  },
+  manualSearchPanel: {
+    marginTop: '8px',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '8px',
+  },
+  manualSearchError: {
+    fontSize: '12px',
+    color: '#ff6b6b',
+    fontStyle: 'italic',
+  },
+  manualResultsList: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '6px',
+    maxHeight: '160px',
+    overflowY: 'auto',
+  },
+  manualResultItem: {
+    padding: '8px',
+    backgroundColor: '#2a2a2a',
+    border: '2px solid transparent',
+    borderRadius: '4px',
+    cursor: 'pointer',
+  },
+  manualResultName: {
+    fontSize: '13px',
+    fontWeight: 'bold',
+    color: 'white',
+  },
+  manualResultMeta: {
+    fontSize: '11px',
+    color: '#888',
+    marginTop: '2px',
+  },
+  manualResultPlatforms: {
+    fontSize: '10px',
+    color: '#666',
+    fontStyle: 'italic',
+    marginTop: '2px',
   },
   tagType: {
     fontSize: '11px',

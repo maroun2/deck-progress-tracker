@@ -51,7 +51,7 @@ function buildContainerStyle(
     // (no overlap nudge) only when v isn't actually 'top'.
     style.top = v === 'top' ? `${50 + overlapOffset}px` : '50px';
   } else if (v === 'center') {
-    style.top = `${Math.max(bannerHeight / 2 - APPROX_BADGE_HEIGHT / 2, 0)}px`;
+    style.top = `${Math.max(bannerHeight / 2 - APPROX_BADGE_HEIGHT / 2 + overlapOffset, 0)}px`;
   } else {
     style.top = `${Math.max(bannerHeight - APPROX_BADGE_HEIGHT - 20 - overlapOffset, 0)}px`;
   }
@@ -253,7 +253,7 @@ export const GameTagBadge: FC<GameTagBadgeProps> = ({ appid }) => {
           >
             {tagStyle && tag && tag.tag ? (
               <>
-                <TagIcon type={tag.tag} size={18} />
+                <TagIcon type={tag.tag} size={18} color="white" />
                 <span>{t(TAG_LABEL_KEY[tag.tag])}</span>
                 {tag.is_manual && <span style={{ fontSize: '12px', opacity: 0.8 }}>✎</span>}
               </>
