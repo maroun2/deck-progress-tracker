@@ -443,6 +443,60 @@ class Plugin:
             logger.error(f"Error resetting tag for {appid}: {e}")
             return {"success": False, "error": str(e)}
 
+    async def search_hltb_candidates(self, appid_or_params, query: str = None) -> Dict[str, Any]:
+        """Search HLTB manually and return candidates for the user to pick
+        from, when the automatic search didn't find (or got wrong) a match."""
+        params = self._extract_params(appid_or_params, query=query)
+        query = params.get('query')
+
+        if not query:
+            return {"success": False, "error": "Missing query parameter"}
+
+        try:
+            candidates = await self.hltb_service.search_candidates(query)
+            return {"success": True, "candidates": candidates}
+        except Exception as e:
+            logger.error(f"Error searching HLTB candidates for '{query}': {e}")
+            return {"success": False, "error": str(e)}
+
+    async def set_manual_hltb_match(self, appid_or_params, candidate: Dict[str, Any] = None) -> Dict[str, Any]:
+        """Manually set the HLTB match for a game, picked by the user from
+        search_hltb_candidates results."""
+        params = self._extract_params(appid_or_params, candidate=candidate)
+        appid = str(params.get('appid', ''))
+        candidate = params.get('candidate')
+
+        logger.info(f"=== set_manual_hltb_match called: appid={appid} ===")
+
+        if not appid:
+            return {"success": False, "error": "Missing appid parameter"}
+        if not candidate or not candidate.get('main_story'):
+            return {"success": False, "error": "Missing or incomplete candidate"}
+
+        try:
+            await self.db.cache_hltb_data(appid, candidate)
+
+            # Un-hide the game (it was likely hidden for lacking HLTB data)
+            # and recalculate its auto tag immediately, instead of waiting
+            # for the next sync pass.
+            stats = await self.db.get_game_stats(appid)
+            if stats and stats.get('is_hidden'):
+                stats['is_hidden'] = False
+                await self.db.update_game_stats(appid, stats)
+
+            current_tag = await self.db.get_tag(appid)
+            if not (current_tag and current_tag.get('is_manual')):
+                calculated_tag = await Plugin.calculate_auto_tag(self, appid)
+                if calculated_tag and calculated_tag != (current_tag.get('tag') if current_tag else None):
+                    await self.db.set_tag(appid, calculated_tag, is_manual=False)
+
+            return {"success": True}
+        except Exception as e:
+            logger.error(f"Error setting manual HLTB match for {appid}: {e}")
+            import traceback
+            logger.error(traceback.format_exc())
+            return {"success": False, "error": str(e)}
+
 
 
 

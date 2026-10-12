@@ -31,6 +31,10 @@ export interface HLTBData {
   completionist?: number;
   all_styles?: number;
   hltb_url: string;
+  // Only populated for manual-search candidates (not persisted in the
+  // cached auto-match) - helps disambiguate same-named entries.
+  release_year?: number;
+  platforms?: string[];
 }
 
 export interface GameDetails {

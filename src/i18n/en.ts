@@ -82,6 +82,11 @@ export const en = {
   'tagManager.setTag': 'Set Tag',
   'tagManager.resetToAuto': 'Reset to Auto',
   'tagManager.remove': 'Remove',
+  'tagManager.manualSearchOpen': 'Search HLTB manually',
+  'tagManager.manualSearchClose': 'Close manual search',
+  'tagManager.manualSearchButton': 'Search',
+  'tagManager.manualSearching': 'Searching...',
+  'tagManager.manualSearchNoResults': 'No results found',
   'tagManager.gameFallback': 'Game {appid}',
 };
 
