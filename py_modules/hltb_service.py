@@ -3,6 +3,7 @@ HowLongToBeat Service
 Fetches game completion times from HowLongToBeat via the howlongtobeatpy library
 """
 
+import re
 from typing import Optional, Dict, Any, List
 
 from howlongtobeatpy import HowLongToBeat
@@ -18,10 +19,22 @@ logger = decky.logger
 # vs similarity 1.0 with a plain hyphen). Normalize before searching.
 _DASH_CHARS = ("–", "—")
 
+# Trademark/registered/copyright marks (both the Unicode glyphs and the
+# textual "(TM)"/"(R)"/"(C)" forms) also make HLTB's search backend return
+# ZERO results for the whole query (confirmed: "Call of Duty: Modern
+# Warfare 3 (R)" -> no results, vs matches with the mark stripped).
+_TRADEMARK_PATTERN = re.compile(r"[™®©]|\((?:tm|r|c)\)", re.IGNORECASE)
+
+# A parenthesized release year, e.g. "Call of Duty: Modern Warfare 3
+# (2011)", also drops HLTB's search results to zero - strip it too.
+_YEAR_IN_PARENS_PATTERN = re.compile(r"\(\s*(?:19|20)\d{2}\s*\)")
+
 
 def _sanitize_query(name: str) -> str:
     for ch in _DASH_CHARS:
         name = name.replace(ch, "-")
+    name = _TRADEMARK_PATTERN.sub("", name)
+    name = _YEAR_IN_PARENS_PATTERN.sub("", name)
     return name
 
 
