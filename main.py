@@ -39,10 +39,9 @@ logger.info(f"Plugin dir: {PLUGIN_DIR}")
 try:
     from database import Database
     from steam_data import SteamDataService
-    from hltb_service import HLTBService
-    logger.info("Backend modules imported successfully")
+    logger.info("Core backend modules imported successfully")
 except ImportError as e:
-    logger.error(f"Import failed: {e}")
+    logger.error(f"Core import failed: {e}")
     import traceback
     logger.error(traceback.format_exc())
     # Create dummy classes so plugin can at least load
@@ -52,8 +51,21 @@ except ImportError as e:
         async def close(self): pass
     class SteamDataService:
         def __init__(self): pass
+
+# HLTB has its own dependency (howlongtobeatpy), which may not be installed
+# yet if requirements.txt was only processed on a prior install (e.g. a dev
+# install done by copying files instead of using Decky's real installer).
+# Isolate its import so a missing/broken dependency only disables HLTB
+# lookups instead of taking down the whole plugin (tags, sync, playtime).
+try:
+    from hltb_service import HLTBService
+    logger.info("HLTB service imported successfully")
+except ImportError as e:
+    logger.error(f"HLTB service unavailable (missing dependency?): {e}")
     class HLTBService:
         def __init__(self): pass
+        async def search_game(self, game_name):
+            return None
 
 
 class Plugin:
