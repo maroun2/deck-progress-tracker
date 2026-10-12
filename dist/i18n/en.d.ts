@@ -21,6 +21,8 @@ export declare const en: {
     'settings.right': string;
     'settings.top': string;
     'settings.bottom': string;
+    'settings.avoidOverlap': string;
+    'settings.avoidOverlapDesc': string;
     'settings.tagging': string;
     'settings.inProgressThreshold': string;
     'settings.minutesSuffix': string;
@@ -63,6 +65,11 @@ export declare const en: {
     'tagManager.setTag': string;
     'tagManager.resetToAuto': string;
     'tagManager.remove': string;
+    'tagManager.manualSearchOpen': string;
+    'tagManager.manualSearchClose': string;
+    'tagManager.manualSearchButton': string;
+    'tagManager.manualSearching': string;
+    'tagManager.manualSearchNoResults': string;
     'tagManager.gameFallback': string;
 };
 export type TranslationKey = keyof typeof en;

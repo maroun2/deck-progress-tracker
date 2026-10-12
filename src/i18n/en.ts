@@ -26,6 +26,8 @@ export const en = {
   'settings.right': 'Right',
   'settings.top': 'Top',
   'settings.bottom': 'Bottom',
+  'settings.avoidOverlap': 'Nudge toward center',
+  'settings.avoidOverlapDesc': 'Offsets the badge toward the center by this many pixels (only applies to Top/Bottom), to avoid overlapping another plugin\'s badge in the same corner.',
 
   // Settings - Tagging
   'settings.tagging': 'Tagging',

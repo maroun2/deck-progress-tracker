@@ -69,6 +69,7 @@ export const Settings: FC = () => {
     source_all_owned: true,
     badge_position_h: 'right',
     badge_position_v: 'top',
+    badge_overlap_offset: 0,
     language: 'auto',
   });
 
@@ -210,6 +211,14 @@ export const Settings: FC = () => {
     } catch (err) {}
   };
 
+  const updateBadgeOverlapOffset = async (value: number) => {
+    setSettings(prev => ({ ...prev, badge_overlap_offset: value }));
+    try {
+      await call<[Record<string, number>], { success: boolean }>('update_settings', { badge_overlap_offset: value });
+      window.dispatchEvent(new CustomEvent(BADGE_SETTINGS_UPDATED_EVENT));
+    } catch (err) {}
+  };
+
   const updateLanguage = async (value: PluginSettings['language']) => {
     setSettings(prev => ({ ...prev, language: value }));
     try {
@@ -312,6 +321,22 @@ export const Settings: FC = () => {
             </div>
           </div>
         </PanelSectionRow>
+        <PanelSectionRow>
+          <div style={styles.avoidOverlapRow}>
+            <SliderField
+              label={t('settings.avoidOverlap')}
+              description={t('settings.avoidOverlapDesc')}
+              value={settings.badge_overlap_offset}
+              min={0}
+              max={100}
+              step={1}
+              editableValue
+              valueSuffix="px"
+              disabled={settings.badge_position_v === 'center'}
+              onChange={updateBadgeOverlapOffset}
+            />
+          </div>
+        </PanelSectionRow>
       </PanelSection>
 
       <PanelSection title={t('settings.tagging')}>
@@ -376,6 +401,7 @@ const styles: Record<string, React.CSSProperties> = {
   manualBadge: { fontSize: '10px', color: '#888', backgroundColor: '#333', padding: '2px 6px', borderRadius: '3px', flexShrink: 0 },
   tagSectionContent: { width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between' },
   dropdownRow: { width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between' },
+  avoidOverlapRow: { width: '100%', marginTop: '12px', paddingTop: '12px', borderTop: '1px solid #333' },
   tagSectionLeft: { display: 'flex', alignItems: 'center', gap: '10px' },
   tagSectionRight: { display: 'flex', alignItems: 'center', gap: '12px' },
   tagSectionTitle: { fontWeight: 'bold' },

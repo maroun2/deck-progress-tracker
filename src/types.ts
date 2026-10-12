@@ -58,6 +58,10 @@ export interface PluginSettings {
   // Badge position on the game banner page
   badge_position_h: 'left' | 'center' | 'right';
   badge_position_v: 'top' | 'center' | 'bottom';
+  // When vertical is 'top'/'bottom', nudges the badge toward the vertical
+  // center by this many pixels (0 = no nudge), to avoid overlapping
+  // another plugin's badge in the same corner.
+  badge_overlap_offset: number;
   // UI language: 'auto' follows the system/browser locale
   language: 'auto' | 'en' | 'pt-BR';
 }

@@ -1,4 +1,4 @@
-const manifest = {"name":"Deck Progress Tracker","author":"Maron","version":"1.4.3","api_version":1,"flags":[],"publish":{"tags":["library","achievements","statistics","enhancement","progress-tracking"],"description":"Automatic game tagging based on achievements, playtime, and completion time. Track your progress with visual badges in the Steam library. Features 5 intelligent tags: Mastered, Completed, Dropped, In Progress, and Backlog.","image":"https://raw.githubusercontent.com/maroun2/deck-progress-tracker/main/assets/market_image.png"}};
+const manifest = {"name":"Deck Progress Tracker","author":"Maron","version":"1.4.4","api_version":1,"flags":[],"publish":{"tags":["library","achievements","statistics","enhancement","progress-tracking"],"description":"Automatic game tagging based on achievements, playtime, and completion time. Track your progress with visual badges in the Steam library. Features 5 intelligent tags: Mastered, Completed, Dropped, In Progress, and Backlog.","image":"https://raw.githubusercontent.com/maroun2/deck-progress-tracker/main/assets/market_image.png"}};
 const API_VERSION = 2;
 if (!manifest?.name) {
     throw new Error('[@decky/api]: Failed to find plugin manifest.');
@@ -568,6 +568,8 @@ const en = {
     'settings.right': 'Right',
     'settings.top': 'Top',
     'settings.bottom': 'Bottom',
+    'settings.avoidOverlap': 'Nudge toward center',
+    'settings.avoidOverlapDesc': 'Offsets the badge toward the center by this many pixels (only applies to Top/Bottom), to avoid overlapping another plugin\'s badge in the same corner.',
     // Settings - Tagging
     'settings.tagging': 'Tagging',
     'settings.inProgressThreshold': 'In Progress threshold',
@@ -617,6 +619,11 @@ const en = {
     'tagManager.setTag': 'Set Tag',
     'tagManager.resetToAuto': 'Reset to Auto',
     'tagManager.remove': 'Remove',
+    'tagManager.manualSearchOpen': 'Search HLTB manually',
+    'tagManager.manualSearchClose': 'Close manual search',
+    'tagManager.manualSearchButton': 'Search',
+    'tagManager.manualSearching': 'Searching...',
+    'tagManager.manualSearchNoResults': 'No results found',
     'tagManager.gameFallback': 'Game {appid}',
 };
 
@@ -646,6 +653,8 @@ const ptBR = {
     'settings.right': 'Direita',
     'settings.top': 'Topo',
     'settings.bottom': 'Baixo',
+    'settings.avoidOverlap': 'Deslocar em direção ao centro',
+    'settings.avoidOverlapDesc': 'Desloca o badge em direção ao centro por essa quantidade de pixels (só se aplica a Topo/Baixo), para evitar sobrepor o badge de outro plugin no mesmo canto.',
     // Settings - Tagging
     'settings.tagging': 'Marcação de Tags',
     'settings.inProgressThreshold': 'Limite para "Em Progresso"',
@@ -695,6 +704,11 @@ const ptBR = {
     'tagManager.setTag': 'Definir Tag',
     'tagManager.resetToAuto': 'Voltar ao Automático',
     'tagManager.remove': 'Remover',
+    'tagManager.manualSearchOpen': 'Buscar HLTB manualmente',
+    'tagManager.manualSearchClose': 'Fechar busca manual',
+    'tagManager.manualSearchButton': 'Buscar',
+    'tagManager.manualSearching': 'Buscando...',
+    'tagManager.manualSearchNoResults': 'Nenhum resultado encontrado',
     'tagManager.gameFallback': 'Jogo {appid}',
 };
 
@@ -810,6 +824,7 @@ const Settings = () => {
         source_all_owned: true,
         badge_position_h: 'right',
         badge_position_v: 'top',
+        badge_overlap_offset: 0,
         language: 'auto',
     });
     const [stats, setStats] = SP_REACT.useState(null);
@@ -938,6 +953,14 @@ const Settings = () => {
         }
         catch (err) { }
     };
+    const updateBadgeOverlapOffset = async (value) => {
+        setSettings(prev => ({ ...prev, badge_overlap_offset: value }));
+        try {
+            await call('update_settings', { badge_overlap_offset: value });
+            window.dispatchEvent(new CustomEvent(BADGE_SETTINGS_UPDATED_EVENT));
+        }
+        catch (err) { }
+    };
     const updateLanguage = async (value) => {
         setSettings(prev => ({ ...prev, language: value }));
         try {
@@ -1002,7 +1025,10 @@ const Settings = () => {
                 SP_REACT.createElement("div", { style: styles$1.dropdownRow },
                     SP_REACT.createElement("span", null, t('settings.vertical')),
                     SP_REACT.createElement("div", { style: { width: positionDropdownWidth } },
-                        SP_REACT.createElement(DFL.Dropdown, { rgOptions: BADGE_V_OPTIONS, selectedOption: settings.badge_position_v, onChange: (option) => updateBadgePosition('badge_position_v', option.data) }))))),
+                        SP_REACT.createElement(DFL.Dropdown, { rgOptions: BADGE_V_OPTIONS, selectedOption: settings.badge_position_v, onChange: (option) => updateBadgePosition('badge_position_v', option.data) })))),
+            SP_REACT.createElement(DFL.PanelSectionRow, null,
+                SP_REACT.createElement("div", { style: styles$1.avoidOverlapRow },
+                    SP_REACT.createElement(DFL.SliderField, { label: t('settings.avoidOverlap'), description: t('settings.avoidOverlapDesc'), value: settings.badge_overlap_offset, min: 0, max: 100, step: 1, editableValue: true, valueSuffix: "px", disabled: settings.badge_position_v === 'center', onChange: updateBadgeOverlapOffset })))),
         SP_REACT.createElement(DFL.PanelSection, { title: t('settings.tagging') },
             SP_REACT.createElement(DFL.PanelSectionRow, null,
                 SP_REACT.createElement(DFL.SliderField, { label: t('settings.inProgressThreshold'), value: settings.in_progress_threshold, min: 1, max: 120, step: 1, editableValue: true, valueSuffix: t('settings.minutesSuffix'), onChange: updateInProgressThreshold }))),
@@ -1016,7 +1042,7 @@ const Settings = () => {
         SP_REACT.createElement(DFL.PanelSection, { title: t('settings.about') },
             SP_REACT.createElement("div", { style: styles$1.about },
                 SP_REACT.createElement("p", { style: styles$1.aboutLine }, "Deck Progress Tracker"),
-                SP_REACT.createElement("p", { style: styles$1.aboutLine }, "1.4.3"),
+                SP_REACT.createElement("p", { style: styles$1.aboutLine }, "1.4.4"),
                 SP_REACT.createElement("p", { style: styles$1.aboutLine }, t('settings.aboutDataSource'))),
             SP_REACT.createElement(DFL.PanelSectionRow, null,
                 SP_REACT.createElement(DFL.ButtonItem, { layout: "below", onClick: () => DFL.Navigation.NavigateToExternalWeb('https://patreon.com/DeckProgressTracker') }, t('settings.supportPatreon'))))));
@@ -1032,6 +1058,7 @@ const styles$1 = {
     manualBadge: { fontSize: '10px', color: '#888', backgroundColor: '#333', padding: '2px 6px', borderRadius: '3px', flexShrink: 0 },
     tagSectionContent: { width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between' },
     dropdownRow: { width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between' },
+    avoidOverlapRow: { width: '100%', marginTop: '12px', paddingTop: '12px', borderTop: '1px solid #333' },
     tagSectionLeft: { display: 'flex', alignItems: 'center', gap: '10px' },
     tagSectionRight: { display: 'flex', alignItems: 'center', gap: '12px' },
     tagSectionTitle: { fontWeight: 'bold' },
@@ -1170,7 +1197,7 @@ const TagManager = ({ appid, onClose }) => {
                                 "/",
                                 stats.total_achievements)))),
                     hltb && (SP_REACT.createElement(SP_REACT.Fragment, null,
-                        SP_REACT.createElement("div", { style: styles.statRow },
+                        SP_REACT.createElement("div", { style: styles.statRowStacked },
                             SP_REACT.createElement("span", null, t('tagManager.hltbMatch')),
                             SP_REACT.createElement("span", { style: styles.hltbMatch },
                                 hltb.matched_name,
@@ -1278,13 +1305,18 @@ const styles = {
         padding: '6px 0',
         fontSize: '13px',
     },
+    statRowStacked: {
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '2px',
+        padding: '6px 0',
+        fontSize: '13px',
+    },
     hltbMatch: {
         fontSize: '12px',
         color: '#888',
-        maxWidth: '120px',
-        overflow: 'hidden',
-        textOverflow: 'ellipsis',
-        whiteSpace: 'nowrap',
+        whiteSpace: 'normal',
+        wordBreak: 'break-word',
     },
     noData: {
         color: '#666',
@@ -1471,11 +1503,12 @@ function useGameTag(appid) {
 const DEFAULT_BADGE_POSITION = {
     badge_position_h: 'right',
     badge_position_v: 'top',
+    badge_overlap_offset: 0,
 };
 // Approx rendered height of the badge/"Add Tag" button, used to keep
 // bottom/center vertical placements fully inside the visible banner area.
 const APPROX_BADGE_HEIGHT = 44;
-function buildContainerStyle(h, v, bannerHeight) {
+function buildContainerStyle(h, v, bannerHeight, overlapOffset) {
     const style = { position: 'absolute', zIndex: 10 };
     if (h === 'center') {
         style.left = '50%';
@@ -1490,13 +1523,15 @@ function buildContainerStyle(h, v, bannerHeight) {
     // Instead, anchor everything from 'top' using the banner's measured
     // pixel height so the badge stays inside the visible banner area.
     if (v === 'top' || bannerHeight == null) {
-        style.top = '50px';
+        // bannerHeight not measured yet: fall back to the plain top offset
+        // (no overlap nudge) only when v isn't actually 'top'.
+        style.top = v === 'top' ? `${50 + overlapOffset}px` : '50px';
     }
     else if (v === 'center') {
         style.top = `${Math.max(bannerHeight / 2 - APPROX_BADGE_HEIGHT / 2, 0)}px`;
     }
     else {
-        style.top = `${Math.max(bannerHeight - APPROX_BADGE_HEIGHT - 20, 0)}px`;
+        style.top = `${Math.max(bannerHeight - APPROX_BADGE_HEIGHT - 20 - overlapOffset, 0)}px`;
     }
     return style;
 }
@@ -1574,6 +1609,7 @@ const GameTagBadge = ({ appid }) => {
                     setPosition({
                         badge_position_h: result.settings.badge_position_h || DEFAULT_BADGE_POSITION.badge_position_h,
                         badge_position_v: result.settings.badge_position_v || DEFAULT_BADGE_POSITION.badge_position_v,
+                        badge_overlap_offset: result.settings.badge_overlap_offset ?? DEFAULT_BADGE_POSITION.badge_overlap_offset,
                     });
                 }
             }
@@ -1636,7 +1672,7 @@ const GameTagBadge = ({ appid }) => {
         setShowManager(false);
         refetch();
     };
-    const containerStyle = buildContainerStyle(position.badge_position_h, position.badge_position_v, bannerHeight);
+    const containerStyle = buildContainerStyle(position.badge_position_h, position.badge_position_v, bannerHeight, position.badge_overlap_offset);
     const tagStyle = tag && tag.tag ? TAG_STYLES[tag.tag] : null;
     const tooltip = tagStyle
         ? tag?.is_manual ? t('badge.manualTagEdit') : t('badge.autoTagEdit')

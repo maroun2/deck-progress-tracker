@@ -16,9 +16,10 @@ import { syncSingleGameWithFrontendData } from '../lib/syncUtils';
 import { PluginSettings, BADGE_SETTINGS_UPDATED_EVENT } from '../types';
 import { useTranslation } from '../i18n';
 
-const DEFAULT_BADGE_POSITION: Pick<PluginSettings, 'badge_position_h' | 'badge_position_v'> = {
+const DEFAULT_BADGE_POSITION: Pick<PluginSettings, 'badge_position_h' | 'badge_position_v' | 'badge_overlap_offset'> = {
   badge_position_h: 'right',
   badge_position_v: 'top',
+  badge_overlap_offset: 0,
 };
 
 // Approx rendered height of the badge/"Add Tag" button, used to keep
@@ -28,7 +29,8 @@ const APPROX_BADGE_HEIGHT = 44;
 function buildContainerStyle(
   h: PluginSettings['badge_position_h'],
   v: PluginSettings['badge_position_v'],
-  bannerHeight: number | null
+  bannerHeight: number | null,
+  overlapOffset: number
 ): React.CSSProperties {
   const style: React.CSSProperties = { position: 'absolute', zIndex: 10 };
 
@@ -45,11 +47,13 @@ function buildContainerStyle(
   // Instead, anchor everything from 'top' using the banner's measured
   // pixel height so the badge stays inside the visible banner area.
   if (v === 'top' || bannerHeight == null) {
-    style.top = '50px';
+    // bannerHeight not measured yet: fall back to the plain top offset
+    // (no overlap nudge) only when v isn't actually 'top'.
+    style.top = v === 'top' ? `${50 + overlapOffset}px` : '50px';
   } else if (v === 'center') {
     style.top = `${Math.max(bannerHeight / 2 - APPROX_BADGE_HEIGHT / 2, 0)}px`;
   } else {
-    style.top = `${Math.max(bannerHeight - APPROX_BADGE_HEIGHT - 20, 0)}px`;
+    style.top = `${Math.max(bannerHeight - APPROX_BADGE_HEIGHT - 20 - overlapOffset, 0)}px`;
   }
 
   return style;
@@ -144,6 +148,7 @@ export const GameTagBadge: FC<GameTagBadgeProps> = ({ appid }) => {
           setPosition({
             badge_position_h: result.settings.badge_position_h || DEFAULT_BADGE_POSITION.badge_position_h,
             badge_position_v: result.settings.badge_position_v || DEFAULT_BADGE_POSITION.badge_position_v,
+            badge_overlap_offset: result.settings.badge_overlap_offset ?? DEFAULT_BADGE_POSITION.badge_overlap_offset,
           });
         }
       } catch (e) {
@@ -218,7 +223,7 @@ export const GameTagBadge: FC<GameTagBadgeProps> = ({ appid }) => {
     refetch();
   };
 
-  const containerStyle = buildContainerStyle(position.badge_position_h, position.badge_position_v, bannerHeight);
+  const containerStyle = buildContainerStyle(position.badge_position_h, position.badge_position_v, bannerHeight, position.badge_overlap_offset);
   const tagStyle = tag && tag.tag ? TAG_STYLES[tag.tag] : null;
   const tooltip = tagStyle
     ? tag?.is_manual ? t('badge.manualTagEdit') : t('badge.autoTagEdit')
