@@ -4,13 +4,26 @@ A Decky Loader plugin for Steam Deck that automatically tags your games based on
 
 | Tag | Criteria |
 |-----|----------|
-| **Mastered** | 85%+ achievements unlocked |
+| **Mastered** | Achievement percentage ≥ your configured threshold (default 85%) |
 | **Completed** | Playtime ≥ HLTB main story time |
-| **In Progress** | Playtime ≥ 30 minutes |
+| **In Progress** | Playtime ≥ your configured threshold (default 30 minutes) |
 | **Dropped** | Not played for over 1 year |
 | **Backlog** | Not started yet |
 
-You can also manually override any tag if the automatic detection isn't right for you.
+You can also manually override any tag if the automatic detection isn't right for you, search HowLongToBeat manually when the automatic match is missing or wrong, and rename/recolor each tag to your liking.
+
+Steam tools and apps (dedicated servers, SDKs, redistributables, etc.) are automatically detected and hidden so they don't clutter your Backlog.
+
+## Features
+
+- **Automatic tagging** from real playtime, achievements, and HowLongToBeat completion times - including non-Steam games (via session tracking and `localconfig.vdf`)
+- **Configurable thresholds**: adjust the achievement percentage required for Mastered and the playtime required for In Progress
+- **Manual HLTB search**: look up and pick the correct HowLongToBeat match yourself when the automatic search fails or picks the wrong game
+- **Customizable tags**: rename any tag label and pick its color from a curated palette, with a one-click reset to defaults
+- **Configurable badge position**: place the progress badge anywhere on the game banner (left/center/right × top/center/bottom), with a vertical nudge offset to avoid overlapping another plugin's badge in the same spot
+- **Localization**: English and Brazilian Portuguese, auto-detected from your system language with a manual override
+- **Full gamepad navigation** throughout the badge, tag dialog, and Settings panel
+- Automatically filters out non-game Steam tools/apps from your library
 
 ## Screenshots
 
@@ -35,7 +48,7 @@ If you find this plugin useful, consider supporting its development — it helps
 1. Open Decky Loader on your Steam Deck (QAM → Plugin icon)
 2. Navigate to Settings → Developer Mode
 3. Enable Developer Mode
-4. Install from URL: `https://github.com/maroun2/deck-progress-tracker/releases/download/1.3.5/deck-progress-tracker-1.3.5.zip`
+4. Install from URL: `https://github.com/maroun2/deck-progress-tracker/releases/latest/download/deck-progress-tracker.zip`
 5. Restart Decky if prompted
 
 ### Manual Installation
@@ -49,7 +62,7 @@ If you find this plugin useful, consider supporting its development — it helps
 The plugin uses a priority-based system where higher priority tags override lower ones:
 
 ### 1. Mastered (Highest Priority)
-- Requires: 85%+ of all achievements unlocked
+- Requires: achievement percentage ≥ your configured threshold (default 85%, adjustable in Settings)
 - Shows true game mastery beyond basic completion
 - Priority: Overrides all other tags
 
@@ -65,7 +78,7 @@ The plugin uses a priority-based system where higher priority tags override lowe
 - Priority: Overrides In Progress, Backlog
 
 ### 4. In Progress
-- Requires: Playtime ≥ 30 minutes
+- Requires: Playtime ≥ your configured threshold (default 30 minutes, adjustable in Settings)
 - Currently playing or recently played
 - Priority: Overrides Backlog only
 
