@@ -57,6 +57,11 @@ jobs:
           cd plugin-build
           zip -r ../deck-progress-tracker-${{ steps.version.outputs.version }}.zip deck-progress-tracker
           cd ..
+          # Also publish under a fixed filename, so GitHub's stable
+          # "latest release" alias (releases/latest/download/<filename>)
+          # keeps working across versions instead of breaking every time
+          # the versioned filename changes.
+          cp deck-progress-tracker-${{ steps.version.outputs.version }}.zip deck-progress-tracker.zip
 
       - name: Verify zip contents
         run: |
@@ -73,9 +78,9 @@ jobs:
           **Option 1: Install from URL (Recommended)**
           1. Enable Developer Mode in Decky Loader settings
           2. Go to Developer tab → Install Plugin from URL
-          3. Enter this URL:
+          3. Enter this URL (always resolves to the latest release):
           ```
-          https://github.com/${{ github.repository }}/releases/download/${{ steps.version.outputs.version }}/deck-progress-tracker-${{ steps.version.outputs.version }}.zip
+          https://github.com/${{ github.repository }}/releases/latest/download/deck-progress-tracker.zip
           ```
           4. Click Install and wait for completion
 
@@ -112,7 +117,9 @@ jobs:
         with:
           tag_name: ${{ steps.version.outputs.version }}
           name: ${{ steps.version.outputs.version }}
-          files: deck-progress-tracker-${{ steps.version.outputs.version }}.zip
+          files: |
+            deck-progress-tracker-${{ steps.version.outputs.version }}.zip
+            deck-progress-tracker.zip
           body_path: release_notes.md
           draft: false
           prerelease: false
