@@ -124,7 +124,15 @@ class Database:
                 ('badge_position_h', 'right'),
                 ('badge_position_v', 'top'),
                 ('badge_overlap_offset', '0'),
-                ('language', 'auto')
+                ('language', 'auto'),
+                ('tag_label_mastered', ''),
+                ('tag_label_completed', ''),
+                ('tag_label_in_progress', ''),
+                ('tag_label_dropped', ''),
+                ('tag_color_mastered', ''),
+                ('tag_color_completed', ''),
+                ('tag_color_in_progress', ''),
+                ('tag_color_dropped', '')
         """)
 
         conn.commit()

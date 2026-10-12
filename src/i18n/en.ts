@@ -35,6 +35,8 @@ export const en = {
   'settings.minutesSuffix': ' min',
   'settings.masteredThreshold': 'Mastered threshold',
   'settings.masteredThresholdDesc': 'Minimum percentage of achievements unlocked for a game to be tagged Mastered.',
+  'settings.customizeTags': 'Customize Tags',
+  'settings.resetTagCustomization': 'Reset to Default',
 
   // Settings - Language
   'settings.language': 'Language',

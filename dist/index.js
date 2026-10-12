@@ -1,4 +1,4 @@
-const manifest = {"name":"Deck Progress Tracker","author":"Maron","version":"1.4.5","api_version":1,"flags":[],"publish":{"tags":["library","achievements","statistics","enhancement","progress-tracking"],"description":"Automatic game tagging based on achievements, playtime, and completion time. Track your progress with visual badges in the Steam library. Features 5 intelligent tags: Mastered, Completed, Dropped, In Progress, and Backlog.","image":"https://raw.githubusercontent.com/maroun2/deck-progress-tracker/main/assets/market_image.png"}};
+const manifest = {"name":"Deck Progress Tracker","author":"Maron","version":"1.4.6","api_version":1,"flags":[],"publish":{"tags":["library","achievements","statistics","enhancement","progress-tracking"],"description":"Automatic game tagging based on achievements, playtime, and completion time. Track your progress with visual badges in the Steam library. Features 5 intelligent tags: Mastered, Completed, Dropped, In Progress, and Backlog.","image":"https://raw.githubusercontent.com/maroun2/deck-progress-tracker/main/assets/market_image.png"}};
 const API_VERSION = 2;
 if (!manifest?.name) {
     throw new Error('[@decky/api]: Failed to find plugin manifest.');
@@ -606,6 +606,8 @@ const en = {
     'settings.minutesSuffix': ' min',
     'settings.masteredThreshold': 'Mastered threshold',
     'settings.masteredThresholdDesc': 'Minimum percentage of achievements unlocked for a game to be tagged Mastered.',
+    'settings.customizeTags': 'Customize Tags',
+    'settings.resetTagCustomization': 'Reset to Default',
     // Settings - Language
     'settings.language': 'Language',
     'settings.languageAuto': 'Automatic (System)',
@@ -693,6 +695,8 @@ const ptBR = {
     'settings.minutesSuffix': ' min',
     'settings.masteredThreshold': 'Limite para "Dominado"',
     'settings.masteredThresholdDesc': 'Percentual mínimo de conquistas desbloqueadas para o jogo ser marcado como Dominado.',
+    'settings.customizeTags': 'Personalizar Tags',
+    'settings.resetTagCustomization': 'Redefinir para o Padrão',
     // Settings - Language
     'settings.language': 'Idioma',
     'settings.languageAuto': 'Automático (Sistema)',
@@ -806,6 +810,61 @@ function useTranslation() {
     return { t: translate, language: currentLanguage };
 }
 
+/**
+ * Shared helpers for user-customizable tag labels/colors
+ * (https://github.com/maroun2/deck-progress-tracker/issues/6)
+ */
+// These match named presets in TAG_COLOR_PRESETS below exactly (Pink, Green,
+// Blue, Brown), so the default color always shows up selected in the
+// dropdown instead of needing a separate synthetic "Default" entry.
+const DEFAULT_TAG_COLORS = {
+    mastered: '#f5576c', // Pink
+    completed: '#2ecc71', // Green
+    in_progress: '#3498db', // Blue
+    dropped: '#8d6e63', // Brown
+};
+const TAG_LABEL_SETTING_KEY = {
+    mastered: 'tag_label_mastered',
+    completed: 'tag_label_completed',
+    in_progress: 'tag_label_in_progress',
+    dropped: 'tag_label_dropped',
+};
+const TAG_COLOR_SETTING_KEY = {
+    mastered: 'tag_color_mastered',
+    completed: 'tag_color_completed',
+    in_progress: 'tag_color_in_progress',
+    dropped: 'tag_color_dropped',
+};
+const DEFAULT_TAG_LABEL_KEY = {
+    mastered: 'tag.mastered',
+    completed: 'tag.completed',
+    in_progress: 'tag.in_progress',
+    dropped: 'tag.dropped',
+};
+// Curated palette instead of a free color picker - @decky/ui has no native
+// color input, and a raw HTML <input type="color"> doesn't play well with
+// gamepad navigation (same class of issue fixed elsewhere in this plugin).
+const TAG_COLOR_PRESETS = [
+    { label: 'Pink', value: '#f5576c' },
+    { label: 'Red', value: '#e74c3c' },
+    { label: 'Orange', value: '#e67e22' },
+    { label: 'Yellow', value: '#f1c40f' },
+    { label: 'Green', value: '#2ecc71' },
+    { label: 'Teal', value: '#1abc9c' },
+    { label: 'Blue', value: '#3498db' },
+    { label: 'Purple', value: '#9b59b6' },
+    { label: 'Brown', value: '#8d6e63' },
+    { label: 'Gray', value: '#888888' },
+];
+function resolveTagLabel(type, settings, t) {
+    const custom = settings[TAG_LABEL_SETTING_KEY[type]];
+    return custom && custom.trim() ? custom.trim() : t(DEFAULT_TAG_LABEL_KEY[type]);
+}
+function resolveTagColor(type, settings) {
+    const custom = settings[TAG_COLOR_SETTING_KEY[type]];
+    return custom && custom.trim() ? custom.trim() : DEFAULT_TAG_COLORS[type];
+}
+
 const TAG_COLORS = {
     completed: '#38ef7d',
     in_progress: '#764ba2',
@@ -813,7 +872,7 @@ const TAG_COLORS = {
     backlog: '#888',
     dropped: '#c9a171',
 };
-const TAG_LABEL_KEY$2 = {
+const TAG_LABEL_KEY = {
     completed: 'tag.completed',
     in_progress: 'tag.in_progress',
     backlog: 'tag.backlog',
@@ -860,6 +919,14 @@ const Settings = () => {
         badge_position_v: 'top',
         badge_overlap_offset: 0,
         language: 'auto',
+        tag_label_mastered: '',
+        tag_label_completed: '',
+        tag_label_in_progress: '',
+        tag_label_dropped: '',
+        tag_color_mastered: '',
+        tag_color_completed: '',
+        tag_color_in_progress: '',
+        tag_color_dropped: '',
     });
     const [stats, setStats] = SP_REACT.useState(null);
     const [syncing, setSyncing] = SP_REACT.useState(false);
@@ -1017,6 +1084,37 @@ const Settings = () => {
         }
         catch (err) { }
     };
+    const updateTagLabel = async (type, value) => {
+        const key = TAG_LABEL_SETTING_KEY[type];
+        setSettings(prev => ({ ...prev, [key]: value }));
+        try {
+            await call('update_settings', { [key]: value });
+            window.dispatchEvent(new CustomEvent(BADGE_SETTINGS_UPDATED_EVENT));
+        }
+        catch (err) { }
+    };
+    const updateTagColor = async (type, value) => {
+        const key = TAG_COLOR_SETTING_KEY[type];
+        setSettings(prev => ({ ...prev, [key]: value }));
+        try {
+            await call('update_settings', { [key]: value });
+            window.dispatchEvent(new CustomEvent(BADGE_SETTINGS_UPDATED_EVENT));
+        }
+        catch (err) { }
+    };
+    const resetTagCustomization = async () => {
+        const cleared = {};
+        ['mastered', 'completed', 'in_progress', 'dropped'].forEach((type) => {
+            cleared[TAG_LABEL_SETTING_KEY[type]] = '';
+            cleared[TAG_COLOR_SETTING_KEY[type]] = '';
+        });
+        setSettings(prev => ({ ...prev, ...cleared }));
+        try {
+            await call('update_settings', cleared);
+            window.dispatchEvent(new CustomEvent(BADGE_SETTINGS_UPDATED_EVENT));
+        }
+        catch (err) { }
+    };
     const groupedGames = taggedGames.reduce((acc, g) => {
         if (!acc[g.tag])
             acc[g.tag] = [];
@@ -1036,22 +1134,24 @@ const Settings = () => {
                 const games = isBacklog ? backlogGames : (groupedGames[tagType] || []);
                 const count = isBacklog ? (stats?.backlog || 0) : games.length;
                 const isExpanded = !!expandedSections[tagType];
+                const label = isBacklog ? t(TAG_LABEL_KEY[tagType]) : resolveTagLabel(tagType, settings, t);
+                const color = isBacklog ? TAG_COLORS[tagType] : resolveTagColor(tagType, settings);
                 return (SP_REACT.createElement(SP_REACT.Fragment, { key: tagType },
                     SP_REACT.createElement(DFL.PanelSectionRow, null,
                         SP_REACT.createElement(DFL.ButtonItem, { layout: "below", onClick: () => toggleSection(tagType) },
                             SP_REACT.createElement("div", { style: styles$1.tagSectionContent },
                                 SP_REACT.createElement("div", { style: styles$1.tagSectionLeft },
-                                    SP_REACT.createElement(TagIcon, { type: tagType, size: 18 }),
-                                    SP_REACT.createElement("span", { style: styles$1.tagSectionTitle }, t(TAG_LABEL_KEY$2[tagType]))),
+                                    SP_REACT.createElement(TagIcon, { type: tagType, size: 18, color: isBacklog ? undefined : color }),
+                                    SP_REACT.createElement("span", { style: styles$1.tagSectionTitle }, label)),
                                 SP_REACT.createElement("div", { style: styles$1.tagSectionRight },
-                                    SP_REACT.createElement("span", { style: { ...styles$1.tagCount, color: TAG_COLORS[tagType] } }, count),
+                                    SP_REACT.createElement("span", { style: { ...styles$1.tagCount, color } }, count),
                                     SP_REACT.createElement("span", { style: styles$1.expandIcon }, isExpanded ? '−' : '+'))))),
                     isExpanded && (SP_REACT.createElement("div", { style: styles$1.tagDescription }, t(TAG_DESCRIPTION_KEY[tagType], tagType === 'mastered' ? { threshold: settings.mastered_threshold } : undefined))),
                     isExpanded && games.length > 0 && games.map(game => (SP_REACT.createElement(DFL.PanelSectionRow, { key: game.appid },
                         SP_REACT.createElement(DFL.ButtonItem, { layout: "below", onClick: () => { DFL.Navigation.Navigate(`/library/app/${game.appid}`); DFL.Navigation.CloseSideMenus(); }, style: { width: '100%', overflow: 'hidden' } },
                             SP_REACT.createElement("div", { style: { display: 'table', tableLayout: 'fixed', width: '100%' } },
                                 SP_REACT.createElement("div", { style: styles$1.gameItemContent },
-                                    SP_REACT.createElement("span", { style: { ...styles$1.smallDot, backgroundColor: TAG_COLORS[game.tag] } }),
+                                    SP_REACT.createElement("span", { style: { ...styles$1.smallDot, backgroundColor: game.tag === 'backlog' ? TAG_COLORS.backlog : resolveTagColor(game.tag, settings) } }),
                                     SP_REACT.createElement("span", { style: styles$1.gameName }, game.game_name),
                                     game.is_manual && SP_REACT.createElement("span", { style: styles$1.manualBadge }, t('settings.manual')))))))),
                     isExpanded && games.length === 0 && !loadingBacklog && SP_REACT.createElement("div", { style: styles$1.emptySection }, t('settings.noGamesFound'))));
@@ -1075,6 +1175,15 @@ const Settings = () => {
                 SP_REACT.createElement(DFL.SliderField, { label: t('settings.inProgressThreshold'), value: settings.in_progress_threshold, min: 1, max: 120, step: 1, editableValue: true, valueSuffix: t('settings.minutesSuffix'), onChange: updateInProgressThreshold })),
             SP_REACT.createElement(DFL.PanelSectionRow, null,
                 SP_REACT.createElement(DFL.SliderField, { label: t('settings.masteredThreshold'), description: t('settings.masteredThresholdDesc'), value: settings.mastered_threshold, min: 50, max: 100, step: 1, editableValue: true, valueSuffix: "%", onChange: updateMasteredThreshold }))),
+        SP_REACT.createElement(DFL.PanelSection, { title: t('settings.customizeTags') },
+            ['mastered', 'completed', 'in_progress', 'dropped'].map((type, index) => (SP_REACT.createElement(DFL.PanelSectionRow, { key: type },
+                SP_REACT.createElement("div", { style: index > 0 ? { ...styles$1.customTagRow, ...styles$1.customTagRowSeparator } : styles$1.customTagRow },
+                    SP_REACT.createElement(DFL.TextField, { label: t(TAG_LABEL_KEY[type]), value: resolveTagLabel(type, settings, t), onChange: (e) => updateTagLabel(type, e.target.value) }),
+                    SP_REACT.createElement("div", { style: styles$1.customTagColorWrapper },
+                        SP_REACT.createElement(DFL.Dropdown, { rgOptions: TAG_COLOR_PRESETS.map((preset) => ({ data: preset.value, label: preset.label })), selectedOption: resolveTagColor(type, settings), onChange: (option) => updateTagColor(type, option.data) })))))),
+            SP_REACT.createElement(DFL.PanelSectionRow, null,
+                SP_REACT.createElement("div", { style: styles$1.customTagRowSeparator },
+                    SP_REACT.createElement(DFL.ButtonItem, { layout: "below", onClick: resetTagCustomization }, t('settings.resetTagCustomization'))))),
         SP_REACT.createElement(DFL.PanelSection, { title: t('settings.language') },
             SP_REACT.createElement(DFL.PanelSectionRow, null,
                 SP_REACT.createElement("div", { style: { width: '100%' } },
@@ -1085,7 +1194,7 @@ const Settings = () => {
         SP_REACT.createElement(DFL.PanelSection, { title: t('settings.about') },
             SP_REACT.createElement("div", { style: styles$1.about },
                 SP_REACT.createElement("p", { style: styles$1.aboutLine }, "Deck Progress Tracker"),
-                SP_REACT.createElement("p", { style: styles$1.aboutLine }, "1.4.5"),
+                SP_REACT.createElement("p", { style: styles$1.aboutLine }, "1.4.6"),
                 SP_REACT.createElement("p", { style: styles$1.aboutLine }, t('settings.aboutDataSource'))),
             SP_REACT.createElement(DFL.PanelSectionRow, null,
                 SP_REACT.createElement(DFL.ButtonItem, { layout: "below", onClick: () => DFL.Navigation.NavigateToExternalWeb('https://patreon.com/DeckProgressTracker') }, t('settings.supportPatreon'))))));
@@ -1102,6 +1211,12 @@ const styles$1 = {
     tagSectionContent: { width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between' },
     dropdownRow: { width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between' },
     avoidOverlapRow: { width: '100%', marginTop: '12px', paddingTop: '12px', borderTop: '1px solid #333' },
+    customTagRow: { width: '100%', display: 'flex', flexDirection: 'column' },
+    customTagRowSeparator: { marginTop: '16px', paddingTop: '16px' },
+    // Dropdown (like TextField) carries its own built-in top margin from
+    // Decky's Field wrapper - a flex `gap` on the parent has no effect on
+    // it, so pull it up directly to actually halve the visual distance.
+    customTagColorWrapper: { marginTop: '-8px' },
     tagSectionLeft: { display: 'flex', alignItems: 'center', gap: '10px' },
     tagSectionRight: { display: 'flex', alignItems: 'center', gap: '12px' },
     tagSectionTitle: { fontWeight: 'bold' },
@@ -1139,11 +1254,9 @@ const TAG_STYLES = {
  * TagManager Component
  * Modal for managing game tags manually
  */
-const TAG_LABEL_KEY$1 = {
-    completed: 'tag.completed',
-    in_progress: 'tag.in_progress',
-    mastered: 'tag.mastered',
-    dropped: 'tag.dropped',
+const EMPTY_TAG_CUSTOMIZATION$1 = {
+    tag_label_mastered: '', tag_label_completed: '', tag_label_in_progress: '', tag_label_dropped: '',
+    tag_color_mastered: '', tag_color_completed: '', tag_color_in_progress: '', tag_color_dropped: '',
 };
 const TagManager = ({ appid, onClose }) => {
     const { t } = useTranslation();
@@ -1155,9 +1268,30 @@ const TagManager = ({ appid, onClose }) => {
     const [manualResults, setManualResults] = SP_REACT.useState([]);
     const [manualSearching, setManualSearching] = SP_REACT.useState(false);
     const [manualError, setManualError] = SP_REACT.useState(null);
+    const [tagCustomization, setTagCustomization] = SP_REACT.useState(EMPTY_TAG_CUSTOMIZATION$1);
     SP_REACT.useEffect(() => {
         fetchDetails();
     }, [appid]);
+    SP_REACT.useEffect(() => {
+        (async () => {
+            try {
+                const result = await call('get_settings');
+                if (result.settings) {
+                    setTagCustomization({
+                        tag_label_mastered: result.settings.tag_label_mastered || '',
+                        tag_label_completed: result.settings.tag_label_completed || '',
+                        tag_label_in_progress: result.settings.tag_label_in_progress || '',
+                        tag_label_dropped: result.settings.tag_label_dropped || '',
+                        tag_color_mastered: result.settings.tag_color_mastered || '',
+                        tag_color_completed: result.settings.tag_color_completed || '',
+                        tag_color_in_progress: result.settings.tag_color_in_progress || '',
+                        tag_color_dropped: result.settings.tag_color_dropped || '',
+                    });
+                }
+            }
+            catch (e) { }
+        })();
+    }, []);
     const fetchDetails = async () => {
         try {
             setLoading(true);
@@ -1275,8 +1409,8 @@ const TagManager = ({ appid, onClose }) => {
             SP_REACT.createElement("div", { style: styles.header },
                 SP_REACT.createElement("h2", { style: styles.title }, stats?.game_name || t('tagManager.gameFallback', { appid })),
                 tag?.tag && (SP_REACT.createElement("div", { style: styles.currentTagBadge },
-                    SP_REACT.createElement(TagIcon, { type: tag.tag, size: 20 }),
-                    SP_REACT.createElement("span", { style: { color: TAG_ICON_COLORS[tag.tag] } }, t(TAG_LABEL_KEY$1[tag.tag]).toUpperCase()),
+                    SP_REACT.createElement(TagIcon, { type: tag.tag, size: 20, color: resolveTagColor(tag.tag, tagCustomization) }),
+                    SP_REACT.createElement("span", { style: { color: resolveTagColor(tag.tag, tagCustomization) } }, resolveTagLabel(tag.tag, tagCustomization, t).toUpperCase()),
                     SP_REACT.createElement("span", { style: styles.tagType }, tag.is_manual ? t('tagManager.manualTag') : t('tagManager.autoTag'))))),
             SP_REACT.createElement("div", { style: styles.mainContent },
                 SP_REACT.createElement("div", { style: styles.leftColumn },
@@ -1327,18 +1461,18 @@ const TagManager = ({ appid, onClose }) => {
                 SP_REACT.createElement("div", { style: styles.rightColumn },
                     SP_REACT.createElement("h3", { style: styles.sectionTitle }, t('tagManager.setTag')),
                     SP_REACT.createElement(DFL.Focusable, { style: styles.tagButtonGroup, "flow-children": "down" },
-                        SP_REACT.createElement(DFL.Focusable, { onActivate: () => setTag('mastered'), style: { ...styles.tagButton, background: TAG_STYLES.mastered.background } },
+                        SP_REACT.createElement(DFL.Focusable, { onActivate: () => setTag('mastered'), style: { ...styles.tagButton, background: tagCustomization.tag_color_mastered || TAG_STYLES.mastered.background } },
                             SP_REACT.createElement(TagIcon, { type: "mastered", size: 18, color: "white" }),
-                            SP_REACT.createElement("span", null, t('tag.mastered'))),
-                        SP_REACT.createElement(DFL.Focusable, { onActivate: () => setTag('completed'), style: { ...styles.tagButton, background: TAG_STYLES.completed.background } },
+                            SP_REACT.createElement("span", null, resolveTagLabel('mastered', tagCustomization, t))),
+                        SP_REACT.createElement(DFL.Focusable, { onActivate: () => setTag('completed'), style: { ...styles.tagButton, background: tagCustomization.tag_color_completed || TAG_STYLES.completed.background } },
                             SP_REACT.createElement(TagIcon, { type: "completed", size: 18, color: "white" }),
-                            SP_REACT.createElement("span", null, t('tag.completed'))),
-                        SP_REACT.createElement(DFL.Focusable, { onActivate: () => setTag('in_progress'), style: { ...styles.tagButton, background: TAG_STYLES.in_progress.background } },
+                            SP_REACT.createElement("span", null, resolveTagLabel('completed', tagCustomization, t))),
+                        SP_REACT.createElement(DFL.Focusable, { onActivate: () => setTag('in_progress'), style: { ...styles.tagButton, background: tagCustomization.tag_color_in_progress || TAG_STYLES.in_progress.background } },
                             SP_REACT.createElement(TagIcon, { type: "in_progress", size: 18, color: "white" }),
-                            SP_REACT.createElement("span", null, t('tag.in_progress'))),
-                        SP_REACT.createElement(DFL.Focusable, { onActivate: () => setTag('dropped'), style: { ...styles.tagButton, background: TAG_STYLES.dropped.background } },
+                            SP_REACT.createElement("span", null, resolveTagLabel('in_progress', tagCustomization, t))),
+                        SP_REACT.createElement(DFL.Focusable, { onActivate: () => setTag('dropped'), style: { ...styles.tagButton, background: tagCustomization.tag_color_dropped || TAG_STYLES.dropped.background } },
                             SP_REACT.createElement(TagIcon, { type: "dropped", size: 18, color: "white" }),
-                            SP_REACT.createElement("span", null, t('tag.dropped')))),
+                            SP_REACT.createElement("span", null, resolveTagLabel('dropped', tagCustomization, t)))),
                     SP_REACT.createElement(DFL.Focusable, { style: styles.buttonGroup, "flow-children": "horizontal" },
                         SP_REACT.createElement(DFL.Focusable, { onClick: resetToAuto, onActivate: resetToAuto, style: styles.secondaryButton }, t('tagManager.resetToAuto')),
                         SP_REACT.createElement(DFL.Focusable, { onClick: removeTag, onActivate: removeTag, style: styles.secondaryButton }, t('tagManager.remove'))))),
@@ -1738,11 +1872,9 @@ const NO_TAG_STYLE = {
     color: '#aaa',
     border: '1px dashed #666',
 };
-const TAG_LABEL_KEY = {
-    completed: 'tag.completed',
-    in_progress: 'tag.in_progress',
-    mastered: 'tag.mastered',
-    dropped: 'tag.dropped',
+const EMPTY_TAG_CUSTOMIZATION = {
+    tag_label_mastered: '', tag_label_completed: '', tag_label_in_progress: '', tag_label_dropped: '',
+    tag_color_mastered: '', tag_color_completed: '', tag_color_in_progress: '', tag_color_dropped: '',
 };
 /**
  * GameTagBadge - Main component injected into library app page
@@ -1756,6 +1888,7 @@ const GameTagBadge = ({ appid }) => {
     const [showManager, setShowManager] = SP_REACT.useState(false);
     const [show, setShow] = SP_REACT.useState(true);
     const [position, setPosition] = SP_REACT.useState(DEFAULT_BADGE_POSITION);
+    const [tagCustomization, setTagCustomization] = SP_REACT.useState(EMPTY_TAG_CUSTOMIZATION);
     const [bannerHeight, setBannerHeight] = SP_REACT.useState(null);
     const ref = SP_REACT.useRef(null);
     SP_REACT.useLayoutEffect(() => {
@@ -1773,6 +1906,16 @@ const GameTagBadge = ({ appid }) => {
                         badge_position_h: result.settings.badge_position_h || DEFAULT_BADGE_POSITION.badge_position_h,
                         badge_position_v: result.settings.badge_position_v || DEFAULT_BADGE_POSITION.badge_position_v,
                         badge_overlap_offset: result.settings.badge_overlap_offset ?? DEFAULT_BADGE_POSITION.badge_overlap_offset,
+                    });
+                    setTagCustomization({
+                        tag_label_mastered: result.settings.tag_label_mastered || '',
+                        tag_label_completed: result.settings.tag_label_completed || '',
+                        tag_label_in_progress: result.settings.tag_label_in_progress || '',
+                        tag_label_dropped: result.settings.tag_label_dropped || '',
+                        tag_color_mastered: result.settings.tag_color_mastered || '',
+                        tag_color_completed: result.settings.tag_color_completed || '',
+                        tag_color_in_progress: result.settings.tag_color_in_progress || '',
+                        tag_color_dropped: result.settings.tag_color_dropped || '',
                     });
                 }
             }
@@ -1836,7 +1979,10 @@ const GameTagBadge = ({ appid }) => {
         refetch();
     };
     const containerStyle = buildContainerStyle(position.badge_position_h, position.badge_position_v, bannerHeight, position.badge_overlap_offset);
-    const tagStyle = tag && tag.tag ? TAG_STYLES[tag.tag] : null;
+    const tagType = tag && tag.tag ? tag.tag : null;
+    const tagStyle = tagType ? TAG_STYLES[tagType] : null;
+    const customColor = tagType ? resolveTagColor(tagType, tagCustomization) : null;
+    const hasCustomColor = tagType ? !!tagCustomization[TAG_COLOR_SETTING_KEY[tagType]] : false;
     const tooltip = tagStyle
         ? tag?.is_manual ? t('badge.manualTagEdit') : t('badge.autoTagEdit')
         : t('badge.clickToAddTag');
@@ -1850,14 +1996,14 @@ const GameTagBadge = ({ appid }) => {
                 fontSize: '14px',
                 fontWeight: 'bold',
                 color: tagStyle ? 'white' : NO_TAG_STYLE.color,
-                background: tagStyle ? tagStyle.background : NO_TAG_STYLE.background,
+                background: tagStyle ? (hasCustomColor ? customColor : tagStyle.background) : NO_TAG_STYLE.background,
                 border: tagStyle ? 'none' : NO_TAG_STYLE.border,
                 boxShadow: '0 4px 6px rgba(0,0,0,0.3)',
                 minWidth: 'auto',
-            } }, tagStyle && tag && tag.tag ? (SP_REACT.createElement(SP_REACT.Fragment, null,
-            SP_REACT.createElement(TagIcon, { type: tag.tag, size: 18, color: "white" }),
-            SP_REACT.createElement("span", null, t(TAG_LABEL_KEY[tag.tag])),
-            tag.is_manual && SP_REACT.createElement("span", { style: { fontSize: '12px', opacity: 0.8 } }, "\u270E"))) : (SP_REACT.createElement(SP_REACT.Fragment, null,
+            } }, tagStyle && tagType ? (SP_REACT.createElement(SP_REACT.Fragment, null,
+            SP_REACT.createElement(TagIcon, { type: tagType, size: 18, color: "white" }),
+            SP_REACT.createElement("span", null, resolveTagLabel(tagType, tagCustomization, t)),
+            tag?.is_manual && SP_REACT.createElement("span", { style: { fontSize: '12px', opacity: 0.8 } }, "\u270E"))) : (SP_REACT.createElement(SP_REACT.Fragment, null,
             SP_REACT.createElement("span", { style: { fontSize: '16px' } }, "+"),
             SP_REACT.createElement("span", null, t('badge.addTag'))))))),
         show && showManager && (SP_REACT.createElement(TagManager, { appid: appid, onClose: handleClose }))));

@@ -10,6 +10,7 @@ import { call } from '@decky/api';
 import { appDetailsClasses, appDetailsHeaderClasses, Button } from '@decky/ui';
 import { TAG_STYLES } from './GameTag';
 import { TagIcon } from './TagIcon';
+import { CustomizableTagType, TAG_COLOR_SETTING_KEY, resolveTagLabel, resolveTagColor } from '../lib/tagCustomization';
 import { TagManager } from './TagManager';
 import { useGameTag } from '../hooks/useGameTag';
 import { syncSingleGameWithFrontendData } from '../lib/syncUtils';
@@ -107,12 +108,14 @@ const NO_TAG_STYLE = {
   border: '1px dashed #666',
 };
 
-const TAG_LABEL_KEY = {
-  completed: 'tag.completed',
-  in_progress: 'tag.in_progress',
-  mastered: 'tag.mastered',
-  dropped: 'tag.dropped',
-} as const;
+const EMPTY_TAG_CUSTOMIZATION: Pick<
+  PluginSettings,
+  'tag_label_mastered' | 'tag_label_completed' | 'tag_label_in_progress' | 'tag_label_dropped' |
+  'tag_color_mastered' | 'tag_color_completed' | 'tag_color_in_progress' | 'tag_color_dropped'
+> = {
+  tag_label_mastered: '', tag_label_completed: '', tag_label_in_progress: '', tag_label_dropped: '',
+  tag_color_mastered: '', tag_color_completed: '', tag_color_in_progress: '', tag_color_dropped: '',
+};
 
 interface GameTagBadgeProps {
   appid: string;
@@ -130,6 +133,7 @@ export const GameTagBadge: FC<GameTagBadgeProps> = ({ appid }) => {
   const [showManager, setShowManager] = useState(false);
   const [show, setShow] = useState(true);
   const [position, setPosition] = useState(DEFAULT_BADGE_POSITION);
+  const [tagCustomization, setTagCustomization] = useState(EMPTY_TAG_CUSTOMIZATION);
   const [bannerHeight, setBannerHeight] = useState<number | null>(null);
   const ref = useRef<HTMLDivElement | null>(null);
 
@@ -149,6 +153,16 @@ export const GameTagBadge: FC<GameTagBadgeProps> = ({ appid }) => {
             badge_position_h: result.settings.badge_position_h || DEFAULT_BADGE_POSITION.badge_position_h,
             badge_position_v: result.settings.badge_position_v || DEFAULT_BADGE_POSITION.badge_position_v,
             badge_overlap_offset: result.settings.badge_overlap_offset ?? DEFAULT_BADGE_POSITION.badge_overlap_offset,
+          });
+          setTagCustomization({
+            tag_label_mastered: result.settings.tag_label_mastered || '',
+            tag_label_completed: result.settings.tag_label_completed || '',
+            tag_label_in_progress: result.settings.tag_label_in_progress || '',
+            tag_label_dropped: result.settings.tag_label_dropped || '',
+            tag_color_mastered: result.settings.tag_color_mastered || '',
+            tag_color_completed: result.settings.tag_color_completed || '',
+            tag_color_in_progress: result.settings.tag_color_in_progress || '',
+            tag_color_dropped: result.settings.tag_color_dropped || '',
           });
         }
       } catch (e) {
@@ -224,7 +238,10 @@ export const GameTagBadge: FC<GameTagBadgeProps> = ({ appid }) => {
   };
 
   const containerStyle = buildContainerStyle(position.badge_position_h, position.badge_position_v, bannerHeight, position.badge_overlap_offset);
-  const tagStyle = tag && tag.tag ? TAG_STYLES[tag.tag] : null;
+  const tagType = tag && tag.tag ? (tag.tag as CustomizableTagType) : null;
+  const tagStyle = tagType ? TAG_STYLES[tagType] : null;
+  const customColor = tagType ? resolveTagColor(tagType, tagCustomization) : null;
+  const hasCustomColor = tagType ? !!(tagCustomization as Record<string, string>)[TAG_COLOR_SETTING_KEY[tagType]] : false;
   const tooltip = tagStyle
     ? tag?.is_manual ? t('badge.manualTagEdit') : t('badge.autoTagEdit')
     : t('badge.clickToAddTag');
@@ -245,17 +262,17 @@ export const GameTagBadge: FC<GameTagBadgeProps> = ({ appid }) => {
               fontSize: '14px',
               fontWeight: 'bold',
               color: tagStyle ? 'white' : NO_TAG_STYLE.color,
-              background: tagStyle ? tagStyle.background : NO_TAG_STYLE.background,
+              background: tagStyle ? (hasCustomColor ? customColor! : tagStyle.background) : NO_TAG_STYLE.background,
               border: tagStyle ? 'none' : NO_TAG_STYLE.border,
               boxShadow: '0 4px 6px rgba(0,0,0,0.3)',
               minWidth: 'auto',
             }}
           >
-            {tagStyle && tag && tag.tag ? (
+            {tagStyle && tagType ? (
               <>
-                <TagIcon type={tag.tag} size={18} color="white" />
-                <span>{t(TAG_LABEL_KEY[tag.tag])}</span>
-                {tag.is_manual && <span style={{ fontSize: '12px', opacity: 0.8 }}>✎</span>}
+                <TagIcon type={tagType} size={18} color="white" />
+                <span>{resolveTagLabel(tagType, tagCustomization, t)}</span>
+                {tag?.is_manual && <span style={{ fontSize: '12px', opacity: 0.8 }}>✎</span>}
               </>
             ) : (
               <>

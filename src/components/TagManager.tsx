@@ -6,17 +6,20 @@
 import React, { FC, useState, useEffect } from 'react';
 import { call } from '@decky/api';
 import { Focusable, DialogButton, TextField } from '@decky/ui';
-import { GameDetails, HLTBData } from '../types';
-import { TagIcon, TAG_ICON_COLORS } from './TagIcon';
+import { GameDetails, HLTBData, PluginSettings } from '../types';
+import { TagIcon } from './TagIcon';
 import { TAG_STYLES } from './GameTag';
 import { useTranslation } from '../i18n';
+import { CustomizableTagType, resolveTagLabel, resolveTagColor } from '../lib/tagCustomization';
 
-const TAG_LABEL_KEY = {
-  completed: 'tag.completed',
-  in_progress: 'tag.in_progress',
-  mastered: 'tag.mastered',
-  dropped: 'tag.dropped',
-} as const;
+const EMPTY_TAG_CUSTOMIZATION: Pick<
+  PluginSettings,
+  'tag_label_mastered' | 'tag_label_completed' | 'tag_label_in_progress' | 'tag_label_dropped' |
+  'tag_color_mastered' | 'tag_color_completed' | 'tag_color_in_progress' | 'tag_color_dropped'
+> = {
+  tag_label_mastered: '', tag_label_completed: '', tag_label_in_progress: '', tag_label_dropped: '',
+  tag_color_mastered: '', tag_color_completed: '', tag_color_in_progress: '', tag_color_dropped: '',
+};
 
 interface TagManagerProps {
   appid: string;
@@ -34,10 +37,31 @@ export const TagManager: FC<TagManagerProps> = ({ appid, onClose }) => {
   const [manualResults, setManualResults] = useState<HLTBData[]>([]);
   const [manualSearching, setManualSearching] = useState(false);
   const [manualError, setManualError] = useState<string | null>(null);
+  const [tagCustomization, setTagCustomization] = useState(EMPTY_TAG_CUSTOMIZATION);
 
   useEffect(() => {
     fetchDetails();
   }, [appid]);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const result = await call<[], { settings: PluginSettings }>('get_settings');
+        if (result.settings) {
+          setTagCustomization({
+            tag_label_mastered: result.settings.tag_label_mastered || '',
+            tag_label_completed: result.settings.tag_label_completed || '',
+            tag_label_in_progress: result.settings.tag_label_in_progress || '',
+            tag_label_dropped: result.settings.tag_label_dropped || '',
+            tag_color_mastered: result.settings.tag_color_mastered || '',
+            tag_color_completed: result.settings.tag_color_completed || '',
+            tag_color_in_progress: result.settings.tag_color_in_progress || '',
+            tag_color_dropped: result.settings.tag_color_dropped || '',
+          });
+        }
+      } catch (e) {}
+    })();
+  }, []);
 
   const fetchDetails = async () => {
     try {
@@ -175,9 +199,9 @@ export const TagManager: FC<TagManagerProps> = ({ appid, onClose }) => {
           <h2 style={styles.title}>{stats?.game_name || t('tagManager.gameFallback', { appid })}</h2>
           {tag?.tag && (
             <div style={styles.currentTagBadge}>
-              <TagIcon type={tag.tag as any} size={20} />
-              <span style={{ color: TAG_ICON_COLORS[tag.tag as keyof typeof TAG_ICON_COLORS] }}>
-                {t(TAG_LABEL_KEY[tag.tag as keyof typeof TAG_LABEL_KEY]).toUpperCase()}
+              <TagIcon type={tag.tag as any} size={20} color={resolveTagColor(tag.tag as CustomizableTagType, tagCustomization)} />
+              <span style={{ color: resolveTagColor(tag.tag as CustomizableTagType, tagCustomization) }}>
+                {resolveTagLabel(tag.tag as CustomizableTagType, tagCustomization, t).toUpperCase()}
               </span>
               <span style={styles.tagType}>
                 {tag.is_manual ? t('tagManager.manualTag') : t('tagManager.autoTag')}
@@ -284,31 +308,31 @@ export const TagManager: FC<TagManagerProps> = ({ appid, onClose }) => {
             <Focusable style={styles.tagButtonGroup} flow-children="down">
               <Focusable
                 onActivate={() => setTag('mastered')}
-                style={{ ...styles.tagButton, background: TAG_STYLES.mastered.background }}
+                style={{ ...styles.tagButton, background: tagCustomization.tag_color_mastered || TAG_STYLES.mastered.background }}
               >
                 <TagIcon type="mastered" size={18} color="white" />
-                <span>{t('tag.mastered')}</span>
+                <span>{resolveTagLabel('mastered', tagCustomization, t)}</span>
               </Focusable>
               <Focusable
                 onActivate={() => setTag('completed')}
-                style={{ ...styles.tagButton, background: TAG_STYLES.completed.background }}
+                style={{ ...styles.tagButton, background: tagCustomization.tag_color_completed || TAG_STYLES.completed.background }}
               >
                 <TagIcon type="completed" size={18} color="white" />
-                <span>{t('tag.completed')}</span>
+                <span>{resolveTagLabel('completed', tagCustomization, t)}</span>
               </Focusable>
               <Focusable
                 onActivate={() => setTag('in_progress')}
-                style={{ ...styles.tagButton, background: TAG_STYLES.in_progress.background }}
+                style={{ ...styles.tagButton, background: tagCustomization.tag_color_in_progress || TAG_STYLES.in_progress.background }}
               >
                 <TagIcon type="in_progress" size={18} color="white" />
-                <span>{t('tag.in_progress')}</span>
+                <span>{resolveTagLabel('in_progress', tagCustomization, t)}</span>
               </Focusable>
               <Focusable
                 onActivate={() => setTag('dropped')}
-                style={{ ...styles.tagButton, background: TAG_STYLES.dropped.background }}
+                style={{ ...styles.tagButton, background: tagCustomization.tag_color_dropped || TAG_STYLES.dropped.background }}
               >
                 <TagIcon type="dropped" size={18} color="white" />
-                <span>{t('tag.dropped')}</span>
+                <span>{resolveTagLabel('dropped', tagCustomization, t)}</span>
               </Focusable>
             </Focusable>
             <Focusable style={styles.buttonGroup} flow-children="horizontal">

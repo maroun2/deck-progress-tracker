@@ -65,6 +65,15 @@ export interface PluginSettings {
   badge_overlap_offset: number;
   // UI language: 'auto' follows the system/browser locale
   language: 'auto' | 'en' | 'pt-BR';
+  // Custom tag labels/colors - empty string means "use the built-in default"
+  tag_label_mastered: string;
+  tag_label_completed: string;
+  tag_label_in_progress: string;
+  tag_label_dropped: string;
+  tag_color_mastered: string;
+  tag_color_completed: string;
+  tag_color_in_progress: string;
+  tag_color_dropped: string;
 }
 
 export const BADGE_SETTINGS_UPDATED_EVENT = 'deck-progress-tracker:badge-settings-updated';
