@@ -84,5 +84,10 @@ export const ptBR: Record<TranslationKey, string> = {
   'tagManager.setTag': 'Definir Tag',
   'tagManager.resetToAuto': 'Voltar ao Automático',
   'tagManager.remove': 'Remover',
+  'tagManager.manualSearchOpen': 'Buscar HLTB manualmente',
+  'tagManager.manualSearchClose': 'Fechar busca manual',
+  'tagManager.manualSearchButton': 'Buscar',
+  'tagManager.manualSearching': 'Buscando...',
+  'tagManager.manualSearchNoResults': 'Nenhum resultado encontrado',
   'tagManager.gameFallback': 'Jogo {appid}',
 };
