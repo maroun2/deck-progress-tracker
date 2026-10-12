@@ -694,6 +694,7 @@ class Plugin:
             game_data = params.get('game_data', {})
             achievement_data = params.get('achievement_data')
             game_name = params.get('game_name')
+            is_tool = bool(game_data.get('is_tool', False))
 
             # Track if this is part of a larger sync operation
             is_bulk_sync = params.get('is_bulk_sync', False)
@@ -731,7 +732,7 @@ class Plugin:
             result = await Plugin.sync_game_with_playtime(
                 self, appid, playtime_minutes,
                 total_achievements, unlocked_achievements, achievement_percentage,
-                game_name, rt_last_time_played
+                game_name, rt_last_time_played, is_tool
             )
 
             # Clear sync progress if this was the last game
@@ -843,14 +844,17 @@ class Plugin:
                     # string (e.g. "234.7") rather than a clean integer.
                     playtime_minutes = int(float(game_info.get('playtime_minutes', 0) or 0))
                     rt_last_time_played = game_info.get('rt_last_time_played')
+                    is_tool = bool(game_info.get('is_tool', False))
                 elif isinstance(game_info, (int, float, str)):
                     # Backwards compatibility: if old format passes just int/float/str
                     playtime_minutes = int(float(game_info or 0))
                     rt_last_time_played = None
+                    is_tool = False
                 else:
                     logger.warning(f"Unexpected game_info type for {appid}: {type(game_info)} = {game_info}")
                     playtime_minutes = 0
                     rt_last_time_played = None
+                    is_tool = False
 
                 # Get achievement data from frontend (None if not available)
                 # We only pass data if we have actual achievement info (total > 0)
@@ -875,7 +879,7 @@ class Plugin:
                     cached_hltb = await self.db.get_hltb_cache(appid)
                     needs_hltb = not cached_hltb and playtime_minutes > 0
 
-                    result = await Plugin.sync_game_with_playtime(self, appid, playtime_minutes, total_achievements, unlocked_achievements, achievement_percentage, game_name, rt_last_time_played)
+                    result = await Plugin.sync_game_with_playtime(self, appid, playtime_minutes, total_achievements, unlocked_achievements, achievement_percentage, game_name, rt_last_time_played, is_tool)
                     synced += 1
 
                     # Update sync progress
@@ -943,7 +947,7 @@ class Plugin:
 
         return None
 
-    async def sync_game_with_playtime(self, appid: str, playtime_minutes: int, total_achievements: int = None, unlocked_achievements: int = None, achievement_percentage: float = None, frontend_game_name: str = None, rt_last_time_played: int = None) -> Dict[str, Any]:
+    async def sync_game_with_playtime(self, appid: str, playtime_minutes: int, total_achievements: int = None, unlocked_achievements: int = None, achievement_percentage: float = None, frontend_game_name: str = None, rt_last_time_played: int = None, is_tool: bool = False) -> Dict[str, Any]:
         """Sync a single game using frontend-provided playtime, achievements, name, and last played timestamp
 
         NOTE: Achievement params can be None if frontend doesn't have data.
@@ -1011,7 +1015,10 @@ class Plugin:
 
         # Determine if this game should be hidden from library
         # Hide non-Steam apps that have no HLTB data (likely not real games: Discord, Chrome, etc.)
-        is_hidden = is_non_steam and not cached_hltb
+        # Also hide Steam tools/apps (dedicated servers, redistributables, SDKs, etc.) that
+        # the frontend identified via Steam's own app_type - they clutter the Backlog since
+        # they're not real games and never get a meaningful tag.
+        is_hidden = (is_non_steam and not cached_hltb) or is_tool
 
         # Build stats object with frontend playtime and achievements
         # If frontend doesn't have achievement data (None), preserve existing DB values
@@ -1034,7 +1041,7 @@ class Plugin:
 
         logger.info(f"  Stats: playtime={playtime_minutes}min, " +
                     f"achievements={final_unlocked_achievements}/{final_total_achievements}" +
-                    (f", HIDDEN (non-Steam app without HLTB)" if is_hidden else "") +
+                    (f", HIDDEN ({'Steam tool' if is_tool else 'non-Steam app without HLTB'})" if is_hidden else "") +
                     (f", last_played={rt_last_time_played}" if rt_last_time_played else ""))
 
         if cached_hltb:
@@ -1048,7 +1055,7 @@ class Plugin:
         if is_manual:
             logger.info(f"  Skipping tag calculation (manual override)")
         elif is_hidden:
-            logger.info(f"  Skipping tag calculation (hidden non-Steam app)")
+            logger.info(f"  Skipping tag calculation (hidden: {'Steam tool' if is_tool else 'non-Steam app without HLTB'})")
         else:
             # Calculate tag using centralized logic
             calculated_tag = await Plugin.calculate_auto_tag(self, appid)

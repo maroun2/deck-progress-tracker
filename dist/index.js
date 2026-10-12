@@ -1,4 +1,4 @@
-const manifest = {"name":"Deck Progress Tracker","author":"Maron","version":"1.4.3","api_version":1,"flags":[],"publish":{"tags":["library","achievements","statistics","enhancement","progress-tracking"],"description":"Automatic game tagging based on achievements, playtime, and completion time. Track your progress with visual badges in the Steam library. Features 5 intelligent tags: Mastered, Completed, Dropped, In Progress, and Backlog.","image":"https://raw.githubusercontent.com/maroun2/deck-progress-tracker/main/assets/market_image.png"}};
+const manifest = {"name":"Deck Progress Tracker","author":"Maron","version":"1.4.4","api_version":1,"flags":[],"publish":{"tags":["library","achievements","statistics","enhancement","progress-tracking"],"description":"Automatic game tagging based on achievements, playtime, and completion time. Track your progress with visual badges in the Steam library. Features 5 intelligent tags: Mastered, Completed, Dropped, In Progress, and Backlog.","image":"https://raw.githubusercontent.com/maroun2/deck-progress-tracker/main/assets/market_image.png"}};
 const API_VERSION = 2;
 if (!manifest?.name) {
     throw new Error('[@decky/api]: Failed to find plugin manifest.');
@@ -265,6 +265,35 @@ const getAchievementData = async (appids) => {
     }
     return achievementMap;
 };
+// Steam's app_type bitmask (from appStore.GetAppOverviewByAppID().app_type).
+// Bits that are never real, playable games - dedicated servers, SDKs,
+// soundtracks, etc. - which otherwise sync in and clutter the Backlog
+// (https://github.com/maroun2/deck-progress-tracker/issues/4).
+const NON_GAME_APP_TYPE_BITS = 2 /* Application */ |
+    4 /* Tool */ |
+    8 /* Demo */ |
+    64 /* Guide */ |
+    128 /* Driver */ |
+    256 /* Config */ |
+    512 /* Hardware */ |
+    2048 /* Video */ |
+    4096 /* Plugin */ |
+    8192 /* Music */;
+const GAME_APP_TYPE_BIT = 1; // Game
+/**
+ * Whether a Steam app overview looks like a non-game tool/app.
+ * A missing/zero app_type (e.g. some non-Steam shortcuts) is never treated
+ * as "it's a tool" - we only flag it when Steam explicitly says so, to
+ * avoid accidentally hiding a real game due to incomplete overview data.
+ */
+const isLikelySteamTool = (overview) => {
+    const appType = overview?.app_type;
+    if (!appType)
+        return false;
+    if (appType & GAME_APP_TYPE_BIT)
+        return false;
+    return (appType & NON_GAME_APP_TYPE_BITS) !== 0;
+};
 /**
  * Get playtime and last played data for a list of appids from Steam's frontend API
  * Uses window.appStore which is Steam's internal game data cache
@@ -283,7 +312,8 @@ const getPlaytimeData = async (appids) => {
                 const rtLastTimePlayed = overview.rt_last_time_played || null;
                 gameDataMap[appid] = {
                     playtime_minutes: playtime,
-                    rt_last_time_played: rtLastTimePlayed
+                    rt_last_time_played: rtLastTimePlayed,
+                    is_tool: isLikelySteamTool(overview)
                 };
             }
         }
@@ -499,7 +529,7 @@ const syncLibraryProgressive = async (onProgress) => {
             const appid = appids[i];
             try {
                 const gameData = await getPlaytimeData([appid]);
-                const gameInfo = gameData[appid] || { playtime_minutes: 0, rt_last_time_played: null };
+                const gameInfo = gameData[appid] || { playtime_minutes: 0, rt_last_time_played: null, is_tool: false };
                 const achievementData = await fetchAchievementsOnDemand(appid);
                 const gameNames = await getGameNames([appid]);
                 const gameName = gameNames[appid] || `Game ${appid}`;
@@ -1042,7 +1072,7 @@ const Settings = () => {
         SP_REACT.createElement(DFL.PanelSection, { title: t('settings.about') },
             SP_REACT.createElement("div", { style: styles$1.about },
                 SP_REACT.createElement("p", { style: styles$1.aboutLine }, "Deck Progress Tracker"),
-                SP_REACT.createElement("p", { style: styles$1.aboutLine }, "1.4.3"),
+                SP_REACT.createElement("p", { style: styles$1.aboutLine }, "1.4.4"),
                 SP_REACT.createElement("p", { style: styles$1.aboutLine }, t('settings.aboutDataSource'))),
             SP_REACT.createElement(DFL.PanelSectionRow, null,
                 SP_REACT.createElement(DFL.ButtonItem, { layout: "below", onClick: () => DFL.Navigation.NavigateToExternalWeb('https://patreon.com/DeckProgressTracker') }, t('settings.supportPatreon'))))));
