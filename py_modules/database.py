@@ -122,6 +122,7 @@ class Database:
                 ('source_all_owned', 'true'),
                 ('badge_position_h', 'right'),
                 ('badge_position_v', 'top'),
+                ('badge_overlap_offset', '0'),
                 ('language', 'auto')
         """)
 

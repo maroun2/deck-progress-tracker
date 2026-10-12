@@ -25,6 +25,8 @@ export interface HLTBData {
     completionist?: number;
     all_styles?: number;
     hltb_url: string;
+    release_year?: number;
+    platforms?: string[];
 }
 export interface GameDetails {
     success: boolean;
@@ -44,6 +46,7 @@ export interface PluginSettings {
     source_all_owned: boolean;
     badge_position_h: 'left' | 'center' | 'right';
     badge_position_v: 'top' | 'center' | 'bottom';
+    badge_overlap_offset: number;
     language: 'auto' | 'en' | 'pt-BR';
 }
 export declare const BADGE_SETTINGS_UPDATED_EVENT = "deck-progress-tracker:badge-settings-updated";
