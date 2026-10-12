@@ -28,6 +28,8 @@ export declare const en: {
     'settings.minutesSuffix': string;
     'settings.masteredThreshold': string;
     'settings.masteredThresholdDesc': string;
+    'settings.customizeTags': string;
+    'settings.resetTagCustomization': string;
     'settings.language': string;
     'settings.languageAuto': string;
     'settings.languageEnglish': string;

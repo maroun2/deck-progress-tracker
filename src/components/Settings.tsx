@@ -1,10 +1,11 @@
 import React, { FC, useState, useEffect, useRef } from 'react';
 import { call, toaster } from '@decky/api';
-import { PanelSection, PanelSectionRow, ButtonItem, Dropdown, SliderField, Navigation } from '@decky/ui';
+import { PanelSection, PanelSectionRow, ButtonItem, Dropdown, SliderField, TextField, Navigation } from '@decky/ui';
 import { PluginSettings, TagStatistics, TaggedGame, BADGE_SETTINGS_UPDATED_EVENT } from '../types';
 import { TagIcon, TagType } from './TagIcon';
 import { syncLibraryProgressive } from '../lib/syncUtils';
 import { useTranslation, LANGUAGE_UPDATED_EVENT, TranslationKey } from '../i18n';
+import { CustomizableTagType, TAG_COLOR_PRESETS, TAG_LABEL_SETTING_KEY, TAG_COLOR_SETTING_KEY, resolveTagLabel, resolveTagColor } from '../lib/tagCustomization';
 
 const TAG_COLORS: Record<string, string> = {
   completed: '#38ef7d',
@@ -71,6 +72,14 @@ export const Settings: FC = () => {
     badge_position_v: 'top',
     badge_overlap_offset: 0,
     language: 'auto',
+    tag_label_mastered: '',
+    tag_label_completed: '',
+    tag_label_in_progress: '',
+    tag_label_dropped: '',
+    tag_color_mastered: '',
+    tag_color_completed: '',
+    tag_color_in_progress: '',
+    tag_color_dropped: '',
   });
 
   const [stats, setStats] = useState<TagStatistics | null>(null);
@@ -241,6 +250,37 @@ export const Settings: FC = () => {
     } catch (err) {}
   };
 
+  const updateTagLabel = async (type: CustomizableTagType, value: string) => {
+    const key = TAG_LABEL_SETTING_KEY[type];
+    setSettings(prev => ({ ...prev, [key]: value }));
+    try {
+      await call<[Record<string, string>], { success: boolean }>('update_settings', { [key]: value });
+      window.dispatchEvent(new CustomEvent(BADGE_SETTINGS_UPDATED_EVENT));
+    } catch (err) {}
+  };
+
+  const updateTagColor = async (type: CustomizableTagType, value: string) => {
+    const key = TAG_COLOR_SETTING_KEY[type];
+    setSettings(prev => ({ ...prev, [key]: value }));
+    try {
+      await call<[Record<string, string>], { success: boolean }>('update_settings', { [key]: value });
+      window.dispatchEvent(new CustomEvent(BADGE_SETTINGS_UPDATED_EVENT));
+    } catch (err) {}
+  };
+
+  const resetTagCustomization = async () => {
+    const cleared: Record<string, string> = {};
+    (['mastered', 'completed', 'in_progress', 'dropped'] as CustomizableTagType[]).forEach((type) => {
+      cleared[TAG_LABEL_SETTING_KEY[type]] = '';
+      cleared[TAG_COLOR_SETTING_KEY[type]] = '';
+    });
+    setSettings(prev => ({ ...prev, ...cleared }));
+    try {
+      await call<[Record<string, string>], { success: boolean }>('update_settings', cleared);
+      window.dispatchEvent(new CustomEvent(BADGE_SETTINGS_UPDATED_EVENT));
+    } catch (err) {}
+  };
+
   const groupedGames = taggedGames.reduce((acc, g) => {
     if (!acc[g.tag]) acc[g.tag] = [];
     acc[g.tag].push(g);
@@ -259,6 +299,8 @@ export const Settings: FC = () => {
             const games = isBacklog ? backlogGames : (groupedGames[tagType] || []);
             const count = isBacklog ? (stats?.backlog || 0) : games.length;
             const isExpanded = !!expandedSections[tagType];
+            const label = isBacklog ? t(TAG_LABEL_KEY[tagType]) : resolveTagLabel(tagType as CustomizableTagType, settings, t);
+            const color = isBacklog ? TAG_COLORS[tagType] : resolveTagColor(tagType as CustomizableTagType, settings);
 
             return (
               <React.Fragment key={tagType}>
@@ -266,11 +308,11 @@ export const Settings: FC = () => {
                   <ButtonItem layout="below" onClick={() => toggleSection(tagType)}>
                     <div style={styles.tagSectionContent}>
                       <div style={styles.tagSectionLeft}>
-                        <TagIcon type={tagType} size={18} />
-                        <span style={styles.tagSectionTitle}>{t(TAG_LABEL_KEY[tagType])}</span>
+                        <TagIcon type={tagType} size={18} color={isBacklog ? undefined : color} />
+                        <span style={styles.tagSectionTitle}>{label}</span>
                       </div>
                       <div style={styles.tagSectionRight}>
-                        <span style={{ ...styles.tagCount, color: TAG_COLORS[tagType] }}>{count}</span>
+                        <span style={{ ...styles.tagCount, color }}>{count}</span>
                         <span style={styles.expandIcon}>{isExpanded ? '−' : '+'}</span>
                       </div>
                     </div>
@@ -292,7 +334,7 @@ export const Settings: FC = () => {
                     >
                       <div style={{ display: 'table', tableLayout: 'fixed', width: '100%' }}>
                         <div style={styles.gameItemContent}>
-                          <span style={{ ...styles.smallDot, backgroundColor: TAG_COLORS[game.tag] }} />
+                          <span style={{ ...styles.smallDot, backgroundColor: (game.tag as string) === 'backlog' ? TAG_COLORS.backlog : resolveTagColor(game.tag as CustomizableTagType, settings) }} />
                           <span style={styles.gameName}>{game.game_name}</span>
                           {game.is_manual && <span style={styles.manualBadge}>{t('settings.manual')}</span>}
                         </div>
@@ -377,6 +419,34 @@ export const Settings: FC = () => {
         </PanelSectionRow>
       </PanelSection>
 
+      <PanelSection title={t('settings.customizeTags')}>
+        {(['mastered', 'completed', 'in_progress', 'dropped'] as CustomizableTagType[]).map((type, index) => (
+          <PanelSectionRow key={type}>
+            <div style={index > 0 ? { ...styles.customTagRow, ...styles.customTagRowSeparator } : styles.customTagRow}>
+              <TextField
+                label={t(TAG_LABEL_KEY[type])}
+                value={resolveTagLabel(type, settings, t)}
+                onChange={(e) => updateTagLabel(type, e.target.value)}
+              />
+              <div style={styles.customTagColorWrapper}>
+                <Dropdown
+                  rgOptions={TAG_COLOR_PRESETS.map((preset) => ({ data: preset.value, label: preset.label }))}
+                  selectedOption={resolveTagColor(type, settings)}
+                  onChange={(option) => updateTagColor(type, option.data)}
+                />
+              </div>
+            </div>
+          </PanelSectionRow>
+        ))}
+        <PanelSectionRow>
+          <div style={styles.customTagRowSeparator}>
+            <ButtonItem layout="below" onClick={resetTagCustomization}>
+              {t('settings.resetTagCustomization')}
+            </ButtonItem>
+          </div>
+        </PanelSectionRow>
+      </PanelSection>
+
       <PanelSection title={t('settings.language')}>
         <PanelSectionRow>
           <div style={{ width: '100%' }}>
@@ -425,6 +495,12 @@ const styles: Record<string, React.CSSProperties> = {
   tagSectionContent: { width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between' },
   dropdownRow: { width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between' },
   avoidOverlapRow: { width: '100%', marginTop: '12px', paddingTop: '12px', borderTop: '1px solid #333' },
+  customTagRow: { width: '100%', display: 'flex', flexDirection: 'column' },
+  customTagRowSeparator: { marginTop: '16px', paddingTop: '16px' },
+  // Dropdown (like TextField) carries its own built-in top margin from
+  // Decky's Field wrapper - a flex `gap` on the parent has no effect on
+  // it, so pull it up directly to actually halve the visual distance.
+  customTagColorWrapper: { marginTop: '-8px' },
   tagSectionLeft: { display: 'flex', alignItems: 'center', gap: '10px' },
   tagSectionRight: { display: 'flex', alignItems: 'center', gap: '12px' },
   tagSectionTitle: { fontWeight: 'bold' },

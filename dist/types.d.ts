@@ -48,6 +48,14 @@ export interface PluginSettings {
     badge_position_v: 'top' | 'center' | 'bottom';
     badge_overlap_offset: number;
     language: 'auto' | 'en' | 'pt-BR';
+    tag_label_mastered: string;
+    tag_label_completed: string;
+    tag_label_in_progress: string;
+    tag_label_dropped: string;
+    tag_color_mastered: string;
+    tag_color_completed: string;
+    tag_color_in_progress: string;
+    tag_color_dropped: string;
 }
 export declare const BADGE_SETTINGS_UPDATED_EVENT = "deck-progress-tracker:badge-settings-updated";
 export interface TagStatistics {

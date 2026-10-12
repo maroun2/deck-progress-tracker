@@ -37,6 +37,8 @@ export const ptBR: Record<TranslationKey, string> = {
   'settings.minutesSuffix': ' min',
   'settings.masteredThreshold': 'Limite para "Dominado"',
   'settings.masteredThresholdDesc': 'Percentual mínimo de conquistas desbloqueadas para o jogo ser marcado como Dominado.',
+  'settings.customizeTags': 'Personalizar Tags',
+  'settings.resetTagCustomization': 'Redefinir para o Padrão',
 
   // Settings - Language
   'settings.language': 'Idioma',
