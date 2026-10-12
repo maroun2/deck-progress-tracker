@@ -313,6 +313,20 @@ class Plugin:
 
             # Fetch fresh game stats
             stats = await self.steam_service.get_game_stats_full(appid)
+
+            # This backend-only path reads the local achievement .vdf file
+            # directly, which can come back empty (0/0) if that file isn't
+            # present/synced on disk at this moment - even though we already
+            # have the real count cached from an earlier frontend-driven
+            # sync. Don't let a transient empty read clobber a known-good
+            # achievement count in the DB.
+            if not stats.get('total_achievements'):
+                existing_stats = await self.db.get_game_stats(appid)
+                if existing_stats and existing_stats.get('total_achievements'):
+                    stats['total_achievements'] = existing_stats.get('total_achievements', 0)
+                    stats['unlocked_achievements'] = existing_stats.get('unlocked_achievements', 0)
+                    stats['achievement_percentage'] = existing_stats.get('achievement_percentage', 0)
+
             await self.db.update_game_stats(appid, stats)
 
             # Log playtime and achievement info

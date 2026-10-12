@@ -28,8 +28,8 @@ export const ptBR: Record<TranslationKey, string> = {
   'settings.right': 'Direita',
   'settings.top': 'Topo',
   'settings.bottom': 'Baixo',
-  'settings.avoidOverlap': 'Deslocar em direção ao centro',
-  'settings.avoidOverlapDesc': 'Desloca o badge em direção ao centro por essa quantidade de pixels (só se aplica a Topo/Baixo), para evitar sobrepor o badge de outro plugin no mesmo canto.',
+  'settings.avoidOverlap': 'Deslocamento vertical',
+  'settings.avoidOverlapDesc': 'Desloca o badge verticalmente por essa quantidade de pixels, para evitar sobrepor o badge de outro plugin no mesmo local.',
 
   // Settings - Tagging
   'settings.tagging': 'Marcação de Tags',
