@@ -292,6 +292,12 @@ class Plugin:
                 if new_tag != current_tag_value or (force and is_currently_manual):
                     await self.db.set_tag(appid, new_tag, is_manual=False)
                     logger.info(f"  -> Tag set: {new_tag} (reset_manual={force and is_currently_manual})")
+            elif force and current_tag and current_tag.get('is_manual'):
+                # "Reset to Auto" on a game whose automatic result is no tag
+                # (Backlog): drop the manual override instead of leaving it in
+                # place, otherwise the reset silently does nothing.
+                await self.db.remove_tag(appid)
+                logger.info("  -> Manual tag removed (auto result: none/backlog)")
 
             return await self.db.get_tag(appid) or {}
 
