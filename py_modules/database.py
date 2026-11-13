@@ -309,7 +309,12 @@ class Database:
             VALUES (?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
             ON CONFLICT(appid) DO UPDATE SET
                 game_name = excluded.game_name,
-                playtime_minutes = excluded.playtime_minutes,
+                -- Playtime only ever grows. Steam can report a lower value
+                -- than we already stored (e.g. a non-Steam shortcut that was
+                -- recreated or modified gets a fresh counter, or the frontend
+                -- reports 0 before its data is loaded). Never let that wipe
+                -- known history and downgrade the game's tag.
+                playtime_minutes = MAX(COALESCE(game_stats.playtime_minutes, 0), COALESCE(excluded.playtime_minutes, 0)),
                 total_achievements = excluded.total_achievements,
                 unlocked_achievements = excluded.unlocked_achievements,
                 is_hidden = excluded.is_hidden,
