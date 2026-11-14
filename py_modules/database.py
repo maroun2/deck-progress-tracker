@@ -6,6 +6,7 @@ Uses standard library sqlite3 with asyncio.to_thread for async operations
 
 import sqlite3
 import asyncio
+import threading
 import time
 from pathlib import Path
 from typing import Optional, Dict, Any, List
@@ -19,24 +20,36 @@ class Database:
     def __init__(self, db_path: str):
         self.db_path = db_path
         self.connection: Optional[sqlite3.Connection] = None
+        # asyncio.to_thread runs calls on a thread pool, so concurrent
+        # coroutines (e.g. parallel sync_single_game_with_data calls) would
+        # otherwise use the shared connection from several threads at once.
+        self._lock = threading.Lock()
+
+    def _locked(self, fn, *args):
+        with self._lock:
+            return fn(*args)
+
+    async def _run(self, fn, *args):
+        """Run a blocking DB call in a worker thread, serialized by the lock"""
+        return await asyncio.to_thread(self._locked, fn, *args)
 
     def _connect_sync(self):
         """Synchronous connection for use with to_thread"""
-        # check_same_thread=False allows connection to be used across threads
-        # This is safe because we serialize access through asyncio.to_thread
+        # check_same_thread=False allows connection to be used across threads.
+        # Access is serialized by self._lock (see _run).
         conn = sqlite3.connect(self.db_path, check_same_thread=False)
         conn.row_factory = sqlite3.Row
         return conn
 
     async def connect(self):
         """Establish database connection"""
-        self.connection = await asyncio.to_thread(self._connect_sync)
+        self.connection = await self._run(self._connect_sync)
         logger.info(f"Connected to database: {self.db_path}")
 
     async def close(self):
         """Close database connection"""
         if self.connection:
-            await asyncio.to_thread(self.connection.close)
+            await self._run(self.connection.close)
             logger.info("Database connection closed")
 
     def _init_schema_sync(self, conn):
@@ -142,7 +155,7 @@ class Database:
         if not self.connection:
             await self.connect()
 
-        await asyncio.to_thread(self._init_schema_sync, self.connection)
+        await self._run(self._init_schema_sync, self.connection)
         logger.info("Database schema initialized")
 
     # Tag operations
@@ -156,7 +169,7 @@ class Database:
         if not self.connection:
             return None
 
-        row = await asyncio.to_thread(self._get_tag_sync, self.connection, appid)
+        row = await self._run(self._get_tag_sync, self.connection, appid)
 
         if row:
             return {
@@ -185,7 +198,7 @@ class Database:
             return False
 
         try:
-            await asyncio.to_thread(self._set_tag_sync, self.connection, appid, tag, is_manual)
+            await self._run(self._set_tag_sync, self.connection, appid, tag, is_manual)
             return True
         except Exception as e:
             logger.error(f"Failed to set tag for {appid}: {e}")
@@ -202,7 +215,7 @@ class Database:
             return False
 
         try:
-            await asyncio.to_thread(self._remove_tag_sync, self.connection, appid)
+            await self._run(self._remove_tag_sync, self.connection, appid)
             return True
         except Exception as e:
             logger.error(f"Failed to remove tag for {appid}: {e}")
@@ -218,7 +231,7 @@ class Database:
         if not self.connection:
             return []
 
-        rows = await asyncio.to_thread(self._get_all_tags_sync, self.connection)
+        rows = await self._run(self._get_all_tags_sync, self.connection)
 
         return [
             {
@@ -269,7 +282,7 @@ class Database:
             return False
 
         try:
-            await asyncio.to_thread(self._cache_hltb_sync, self.connection, appid, data)
+            await self._run(self._cache_hltb_sync, self.connection, appid, data)
             return True
         except Exception as e:
             logger.error(f"Failed to cache HLTB data for {appid}: {e}")
@@ -285,7 +298,7 @@ class Database:
         if not self.connection:
             return None
 
-        row = await asyncio.to_thread(self._get_hltb_cache_sync, self.connection, appid)
+        row = await self._run(self._get_hltb_cache_sync, self.connection, appid)
 
         if not row:
             return None
@@ -348,7 +361,7 @@ class Database:
             return False
 
         try:
-            await asyncio.to_thread(self._update_stats_sync, self.connection, appid, stats)
+            await self._run(self._update_stats_sync, self.connection, appid, stats)
             return True
         except Exception as e:
             logger.error(f"Failed to update stats for {appid}: {e}")
@@ -364,7 +377,7 @@ class Database:
         if not self.connection:
             return None
 
-        row = await asyncio.to_thread(self._get_stats_sync, self.connection, appid)
+        row = await self._run(self._get_stats_sync, self.connection, appid)
 
         if row:
             # Handle case where is_hidden column might not exist yet (migration)
@@ -423,7 +436,7 @@ class Database:
             return False
 
         try:
-            await asyncio.to_thread(self._add_tracked_playtime_sync, self.connection, appid, seconds, game_name)
+            await self._run(self._add_tracked_playtime_sync, self.connection, appid, seconds, game_name)
             return True
         except Exception as e:
             logger.error(f"Failed to add tracked playtime for {appid}: {e}")
@@ -442,7 +455,7 @@ class Database:
         if not self.connection:
             return []
 
-        rows = await asyncio.to_thread(self._get_all_game_stats_sync, self.connection, include_hidden)
+        rows = await self._run(self._get_all_game_stats_sync, self.connection, include_hidden)
         return [{"appid": row["appid"]} for row in rows]
 
     # Settings operations
@@ -456,9 +469,9 @@ class Database:
         if not self.connection:
             return default
 
-        row = await asyncio.to_thread(self._get_setting_sync, self.connection, key)
+        row = await self._run(self._get_setting_sync, self.connection, key)
 
-        if row:
+        if row and row["value"] is not None:
             value = row["value"]
             if value.lower() in ('true', 'false'):
                 return value.lower() == 'true'
@@ -482,9 +495,13 @@ class Database:
         if not self.connection:
             return False
 
+        if value is None:
+            logger.warning(f"Ignoring None value for setting {key}")
+            return False
+
         try:
             str_value = str(value).lower() if isinstance(value, bool) else str(value)
-            await asyncio.to_thread(self._set_setting_sync, self.connection, key, str_value)
+            await self._run(self._set_setting_sync, self.connection, key, str_value)
             return True
         except Exception as e:
             logger.error(f"Failed to set setting {key}: {e}")
@@ -500,12 +517,16 @@ class Database:
         if not self.connection:
             return {}
 
-        rows = await asyncio.to_thread(self._get_all_settings_sync, self.connection)
+        rows = await self._run(self._get_all_settings_sync, self.connection)
 
         settings = {}
         for row in rows:
             key = row["key"]
             value = row["value"]
+            if value is None:
+                # NOT NULL in the schema, but guard anyway so one bad row
+                # can't break tag calculation for every game
+                continue
 
             if value.lower() in ('true', 'false'):
                 settings[key] = value.lower() == 'true'
@@ -559,7 +580,7 @@ class Database:
         if not self.connection:
             return []
 
-        rows = await asyncio.to_thread(self._get_games_eligible_for_dropped_sync, self.connection, days_threshold)
+        rows = await self._run(self._get_games_eligible_for_dropped_sync, self.connection, days_threshold)
 
         return [
             {
