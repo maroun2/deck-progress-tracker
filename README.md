@@ -32,9 +32,9 @@ Steam tools and apps (dedicated servers, SDKs, redistributables, etc.) are autom
 
 Tag badges on every game in the library, with the plugin open in the Quick Access menu.
 
-![Game page badge](assets/game-page-badge.png)
+![Game page tag settings](assets/game-page-tag-dialog.png)
 
-The tag badge on a game's page.
+The badge on a game's page opens its tag settings: statistics, the HowLongToBeat match, and buttons to set, reset or remove the tag.
 
 ![Deck Progress Tracker Dashboard](assets/20260313182447_1.jpg)
 
