@@ -572,6 +572,7 @@ const TAG_REFRESH_DEBOUNCE_MS = 1500;
 let state = {
     position: DEFAULT_LIBRARY_BADGE_POSITION,
     tags: {},
+    tagsLoaded: false,
     colors: {},
 };
 const listeners = new Set();
@@ -629,8 +630,8 @@ async function loadTags() {
         const result = await call('get_tag_map');
         lastTagFetch = Date.now();
         if (result?.success && result.tags && active) {
-            if (JSON.stringify(result.tags) !== JSON.stringify(state.tags)) {
-                emit({ ...state, tags: result.tags });
+            if (!state.tagsLoaded || JSON.stringify(result.tags) !== JSON.stringify(state.tags)) {
+                emit({ ...state, tags: result.tags, tagsLoaded: true });
             }
         }
     }
@@ -2450,8 +2451,11 @@ function removeLibraryBadgeStylesheets() {
     styledDocuments.clear();
 }
 function derive(appid) {
-    const { position, tags, colors } = getLibraryBadgeState();
-    const tag = tags[appid] || null;
+    const { position, tags, tagsLoaded, colors } = getLibraryBadgeState();
+    // No tag = Backlog, for every tile: Steam games, non-Steam shortcuts (also
+    // the ones the plugin hides from its lists for lack of HLTB data) and
+    // games not synced yet.
+    const tag = tagsLoaded ? tags[appid] || 'backlog' : null;
     let background = '';
     if (tag === 'backlog') {
         background = BACKLOG_BACKGROUND;

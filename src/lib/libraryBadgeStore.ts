@@ -23,12 +23,14 @@ type TagColorSettings = Partial<Pick<
   'tag_color_mastered' | 'tag_color_completed' | 'tag_color_in_progress' | 'tag_color_dropped'
 >>;
 
-/** Backlog = a game with no tag (the backend fills it in, see get_tag_map). */
+/** Backlog = any game without a tag (not in the tag map). */
 export type LibraryBadgeTag = CustomizableTagType | 'backlog';
 
 interface LibraryBadgeState {
   position: LibraryBadgePosition;
   tags: Record<string, LibraryBadgeTag>;
+  /** False until the first tag map arrives - don't show everything as Backlog meanwhile */
+  tagsLoaded: boolean;
   colors: TagColorSettings;
 }
 
@@ -43,6 +45,7 @@ const TAG_REFRESH_DEBOUNCE_MS = 1_500;
 let state: LibraryBadgeState = {
   position: DEFAULT_LIBRARY_BADGE_POSITION,
   tags: {},
+  tagsLoaded: false,
   colors: {},
 };
 
@@ -102,8 +105,8 @@ async function loadTags() {
     const result = await call<[], { success: boolean; tags: Record<string, LibraryBadgeTag> }>('get_tag_map');
     lastTagFetch = Date.now();
     if (result?.success && result.tags && active) {
-      if (JSON.stringify(result.tags) !== JSON.stringify(state.tags)) {
-        emit({ ...state, tags: result.tags });
+      if (!state.tagsLoaded || JSON.stringify(result.tags) !== JSON.stringify(state.tags)) {
+        emit({ ...state, tags: result.tags, tagsLoaded: true });
       }
     }
   } catch (e) {

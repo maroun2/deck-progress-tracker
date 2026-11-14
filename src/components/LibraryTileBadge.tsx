@@ -94,8 +94,11 @@ interface Derived {
 }
 
 function derive(appid: string): Derived {
-  const { position, tags, colors } = getLibraryBadgeState();
-  const tag = tags[appid] || null;
+  const { position, tags, tagsLoaded, colors } = getLibraryBadgeState();
+  // No tag = Backlog, for every tile: Steam games, non-Steam shortcuts (also
+  // the ones the plugin hides from its lists for lack of HLTB data) and
+  // games not synced yet.
+  const tag: LibraryBadgeTag | null = tagsLoaded ? tags[appid] || 'backlog' : null;
   let background = '';
   if (tag === 'backlog') {
     background = BACKLOG_BACKGROUND;
