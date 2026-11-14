@@ -45,6 +45,12 @@ export const ptBR: Record<TranslationKey, string> = {
   'settings.openSettings': 'Configurações',
   'settings.syncSection': 'Sincronização da biblioteca',
   'settings.syncDesc': 'Verifica novamente o tempo de jogo e as conquistas de todos os jogos e atualiza as tags.',
+  'settings.syncNotifications': 'Notificações de sincronização',
+  'settings.syncNotificationsDesc': 'Pop-ups da sincronização automática ao iniciar. Pop-ups de sucesso nunca aparecem durante um jogo. Uma sincronização iniciada aqui sempre mostra o resultado.',
+  'settings.syncNotificationsAll': 'Todas',
+  'settings.syncNotificationsErrors': 'Somente erros',
+  'settings.syncNotificationsOff': 'Desativadas',
+  'notify.startupSyncFailed': 'A sincronização automática falhou: {error}. Use "Sincronizar Biblioteca Inteira" nas Configurações para tentar novamente.',
   'settings.badgePositionDesc': 'Onde o badge da tag aparece no banner da página do jogo.',
   'settings.customizeTagsDesc': 'Renomeie as tags e escolha suas cores. As cores são usadas nas listas, na página do jogo e nos blocos da biblioteca.',
 

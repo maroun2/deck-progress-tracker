@@ -187,6 +187,12 @@ const en = {
     'settings.openSettings': 'Settings',
     'settings.syncSection': 'Library sync',
     'settings.syncDesc': 'Re-scan playtime and achievements for every game and update tags.',
+    'settings.syncNotifications': 'Sync notifications',
+    'settings.syncNotificationsDesc': 'Pop-ups from the automatic sync at startup. Success pop-ups never show while a game is running. A sync you start here always reports back.',
+    'settings.syncNotificationsAll': 'All',
+    'settings.syncNotificationsErrors': 'Errors only',
+    'settings.syncNotificationsOff': 'Off',
+    'notify.startupSyncFailed': 'Automatic sync failed: {error}. Use Sync Entire Library in Settings to try again.',
     'settings.badgePositionDesc': 'Where the tag badge sits on a game\'s page banner.',
     'settings.customizeTagsDesc': 'Rename tags and pick their colours. Colours are used in the lists, on the game page and on library tiles.',
     // Settings - Library tile badges
@@ -293,6 +299,12 @@ const ptBR = {
     'settings.openSettings': 'Configurações',
     'settings.syncSection': 'Sincronização da biblioteca',
     'settings.syncDesc': 'Verifica novamente o tempo de jogo e as conquistas de todos os jogos e atualiza as tags.',
+    'settings.syncNotifications': 'Notificações de sincronização',
+    'settings.syncNotificationsDesc': 'Pop-ups da sincronização automática ao iniciar. Pop-ups de sucesso nunca aparecem durante um jogo. Uma sincronização iniciada aqui sempre mostra o resultado.',
+    'settings.syncNotificationsAll': 'Todas',
+    'settings.syncNotificationsErrors': 'Somente erros',
+    'settings.syncNotificationsOff': 'Desativadas',
+    'notify.startupSyncFailed': 'A sincronização automática falhou: {error}. Use "Sincronizar Biblioteca Inteira" nas Configurações para tentar novamente.',
     'settings.badgePositionDesc': 'Onde o badge da tag aparece no banner da página do jogo.',
     'settings.customizeTagsDesc': 'Renomeie as tags e escolha suas cores. As cores são usadas nas listas, na página do jogo e nos blocos da biblioteca.',
     // Settings - Library tile badges
@@ -481,6 +493,7 @@ const BADGE_SETTINGS_UPDATED_EVENT = 'deck-progress-tracker:badge-settings-updat
 // library tile badges can refresh their cached tag map.
 const TAGS_UPDATED_EVENT = 'deck-progress-tracker:tags-updated';
 const DEFAULT_LIBRARY_BADGE_POSITION = 'top-right';
+const DEFAULT_SYNC_NOTIFICATION_MODE = 'errors';
 
 /**
  * Shared plugin settings state for the main panel and the settings page.
@@ -498,6 +511,7 @@ const DEFAULT_SETTINGS = {
     badge_overlap_offset: 0,
     library_badge_position: DEFAULT_LIBRARY_BADGE_POSITION,
     library_badge_show_backlog: true,
+    sync_notifications: DEFAULT_SYNC_NOTIFICATION_MODE,
     language: 'auto',
     tag_label_mastered: '',
     tag_label_completed: '',
@@ -1131,6 +1145,203 @@ const syncLibraryProgressive = async (onProgress) => {
 };
 
 /**
+ * Pure rules for sync notifications and the startup sync retry loop.
+ *
+ * No Steam / Decky imports here (type-only imports are erased), so this
+ * file can be exercised outside Steam with injected dependencies.
+ */
+const SYNC_NOTIFICATION_MODES = ['all', 'errors', 'off'];
+function normalizeSyncNotificationMode(value, fallback) {
+    return SYNC_NOTIFICATION_MODES.includes(value) ? value : fallback;
+}
+function shouldNotify(mode, kind, gameRunning) {
+    switch (kind) {
+        case 'manual':
+            return true;
+        case 'error':
+            return mode !== 'off';
+        case 'success':
+            // Never pop a "sync done" toast over a running game.
+            return mode === 'all' && !gameRunning;
+        default:
+            return false;
+    }
+}
+/**
+ * A startup sync only counts as done if it actually synced something.
+ * Right after boot Steam can report an empty library or every game can
+ * fail, which is worth a quiet retry rather than a success toast.
+ */
+function classifySyncResult(result) {
+    if (!result || !result.success) {
+        return { ok: false, error: result?.error || 'Unknown error' };
+    }
+    if (!result.total) {
+        return { ok: false, error: 'No games found yet' };
+    }
+    if (!result.synced) {
+        return { ok: false, error: `0 of ${result.total} games synced` };
+    }
+    return { ok: true };
+}
+/** Pauses between startup sync attempts (first attempt runs right away). */
+const STARTUP_RETRY_DELAYS_MS = [10000, 30000, 60000, 120000];
+/** How long to wait for network + Steam + backend before an attempt. */
+const FIRST_READY_CAP_MS = 90000;
+const RETRY_READY_CAP_MS = 30000;
+/**
+ * Wait until the Deck is ready, sync, and retry quietly with backoff. Only
+ * the final failure is reported (and only if the setting allows errors -
+ * `notify` decides that).
+ */
+async function runStartupSync(deps) {
+    const delays = deps.retryDelaysMs ?? STARTUP_RETRY_DELAYS_MS;
+    let lastError = 'Unknown error';
+    for (let attempt = 1; attempt <= delays.length + 1; attempt++) {
+        if (attempt > 1) {
+            await deps.sleep(delays[attempt - 2]);
+        }
+        if (deps.isDisposed())
+            return { ok: false, attempts: attempt - 1 };
+        const ready = await deps.waitUntilReady(attempt === 1 ? FIRST_READY_CAP_MS : RETRY_READY_CAP_MS);
+        if (deps.isDisposed())
+            return { ok: false, attempts: attempt - 1 };
+        let result;
+        try {
+            result = await deps.sync(attempt);
+        }
+        catch (e) {
+            result = { success: false, error: e?.message || String(e) };
+        }
+        const outcome = classifySyncResult(result);
+        if (outcome.ok) {
+            deps.log(`Startup sync attempt ${attempt} succeeded (${result.synced}/${result.total} games, ready=${ready})`);
+            await deps.notify('success', deps.successMessage(result));
+            return { ok: true, attempts: attempt };
+        }
+        lastError = outcome.error || lastError;
+        const next = delays[attempt - 1];
+        deps.log(`Startup sync attempt ${attempt} failed: ${lastError} (ready=${ready}); ` +
+            (next !== undefined ? `retrying quietly in ${Math.round(next / 1000)}s` : 'giving up'));
+    }
+    if (!deps.isDisposed()) {
+        await deps.notify('error', deps.failureMessage(lastError));
+    }
+    return { ok: false, attempts: delays.length + 1 };
+}
+
+/**
+ * Play Session Tracker
+ *
+ * Steam's own `minutes_playtime_forever` (read via appStore.GetAppOverviewByAppID)
+ * doesn't update reliably for non-Steam shortcuts. As a fallback, this tracks
+ * real session start/stop times via SteamClient's native game lifetime
+ * notifications - a stable global API, not fragile module-scanning - and
+ * reports elapsed session time to the backend, which only applies it for
+ * non-Steam appids (regular Steam games already have reliable playtime).
+ */
+const sessionStarts = new Map();
+/** True while a game started since the plugin loaded is still running. */
+function hasActiveGameSession() {
+    return sessionStarts.size > 0;
+}
+function handleAppLifetimeNotification(data) {
+    if (data.bRunning) {
+        sessionStarts.set(data.unAppID, Date.now());
+        return;
+    }
+    const startedAt = sessionStarts.get(data.unAppID);
+    sessionStarts.delete(data.unAppID);
+    if (!startedAt) {
+        return;
+    }
+    const seconds = Math.round((Date.now() - startedAt) / 1000);
+    if (seconds <= 0) {
+        return;
+    }
+    call('record_play_session', { appid: String(data.unAppID), seconds }).catch(() => {
+        // Best-effort: a missed session just means this game's tracked
+        // playtime undercounts until the next successful session.
+    });
+}
+/**
+ * Starts listening for game start/stop events. Returns a cleanup function
+ * (or null if the SteamClient API isn't available), to call on unmount.
+ */
+function startPlaySessionTracking() {
+    try {
+        const steamClient = window.SteamClient;
+        const registration = steamClient?.GameSessions?.RegisterForAppLifetimeNotifications?.(handleAppLifetimeNotification);
+        if (!registration) {
+            return null;
+        }
+        return () => {
+            try {
+                registration.unregister?.();
+            }
+            catch (e) {
+                // Ignore cleanup errors
+            }
+        };
+    }
+    catch (e) {
+        return null;
+    }
+}
+
+/**
+ * The single place that shows sync toasts. Every sync notification goes
+ * through `notify(kind, body)`, which applies the "Sync notifications"
+ * setting and the "game running" check (rules in syncPolicy.ts).
+ */
+const TITLE = 'Deck Progress Tracker';
+function debugOverrides() {
+    try {
+        const parsed = JSON.parse(localStorage.getItem('dpt:debug') || '{}');
+        return parsed && typeof parsed === 'object' ? parsed : {};
+    }
+    catch (e) {
+        return {};
+    }
+}
+function logFrontend(level, message) {
+    call('log_frontend', level, message).catch(() => { });
+}
+function isGameRunning() {
+    const forced = debugOverrides().gameRunning;
+    if (typeof forced === 'boolean')
+        return forced;
+    try {
+        if (DFL.Router?.MainRunningApp)
+            return true;
+    }
+    catch (e) {
+        // Router getter unavailable - fall through to our own tracking
+    }
+    return hasActiveGameSession();
+}
+async function readMode() {
+    try {
+        const res = await call('get_settings');
+        return normalizeSyncNotificationMode(res?.settings?.sync_notifications, DEFAULT_SYNC_NOTIFICATION_MODE);
+    }
+    catch (e) {
+        return DEFAULT_SYNC_NOTIFICATION_MODE;
+    }
+}
+/** Shows `body` as a toast if the setting allows it. Returns whether it was shown. */
+async function notify(kind, body, duration = 5000) {
+    const mode = kind === 'manual' ? 'all' : await readMode();
+    const gameRunning = isGameRunning();
+    const show = shouldNotify(mode, kind, gameRunning);
+    logFrontend('info', `[notify] kind=${kind} mode=${mode} gameRunning=${gameRunning} -> ${show ? 'shown' : 'suppressed'}: ${body}`);
+    if (show) {
+        toaster.toast({ title: TITLE, body, duration });
+    }
+    return show;
+}
+
+/**
  * Library sync state shared by the main panel (status line) and the
  * settings page (Sync button). Polls the backend so a sync started from
  * anywhere (startup auto-sync, the other view) is reflected.
@@ -1193,15 +1404,22 @@ function useLibrarySync(onProgressUpdate) {
                 }
             });
             onUpdateRef.current?.();
+            if (!result.success) {
+                throw new Error(result.error || 'Unknown');
+            }
             const newTagsSuffix = result.new_tags
                 ? t('settings.syncCompleteNewTags', { count: result.new_tags })
                 : '';
             const msg = t('settings.syncCompleteDetailed', { synced: result.synced ?? 0, newTags: newTagsSuffix });
             showTransient(msg, 10000);
-            toaster.toast({ title: 'Deck Progress Tracker', body: msg, duration: 5000 });
+            // Started from the plugin UI, so always report back (even with
+            // notifications Off) - the panel may be closed by the time it ends.
+            notify('manual', msg);
         }
         catch (err) {
-            setMessage(t('settings.syncError', { error: err?.message || 'Unknown' }));
+            const msg = t('settings.syncError', { error: err?.message || 'Unknown' });
+            setMessage(msg);
+            notify('manual', msg);
         }
         finally {
             localSyncRef.current = false;
@@ -1267,6 +1485,11 @@ const SettingsPanel = ({ onBack, focusBack }) => {
         { data: 'bottom-left', label: t('settings.positionBottomLeft') },
         { data: 'bottom-right', label: t('settings.positionBottomRight') },
     ];
+    const syncNotificationOptions = [
+        { data: 'all', label: t('settings.syncNotificationsAll') },
+        { data: 'errors', label: t('settings.syncNotificationsErrors') },
+        { data: 'off', label: t('settings.syncNotificationsOff') },
+    ];
     const hOptions = [
         { data: 'left', label: t('settings.left') },
         { data: 'center', label: t('settings.center') },
@@ -1304,7 +1527,12 @@ const SettingsPanel = ({ onBack, focusBack }) => {
         SP_REACT.createElement(DFL.PanelSection, { title: t('settings.syncSection') },
             message && SP_REACT.createElement("div", { style: styles$2.message }, message),
             SP_REACT.createElement(DFL.PanelSectionRow, null,
-                SP_REACT.createElement(DFL.ButtonItem, { layout: "below", description: t('settings.syncDesc'), onClick: syncLibrary, disabled: syncing }, syncing ? t('settings.syncing') : t('settings.syncLibrary')))),
+                SP_REACT.createElement(DFL.ButtonItem, { layout: "below", description: t('settings.syncDesc'), onClick: syncLibrary, disabled: syncing }, syncing ? t('settings.syncing') : t('settings.syncLibrary'))),
+            SP_REACT.createElement(DFL.PanelSectionRow, null,
+                SP_REACT.createElement("div", { style: styles$2.syncNotificationsRow },
+                    SP_REACT.createElement("div", { style: styles$2.fieldLabel }, t('settings.syncNotifications')),
+                    SP_REACT.createElement("div", { style: styles$2.description }, t('settings.syncNotificationsDesc')),
+                    SP_REACT.createElement(DFL.Dropdown, { menuLabel: t('settings.syncNotifications'), rgOptions: syncNotificationOptions, selectedOption: settings.sync_notifications, onChange: (option) => update({ sync_notifications: option.data }) })))),
         SP_REACT.createElement(DFL.PanelSection, { title: t('settings.tagging') },
             SP_REACT.createElement(DFL.PanelSectionRow, null,
                 SP_REACT.createElement(DFL.SliderField, { label: t('settings.inProgressThreshold'), value: settings.in_progress_threshold, min: 1, max: 120, step: 1, editableValue: true, valueSuffix: t('settings.minutesSuffix'), onChange: (value) => update({ in_progress_threshold: value }) })),
@@ -1353,6 +1581,8 @@ const styles$2 = {
     message: { padding: '12px', backgroundColor: 'rgba(102, 126, 234, 0.2)', borderRadius: '4px', marginBottom: '8px', fontSize: '14px', border: '1px solid rgba(102, 126, 234, 0.5)' },
     description: { fontSize: '12px', color: '#8b929a', marginBottom: '8px', lineHeight: '1.4' },
     fullWidth: { width: '100%' },
+    syncNotificationsRow: { width: '100%', marginTop: '8px' },
+    fieldLabel: { fontSize: '14px', marginBottom: '4px' },
     dropdownRow: { width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between' },
     avoidOverlapRow: { width: '100%', marginTop: '12px', paddingTop: '12px', borderTop: '1px solid #333' },
     customTagRow: { width: '100%', display: 'flex', flexDirection: 'column' },
@@ -2606,6 +2836,79 @@ function patchLibraryCapsules() {
 }
 
 /**
+ * Automatic library sync after the plugin loads (Steam start / reboot /
+ * Decky restart). Waits for the network, Steam's app data and the plugin
+ * backend first, then retries quietly (see runStartupSync in syncPolicy.ts),
+ * so a Deck that boots before Wi-Fi is up no longer gets a false
+ * "sync failed" toast.
+ */
+const loadedAt = Date.now();
+const POLL_MS = 2000;
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+function isOnline() {
+    const offlineForMs = debugOverrides().offlineForMs;
+    if (offlineForMs && Date.now() - loadedAt < offlineForMs)
+        return false;
+    return navigator.onLine !== false;
+}
+function steamAppsReady() {
+    const allApps = window.collectionStore?.allAppsCollection?.allApps;
+    return Array.isArray(allApps) && allApps.length > 0;
+}
+async function backendResponds() {
+    try {
+        const res = await Promise.race([
+            call('get_settings'),
+            sleep(5000).then(() => null),
+        ]);
+        return !!res?.success;
+    }
+    catch (e) {
+        return false;
+    }
+}
+/** Polls until online + Steam app data + backend are all ready, or `capMs` passes. */
+async function waitUntilReady(capMs) {
+    const started = Date.now();
+    for (;;) {
+        const online = isOnline();
+        const apps = steamAppsReady();
+        const backend = online && apps && await backendResponds();
+        if (online && apps && backend) {
+            const waited = Date.now() - started;
+            if (waited > POLL_MS)
+                logFrontend('info', `Startup sync: ready after ${Math.round(waited / 1000)}s`);
+            return true;
+        }
+        if (Date.now() - started >= capMs) {
+            logFrontend('warn', `Startup sync: not ready after ${Math.round(capMs / 1000)}s (online=${online} apps=${apps} backend=${backend}), trying anyway`);
+            return false;
+        }
+        await sleep(POLL_MS);
+    }
+}
+function startStartupSync(isDisposed) {
+    return runStartupSync({
+        waitUntilReady,
+        sync: async (attempt) => {
+            const fail = debugOverrides().failSyncAttempts ?? 0;
+            if (attempt <= fail)
+                return { success: false, error: `Simulated failure (debug, attempt ${attempt}/${fail})` };
+            return syncLibraryProgressive();
+        },
+        notify,
+        sleep,
+        isDisposed,
+        log: (message) => logFrontend('info', message),
+        successMessage: (result) => translate('settings.syncCompleteDetailed', {
+            synced: result.synced ?? 0,
+            newTags: result.new_tags ? translate('settings.syncCompleteNewTags', { count: result.new_tags }) : '',
+        }),
+        failureMessage: (error) => translate('notify.startupSyncFailed', { error }),
+    }).catch((e) => logFrontend('error', `Startup sync crashed: ${e?.message || e}`));
+}
+
+/**
  * Achievement Cache Watcher
  * Monitors URL changes and syncs achievements when user views "Your Stuff" tab
  */
@@ -2667,61 +2970,6 @@ function stopAchievementCacheWatcher() {
     if (syncTimeout) {
         clearTimeout(syncTimeout);
         syncTimeout = null;
-    }
-}
-
-/**
- * Play Session Tracker
- *
- * Steam's own `minutes_playtime_forever` (read via appStore.GetAppOverviewByAppID)
- * doesn't update reliably for non-Steam shortcuts. As a fallback, this tracks
- * real session start/stop times via SteamClient's native game lifetime
- * notifications - a stable global API, not fragile module-scanning - and
- * reports elapsed session time to the backend, which only applies it for
- * non-Steam appids (regular Steam games already have reliable playtime).
- */
-const sessionStarts = new Map();
-function handleAppLifetimeNotification(data) {
-    if (data.bRunning) {
-        sessionStarts.set(data.unAppID, Date.now());
-        return;
-    }
-    const startedAt = sessionStarts.get(data.unAppID);
-    sessionStarts.delete(data.unAppID);
-    if (!startedAt) {
-        return;
-    }
-    const seconds = Math.round((Date.now() - startedAt) / 1000);
-    if (seconds <= 0) {
-        return;
-    }
-    call('record_play_session', { appid: String(data.unAppID), seconds }).catch(() => {
-        // Best-effort: a missed session just means this game's tracked
-        // playtime undercounts until the next successful session.
-    });
-}
-/**
- * Starts listening for game start/stop events. Returns a cleanup function
- * (or null if the SteamClient API isn't available), to call on unmount.
- */
-function startPlaySessionTracking() {
-    try {
-        const steamClient = window.SteamClient;
-        const registration = steamClient?.GameSessions?.RegisterForAppLifetimeNotifications?.(handleAppLifetimeNotification);
-        if (!registration) {
-            return null;
-        }
-        return () => {
-            try {
-                registration.unregister?.();
-            }
-            catch (e) {
-                // Ignore cleanup errors
-            }
-        };
-    }
-    catch (e) {
-        return null;
     }
 }
 
@@ -2793,72 +3041,10 @@ var index = definePlugin(() => {
     // Track real game session start/stop, used as a reliable playtime
     // fallback for non-Steam shortcuts (see src/lib/playSessionTracker.ts)
     const stopPlaySessionTracking = startPlaySessionTracking();
-    // Trigger sync with frontend data (replaces backend auto-sync)
-    // This uses Steam's frontend API for real-time playtime and achievement data
-    // Add a delay before attempting sync to let Steam frontend initialize
-    const syncDelay = 5000; // Start with 5 seconds delay
-    setTimeout(async () => {
-        try {
-            // Use progressive sync with progress logging
-            const result = await syncLibraryProgressive((current, total, gameName) => {
-                // Progress callback - could be used for UI updates in future
-            });
-            // Show toast notification when initial sync completes
-            // Use new_tags count from backend for accurate notification
-            if (result && result.success && result.synced && result.synced > 0) {
-                const newTags = result.new_tags || 0;
-                const message = newTags > 0
-                    ? `Synced ${result.synced} games. ${newTags} new tag${newTags > 1 ? 's' : ''} added!`
-                    : `Synced ${result.synced} games. Open plugin to see your library.`;
-                toaster.toast({
-                    title: 'Deck Progress Tracker',
-                    body: message,
-                    duration: 5000,
-                });
-            }
-            else if (!result || !result.success) {
-                // Show error toast
-                toaster.toast({
-                    title: 'Deck Progress Tracker',
-                    body: `Initial sync failed: ${result?.error || 'Unknown error'}. Will retry...`,
-                    duration: 5000,
-                });
-                // Retry once more after additional delay
-                setTimeout(async () => {
-                    try {
-                        const retryResult = await syncLibraryProgressive((current, total, gameName) => {
-                            // Progress callback for retry
-                        });
-                        if (retryResult && retryResult.success && retryResult.synced) {
-                            toaster.toast({
-                                title: 'Deck Progress Tracker',
-                                body: `Library synced: ${retryResult.synced} games processed`,
-                                duration: 5000,
-                            });
-                        }
-                        else {
-                            toaster.toast({
-                                title: 'Deck Progress Tracker',
-                                body: 'Auto-sync failed. Please sync manually from settings.',
-                                duration: 8000,
-                            });
-                        }
-                    }
-                    catch (retryErr) {
-                        // Retry sync failed
-                    }
-                }, 10000);
-            }
-        }
-        catch (err) {
-            // Show error toast
-            toaster.toast({
-                title: 'Deck Progress Tracker',
-                body: `Sync error: ${err?.message || 'Unknown error'}`,
-                duration: 5000,
-            });
-        }
-    }, syncDelay);
+    // Automatic sync with Steam's frontend data (real-time playtime and
+    // achievements). Waits for network/Steam/backend and retries quietly;
+    // toasts go through notify() and respect the "Sync notifications" setting.
+    startStartupSync(() => disposed);
     return {
         name: 'Deck Progress Tracker',
         titleView: SP_REACT.createElement("div", { className: DFL.staticClasses.Title }, "Deck Progress Tracker"),

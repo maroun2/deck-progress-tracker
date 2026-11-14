@@ -13,7 +13,7 @@ import { MainPanel } from './components/MainPanel';
 import patchLibraryApp from './lib/patchLibraryApp';
 import { patchLibraryCapsules } from './lib/patchLibraryCapsules';
 import { initLibraryBadgeStore } from './lib/libraryBadgeStore';
-import { syncLibraryProgressive } from './lib/syncUtils';
+import { startStartupSync } from './lib/startupSync';
 import { startAchievementCacheWatcher, stopAchievementCacheWatcher } from './lib/achievementCacheWatcher';
 import { startPlaySessionTracking } from './lib/playSessionTracker';
 
@@ -84,75 +84,10 @@ export default definePlugin(() => {
   // fallback for non-Steam shortcuts (see src/lib/playSessionTracker.ts)
   const stopPlaySessionTracking = startPlaySessionTracking();
 
-  // Trigger sync with frontend data (replaces backend auto-sync)
-  // This uses Steam's frontend API for real-time playtime and achievement data
-
-  // Add a delay before attempting sync to let Steam frontend initialize
-  const syncDelay = 5000; // Start with 5 seconds delay
-
-  setTimeout(async () => {
-    try {
-      // Use progressive sync with progress logging
-      const result = await syncLibraryProgressive((current, total, gameName) => {
-        // Progress callback - could be used for UI updates in future
-      });
-
-      // Show toast notification when initial sync completes
-      // Use new_tags count from backend for accurate notification
-      if (result && result.success && result.synced && result.synced > 0) {
-        const newTags = result.new_tags || 0;
-        const message = newTags > 0
-          ? `Synced ${result.synced} games. ${newTags} new tag${newTags > 1 ? 's' : ''} added!`
-          : `Synced ${result.synced} games. Open plugin to see your library.`;
-
-        toaster.toast({
-          title: 'Deck Progress Tracker',
-          body: message,
-          duration: 5000,
-        });
-      } else if (!result || !result.success) {
-
-        // Show error toast
-        toaster.toast({
-          title: 'Deck Progress Tracker',
-          body: `Initial sync failed: ${result?.error || 'Unknown error'}. Will retry...`,
-          duration: 5000,
-        });
-
-        // Retry once more after additional delay
-        setTimeout(async () => {
-          try {
-            const retryResult = await syncLibraryProgressive((current, total, gameName) => {
-              // Progress callback for retry
-            });
-
-            if (retryResult && retryResult.success && retryResult.synced) {
-              toaster.toast({
-                title: 'Deck Progress Tracker',
-                body: `Library synced: ${retryResult.synced} games processed`,
-                duration: 5000,
-              });
-            } else {
-              toaster.toast({
-                title: 'Deck Progress Tracker',
-                body: 'Auto-sync failed. Please sync manually from settings.',
-                duration: 8000,
-              });
-            }
-          } catch (retryErr: any) {
-            // Retry sync failed
-          }
-        }, 10000);
-      }
-    } catch (err: any) {
-      // Show error toast
-      toaster.toast({
-        title: 'Deck Progress Tracker',
-        body: `Sync error: ${err?.message || 'Unknown error'}`,
-        duration: 5000,
-      });
-    }
-  }, syncDelay);
+  // Automatic sync with Steam's frontend data (real-time playtime and
+  // achievements). Waits for network/Steam/backend and retries quietly;
+  // toasts go through notify() and respect the "Sync notifications" setting.
+  startStartupSync(() => disposed);
 
   return {
     name: 'Deck Progress Tracker',

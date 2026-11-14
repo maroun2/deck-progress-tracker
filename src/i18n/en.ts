@@ -43,6 +43,12 @@ export const en = {
   'settings.openSettings': 'Settings',
   'settings.syncSection': 'Library sync',
   'settings.syncDesc': 'Re-scan playtime and achievements for every game and update tags.',
+  'settings.syncNotifications': 'Sync notifications',
+  'settings.syncNotificationsDesc': 'Pop-ups from the automatic sync at startup. Success pop-ups never show while a game is running. A sync you start here always reports back.',
+  'settings.syncNotificationsAll': 'All',
+  'settings.syncNotificationsErrors': 'Errors only',
+  'settings.syncNotificationsOff': 'Off',
+  'notify.startupSyncFailed': 'Automatic sync failed: {error}. Use Sync Entire Library in Settings to try again.',
   'settings.badgePositionDesc': 'Where the tag badge sits on a game\'s page banner.',
   'settings.customizeTagsDesc': 'Rename tags and pick their colours. Colours are used in the lists, on the game page and on library tiles.',
 

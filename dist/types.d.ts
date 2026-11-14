@@ -49,6 +49,7 @@ export interface PluginSettings {
     badge_overlap_offset: number;
     library_badge_position: LibraryBadgePosition;
     library_badge_show_backlog: boolean;
+    sync_notifications: SyncNotificationMode;
     language: 'auto' | 'en' | 'pt-BR';
     tag_label_mastered: string;
     tag_label_completed: string;
@@ -63,6 +64,8 @@ export declare const BADGE_SETTINGS_UPDATED_EVENT = "deck-progress-tracker:badge
 export declare const TAGS_UPDATED_EVENT = "deck-progress-tracker:tags-updated";
 export type LibraryBadgePosition = 'none' | 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
 export declare const DEFAULT_LIBRARY_BADGE_POSITION: LibraryBadgePosition;
+export type SyncNotificationMode = 'all' | 'errors' | 'off';
+export declare const DEFAULT_SYNC_NOTIFICATION_MODE: SyncNotificationMode;
 export interface TagStatistics {
     completed: number;
     in_progress: number;

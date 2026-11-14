@@ -34,6 +34,12 @@ export declare const en: {
     'settings.openSettings': string;
     'settings.syncSection': string;
     'settings.syncDesc': string;
+    'settings.syncNotifications': string;
+    'settings.syncNotificationsDesc': string;
+    'settings.syncNotificationsAll': string;
+    'settings.syncNotificationsErrors': string;
+    'settings.syncNotificationsOff': string;
+    'notify.startupSyncFailed': string;
     'settings.badgePositionDesc': string;
     'settings.customizeTagsDesc': string;
     'settings.libraryBadgePosition': string;
