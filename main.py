@@ -1059,14 +1059,19 @@ class Plugin:
         if should_fetch_hltb:
             logger.info(f"  Fetching HLTB for: {game_name} (cached={bool(cached_hltb)}, has_main_story={cached_hltb.get('main_story') if cached_hltb else None})")
             hltb_data = await self.hltb_service.search_game(game_name)
-            if hltb_data and hltb_data.get('main_story'):
-                # Only cache if we got actual completion time data
+            if hltb_data:
+                # Cache any match, also one without completion times (MMOs and
+                # endless games like World of Warcraft: Forever have an HLTB
+                # entry but no main story time): being on HLTB is what tells a
+                # non-Steam game apart from an app below. No main_story means
+                # it's looked up again next sync; a failed lookup (e.g. rate
+                # limit) keeps the cached match instead of hiding the game.
                 await self.db.cache_hltb_data(appid, hltb_data)
                 cached_hltb = hltb_data
                 logger.info(f"  HLTB cached: main_story={hltb_data.get('main_story')}h")
 
         # Determine if this game should be hidden from library
-        # Hide non-Steam apps that have no HLTB data (likely not real games: Discord, Chrome, etc.)
+        # Hide non-Steam apps that aren't on HLTB at all (likely not real games: Discord, Chrome, etc.)
         # Also hide Steam tools/apps (dedicated servers, redistributables, SDKs, etc.) that
         # the frontend identified via Steam's own app_type - they clutter the Backlog since
         # they're not real games and never get a meaningful tag.
