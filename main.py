@@ -363,12 +363,24 @@ class Plugin:
             # have the real count cached from an earlier frontend-driven
             # sync. Don't let a transient empty read clobber a known-good
             # achievement count in the DB.
+            existing_stats = await self.db.get_game_stats(appid)
             if not stats.get('total_achievements'):
-                existing_stats = await self.db.get_game_stats(appid)
                 if existing_stats and existing_stats.get('total_achievements'):
                     stats['total_achievements'] = existing_stats.get('total_achievements', 0)
                     stats['unlocked_achievements'] = existing_stats.get('unlocked_achievements', 0)
                     stats['achievement_percentage'] = existing_stats.get('achievement_percentage', 0)
+
+            # The backend-only read has no last-played timestamp, no
+            # hidden flag (Steam tool / non-Steam app without HLTB) and
+            # often only a placeholder name - those come from the frontend
+            # sync. Keep what we already know instead of wiping it, or the
+            # reset would un-hide tools and lose "dropped" detection.
+            if existing_stats:
+                stats.setdefault('rt_last_time_played', existing_stats.get('rt_last_time_played'))
+                stats.setdefault('is_hidden', existing_stats.get('is_hidden', False))
+                name = stats.get('game_name') or ''
+                if (not name or name.startswith('Unknown Game') or name.startswith('Game ')) and existing_stats.get('game_name'):
+                    stats['game_name'] = existing_stats['game_name']
 
             await self.db.update_game_stats(appid, stats)
 
@@ -390,8 +402,12 @@ class Plugin:
             else:
                 logger.info(f"  HLTB: no data")
 
-            # Calculate new tag
-            new_tag = await Plugin.calculate_auto_tag(self, appid)
+            # Calculate new tag. Hidden games never get an auto tag (same
+            # rule as sync_game_with_playtime).
+            if stats.get('is_hidden'):
+                new_tag = None
+            else:
+                new_tag = await Plugin.calculate_auto_tag(self, appid)
             logger.info(f"  Calculated tag: {new_tag or 'none'}")
 
             # Update if changed, doesn't exist, or forcing reset from manual
@@ -501,6 +517,8 @@ class Plugin:
         try:
             # Force recalculation
             result = await Plugin.sync_game_tags(self, appid, force=True)
+            if result.get("error"):
+                return {"success": False, "error": result["error"]}
             return {"success": True, "tag": result}
         except Exception as e:
             logger.error(f"Error resetting tag for {appid}: {e}")
