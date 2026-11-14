@@ -1177,6 +1177,21 @@ class Plugin:
             logger.error(traceback.format_exc())
             return {'success': False, 'error': str(e)}
 
+    async def get_tag_map(self) -> Dict[str, Any]:
+        """Lightweight {appid: tag} map for the library tile badges.
+
+        One query for the whole library, so the frontend can badge every
+        capsule without calling the backend per tile. Games without a tag
+        (Backlog) are simply absent from the map.
+        """
+        try:
+            all_tags = await self.db.get_all_tags()
+            tags = {str(t['appid']): t['tag'] for t in all_tags if t.get('tag')}
+            return {'success': True, 'tags': tags}
+        except Exception as e:
+            logger.error(f"Error getting tag map: {e}")
+            return {'success': False, 'error': str(e), 'tags': {}}
+
     async def get_backlog_games(self) -> Dict[str, Any]:
         """Get all games without a tag (backlog games)"""
         logger.info("=== get_backlog_games called ===")

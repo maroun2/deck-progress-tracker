@@ -47,6 +47,7 @@ export interface PluginSettings {
     badge_position_h: 'left' | 'center' | 'right';
     badge_position_v: 'top' | 'center' | 'bottom';
     badge_overlap_offset: number;
+    library_badge_position: LibraryBadgePosition;
     language: 'auto' | 'en' | 'pt-BR';
     tag_label_mastered: string;
     tag_label_completed: string;
@@ -58,6 +59,9 @@ export interface PluginSettings {
     tag_color_dropped: string;
 }
 export declare const BADGE_SETTINGS_UPDATED_EVENT = "deck-progress-tracker:badge-settings-updated";
+export declare const TAGS_UPDATED_EVENT = "deck-progress-tracker:tags-updated";
+export type LibraryBadgePosition = 'none' | 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
+export declare const DEFAULT_LIBRARY_BADGE_POSITION: LibraryBadgePosition;
 export interface TagStatistics {
     completed: number;
     in_progress: number;
