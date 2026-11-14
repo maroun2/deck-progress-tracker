@@ -9,8 +9,11 @@ import { staticClasses } from '@decky/ui';
 import { call, definePlugin, routerHook, toaster } from '@decky/api';
 import React from 'react';
 import { FaTrophy } from 'react-icons/fa';
-import { Settings } from './components/Settings';
+import { MainPanel, SETTINGS_ROUTE } from './components/MainPanel';
+import { SettingsPage } from './components/SettingsPage';
 import patchLibraryApp from './lib/patchLibraryApp';
+import { patchLibraryCapsules } from './lib/patchLibraryCapsules';
+import { initLibraryBadgeStore } from './lib/libraryBadgeStore';
 import { syncLibraryProgressive } from './lib/syncUtils';
 import { startAchievementCacheWatcher, stopAchievementCacheWatcher } from './lib/achievementCacheWatcher';
 import { startPlaySessionTracking } from './lib/playSessionTracker';
@@ -25,6 +28,12 @@ export default definePlugin(() => {
   // backend-reported Decky version first and skip patching on old versions
   // instead of showing that crash screen to the user.
   let libraryPatch: ReturnType<typeof patchLibraryApp> | null = null;
+  let unpatchLibraryCapsules: (() => void) | null = null;
+  let stopLibraryBadgeStore: (() => void) | null = null;
+  let disposed = false;
+
+  // Full-screen settings page, opened from the panel's Settings button
+  routerHook.addRoute(SETTINGS_ROUTE, SettingsPage, { exact: true });
 
   (async () => {
     let compatible = true;
@@ -52,10 +61,23 @@ export default definePlugin(() => {
       return;
     }
 
+    if (disposed) return;
+
     try {
       libraryPatch = patchLibraryApp();
     } catch (error) {
       // Failed to register library app patch
+    }
+
+    // Tag badges on every game capsule (library grid, collections, Home)
+    try {
+      stopLibraryBadgeStore = initLibraryBadgeStore();
+      unpatchLibraryCapsules = patchLibraryCapsules();
+      if (!unpatchLibraryCapsules) {
+        call<[string, string], unknown>('log_frontend', 'warn', 'Library capsule component not found - library tile badges disabled').catch(() => {});
+      }
+    } catch (error) {
+      call<[string, string], unknown>('log_frontend', 'error', `Library capsule patch failed: ${error}`).catch(() => {});
     }
   })();
 
@@ -139,9 +161,24 @@ export default definePlugin(() => {
   return {
     name: 'Deck Progress Tracker',
     titleView: <div className={staticClasses.Title}>Deck Progress Tracker</div>,
-    content: <Settings />,
+    content: <MainPanel />,
     icon: <FaTrophy />,
     onDismount() {
+      disposed = true;
+
+      try {
+        unpatchLibraryCapsules?.();
+        stopLibraryBadgeStore?.();
+      } catch (error) {
+        // Error removing library capsule patch
+      }
+
+      try {
+        routerHook.removeRoute(SETTINGS_ROUTE);
+      } catch (error) {
+        // Error removing settings route
+      }
+
       // Stop achievement cache watcher
       stopAchievementCacheWatcher();
 

@@ -63,6 +63,9 @@ export interface PluginSettings {
   // center by this many pixels (0 = no nudge), to avoid overlapping
   // another plugin's badge in the same corner.
   badge_overlap_offset: number;
+  // Small icon-only badge on every game capsule in the library/Home/
+  // collections. 'none' turns the feature off entirely.
+  library_badge_position: LibraryBadgePosition;
   // UI language: 'auto' follows the system/browser locale
   language: 'auto' | 'en' | 'pt-BR';
   // Custom tag labels/colors - empty string means "use the built-in default"
@@ -77,6 +80,13 @@ export interface PluginSettings {
 }
 
 export const BADGE_SETTINGS_UPDATED_EVENT = 'deck-progress-tracker:badge-settings-updated';
+
+// Fired whenever game tags may have changed (manual tag edit, sync), so the
+// library tile badges can refresh their cached tag map.
+export const TAGS_UPDATED_EVENT = 'deck-progress-tracker:tags-updated';
+
+export type LibraryBadgePosition = 'none' | 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
+export const DEFAULT_LIBRARY_BADGE_POSITION: LibraryBadgePosition = 'top-right';
 
 export interface TagStatistics {
   completed: number;

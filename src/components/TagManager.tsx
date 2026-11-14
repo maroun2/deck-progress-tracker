@@ -10,6 +10,7 @@ import { GameDetails, HLTBData, PluginSettings } from '../types';
 import { TagIcon } from './TagIcon';
 import { TAG_STYLES } from './GameTag';
 import { useTranslation } from '../i18n';
+import { notifyTagsChanged } from '../lib/libraryBadgeStore';
 import { CustomizableTagType, resolveTagLabel, resolveTagColor } from '../lib/tagCustomization';
 
 const EMPTY_TAG_CUSTOMIZATION: Pick<
@@ -83,6 +84,7 @@ export const TagManager: FC<TagManagerProps> = ({ appid, onClose }) => {
     try {
       const result = await call<[{ appid: string; tag: string }], { success: boolean; error?: string }>('set_manual_tag', { appid, tag });
       await fetchDetails();
+      notifyTagsChanged();
     } catch (err: any) {
       const errorMsg = err?.message || t('tagManager.failedToSetTag');
       setError(errorMsg);
@@ -94,6 +96,7 @@ export const TagManager: FC<TagManagerProps> = ({ appid, onClose }) => {
     try {
       const result = await call<[{ appid: string }], { success: boolean; error?: string }>('reset_to_auto_tag', { appid });
       await fetchDetails();
+      notifyTagsChanged();
     } catch (err: any) {
       const errorMsg = err?.message || t('tagManager.failedToReset');
       setError(errorMsg);
@@ -105,6 +108,7 @@ export const TagManager: FC<TagManagerProps> = ({ appid, onClose }) => {
     try {
       const result = await call<[{ appid: string }], { success: boolean; error?: string }>('remove_tag', { appid });
       await fetchDetails();
+      notifyTagsChanged();
     } catch (err: any) {
       const errorMsg = err?.message || t('tagManager.failedToRemove');
       setError(errorMsg);
@@ -159,6 +163,7 @@ export const TagManager: FC<TagManagerProps> = ({ appid, onClose }) => {
       setManualSearchOpen(false);
       setManualResults([]);
       await fetchDetails();
+      notifyTagsChanged();
     } catch (err: any) {
       setManualError(err?.message || t('tagManager.manualSearchNoResults'));
     }

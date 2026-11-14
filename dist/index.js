@@ -85,14 +85,19 @@ function IconBase(props) {
 }
 
 // THIS FILE IS AUTO GENERATED
-function FaTrophy (props) {
+function FaCog (props) {
+  return GenIcon({"tag":"svg","attr":{"viewBox":"0 0 512 512"},"child":[{"tag":"path","attr":{"d":"M487.4 315.7l-42.6-24.6c4.3-23.2 4.3-47 0-70.2l42.6-24.6c4.9-2.8 7.1-8.6 5.5-14-11.1-35.6-30-67.8-54.7-94.6-3.8-4.1-10-5.1-14.8-2.3L380.8 110c-17.9-15.4-38.5-27.3-60.8-35.1V25.8c0-5.6-3.9-10.5-9.4-11.7-36.7-8.2-74.3-7.8-109.2 0-5.5 1.2-9.4 6.1-9.4 11.7V75c-22.2 7.9-42.8 19.8-60.8 35.1L88.7 85.5c-4.9-2.8-11-1.9-14.8 2.3-24.7 26.7-43.6 58.9-54.7 94.6-1.7 5.4.6 11.2 5.5 14L67.3 221c-4.3 23.2-4.3 47 0 70.2l-42.6 24.6c-4.9 2.8-7.1 8.6-5.5 14 11.1 35.6 30 67.8 54.7 94.6 3.8 4.1 10 5.1 14.8 2.3l42.6-24.6c17.9 15.4 38.5 27.3 60.8 35.1v49.2c0 5.6 3.9 10.5 9.4 11.7 36.7 8.2 74.3 7.8 109.2 0 5.5-1.2 9.4-6.1 9.4-11.7v-49.2c22.2-7.9 42.8-19.8 60.8-35.1l42.6 24.6c4.9 2.8 11 1.9 14.8-2.3 24.7-26.7 43.6-58.9 54.7-94.6 1.5-5.5-.7-11.3-5.6-14.1zM256 336c-44.1 0-80-35.9-80-80s35.9-80 80-80 80 35.9 80 80-35.9 80-80 80z"},"child":[]}]})(props);
+}function FaGlobe (props) {
+  return GenIcon({"tag":"svg","attr":{"viewBox":"0 0 496 512"},"child":[{"tag":"path","attr":{"d":"M336.5 160C322 70.7 287.8 8 248 8s-74 62.7-88.5 152h177zM152 256c0 22.2 1.2 43.5 3.3 64h185.3c2.1-20.5 3.3-41.8 3.3-64s-1.2-43.5-3.3-64H155.3c-2.1 20.5-3.3 41.8-3.3 64zm324.7-96c-28.6-67.9-86.5-120.4-158-141.6 24.4 33.8 41.2 84.7 50 141.6h108zM177.2 18.4C105.8 39.6 47.8 92.1 19.3 160h108c8.7-56.9 25.5-107.8 49.9-141.6zM487.4 192H372.7c2.1 21 3.3 42.5 3.3 64s-1.2 43-3.3 64h114.6c5.5-20.5 8.6-41.8 8.6-64s-3.1-43.5-8.5-64zM120 256c0-21.5 1.2-43 3.3-64H8.6C3.2 212.5 0 233.8 0 256s3.2 43.5 8.6 64h114.6c-2-21-3.2-42.5-3.2-64zm39.5 96c14.5 89.3 48.7 152 88.5 152s74-62.7 88.5-152h-177zm159.3 141.6c71.4-21.2 129.4-73.7 158-141.6h-108c-8.8 56.9-25.6 107.8-50 141.6zM19.3 352c28.6 67.9 86.5 120.4 158 141.6-24.4-33.8-41.2-84.7-50-141.6h-108z"},"child":[]}]})(props);
+}function FaSyncAlt (props) {
+  return GenIcon({"tag":"svg","attr":{"viewBox":"0 0 512 512"},"child":[{"tag":"path","attr":{"d":"M370.72 133.28C339.458 104.008 298.888 87.962 255.848 88c-77.458.068-144.328 53.178-162.791 126.85-1.344 5.363-6.122 9.15-11.651 9.15H24.103c-7.498 0-13.194-6.807-11.807-14.176C33.933 94.924 134.813 8 256 8c66.448 0 126.791 26.136 171.315 68.685L463.03 40.97C478.149 25.851 504 36.559 504 57.941V192c0 13.255-10.745 24-24 24H345.941c-21.382 0-32.09-25.851-16.971-40.971l41.75-41.749zM32 296h134.059c21.382 0 32.09 25.851 16.971 40.971l-41.75 41.75c31.262 29.273 71.835 45.319 114.876 45.28 77.418-.07 144.315-53.144 162.787-126.849 1.344-5.363 6.122-9.15 11.651-9.15h57.304c7.498 0 13.194 6.807 11.807 14.176C478.067 417.076 377.187 504 256 504c-66.448 0-126.791-26.136-171.315-68.685L48.97 471.03C33.851 486.149 8 475.441 8 454.059V320c0-13.255 10.745-24 24-24z"},"child":[]}]})(props);
+}function FaTags (props) {
+  return GenIcon({"tag":"svg","attr":{"viewBox":"0 0 640 512"},"child":[{"tag":"path","attr":{"d":"M497.941 225.941L286.059 14.059A48 48 0 0 0 252.118 0H48C21.49 0 0 21.49 0 48v204.118a48 48 0 0 0 14.059 33.941l211.882 211.882c18.744 18.745 49.136 18.746 67.882 0l204.118-204.118c18.745-18.745 18.745-49.137 0-67.882zM112 160c-26.51 0-48-21.49-48-48s21.49-48 48-48 48 21.49 48 48-21.49 48-48 48zm513.941 133.823L421.823 497.941c-18.745 18.745-49.137 18.745-67.882 0l-.36-.36L527.64 323.522c16.999-16.999 26.36-39.6 26.36-63.64s-9.362-46.641-26.36-63.64L331.397 0h48.721a48 48 0 0 1 33.941 14.059l211.882 211.882c18.745 18.745 18.745 49.137 0 67.882z"},"child":[]}]})(props);
+}function FaThLarge (props) {
+  return GenIcon({"tag":"svg","attr":{"viewBox":"0 0 512 512"},"child":[{"tag":"path","attr":{"d":"M296 32h192c13.255 0 24 10.745 24 24v160c0 13.255-10.745 24-24 24H296c-13.255 0-24-10.745-24-24V56c0-13.255 10.745-24 24-24zm-80 0H24C10.745 32 0 42.745 0 56v160c0 13.255 10.745 24 24 24h192c13.255 0 24-10.745 24-24V56c0-13.255-10.745-24-24-24zM0 296v160c0 13.255 10.745 24 24 24h192c13.255 0 24-10.745 24-24V296c0-13.255-10.745-24-24-24H24c-13.255 0-24 10.745-24 24zm296 184h192c13.255 0 24-10.745 24-24V296c0-13.255-10.745-24-24-24H296c-13.255 0-24 10.745-24 24v160c0 13.255 10.745 24 24 24z"},"child":[]}]})(props);
+}function FaTrophy (props) {
   return GenIcon({"tag":"svg","attr":{"viewBox":"0 0 576 512"},"child":[{"tag":"path","attr":{"d":"M552 64H448V24c0-13.3-10.7-24-24-24H152c-13.3 0-24 10.7-24 24v40H24C10.7 64 0 74.7 0 88v56c0 35.7 22.5 72.4 61.9 100.7 31.5 22.7 69.8 37.1 110 41.7C203.3 338.5 240 360 240 360v72h-48c-35.3 0-64 20.7-64 56v12c0 6.6 5.4 12 12 12h296c6.6 0 12-5.4 12-12v-12c0-35.3-28.7-56-64-56h-48v-72s36.7-21.5 68.1-73.6c40.3-4.6 78.6-19 110-41.7 39.3-28.3 61.9-65 61.9-100.7V88c0-13.3-10.7-24-24-24zM99.3 192.8C74.9 175.2 64 155.6 64 144v-16h64.2c1 32.6 5.8 61.2 12.8 86.2-15.1-5.2-29.2-12.4-41.7-21.4zM512 144c0 16.1-17.7 36.1-35.3 48.8-12.5 9-26.7 16.2-41.8 21.4 7-25 11.8-53.6 12.8-86.2H512v16z"},"child":[]}]})(props);
 }
-
-/**
- * TypeScript type definitions for Game Progress Tracker
- */
-const BADGE_SETTINGS_UPDATED_EVENT = 'deck-progress-tracker:badge-settings-updated';
 
 // Tag colors matching the existing theme
 const TAG_ICON_COLORS = {
@@ -146,6 +151,550 @@ const TagIcon = ({ type, size = 24, className, color: colorOverride }) => {
         type === 'backlog' && SP_REACT.createElement(EmptyCircleIcon, { size: size, color: color }),
         type === 'dropped' && SP_REACT.createElement(XCircleIcon, { size: size, color: color })));
 };
+
+/**
+ * English (default/fallback) translations
+ */
+const en = {
+    // Settings - Library section
+    'settings.library': 'Library',
+    'settings.noGamesFound': 'No games found',
+    'settings.manual': 'manual',
+    // Settings - Sync
+    'settings.syncLibrary': 'Sync Entire Library',
+    'settings.syncing': 'Syncing...',
+    'settings.syncStarting': 'Starting sync...',
+    'settings.syncingProgress': 'Syncing: {current}/{total} games',
+    'settings.syncComplete': 'Sync complete! Library updated.',
+    'settings.syncCompleteDetailed': 'Sync complete! {synced} games updated{newTags}.',
+    'settings.syncCompleteNewTags': ', {count} new tags',
+    'settings.syncError': 'Sync error: {error}',
+    // Settings - Badge Position
+    'settings.badgePosition': 'Badge Position',
+    'settings.horizontal': 'Horizontal',
+    'settings.vertical': 'Vertical',
+    'settings.left': 'Left',
+    'settings.center': 'Center',
+    'settings.right': 'Right',
+    'settings.top': 'Top',
+    'settings.bottom': 'Bottom',
+    'settings.avoidOverlap': 'Vertical nudge',
+    'settings.avoidOverlapDesc': 'Shifts the badge vertically by this many pixels, to avoid overlapping another plugin\'s badge in the same spot.',
+    // Settings - Tagging
+    'settings.tagging': 'Tagging',
+    'settings.inProgressThreshold': 'In Progress threshold',
+    'settings.minutesSuffix': ' min',
+    'settings.masteredThreshold': 'Mastered threshold',
+    'settings.masteredThresholdDesc': 'Minimum percentage of achievements unlocked for a game to be tagged Mastered.',
+    'settings.customizeTags': 'Customize Tags',
+    'settings.resetTagCustomization': 'Reset to Default',
+    // Settings page / panel
+    'settings.openSettings': 'Settings',
+    'settings.title': 'Deck Progress Tracker',
+    'settings.pageGeneral': 'General',
+    'settings.pageBadges': 'Badges',
+    'settings.syncSection': 'Library sync',
+    'settings.syncDesc': 'Re-scan playtime and achievements for every game and update tags.',
+    'settings.badgePositionDesc': 'Where the tag badge sits on a game\'s page banner.',
+    'settings.customizeTagsDesc': 'Rename tags and pick their colours. Colours are used in the lists, on the game page and on library tiles.',
+    // Settings - Library tile badges
+    'settings.libraryBadgeSection': 'Library tiles',
+    'settings.libraryBadgePosition': 'Library badge position',
+    'settings.libraryBadgePositionDesc': 'Small tag icon on every game tile in the library, collections and Home. ProtonDB Badges uses the bottom left by default; if both are in the same corner, this badge steps aside.',
+    'settings.positionNone': 'None (off)',
+    'settings.positionTopLeft': 'Top left',
+    'settings.positionTopRight': 'Top right',
+    'settings.positionBottomLeft': 'Bottom left',
+    'settings.positionBottomRight': 'Bottom right',
+    // Settings - Language
+    'settings.language': 'Language',
+    'settings.languageAuto': 'Automatic (System)',
+    'settings.languageEnglish': 'English',
+    'settings.languagePortuguese': 'Português (Brasil)',
+    // Settings - About
+    'settings.about': 'About',
+    'settings.aboutDataSource': 'Data from HowLongToBeat & Steam',
+    'settings.supportPatreon': 'Support on Patreon',
+    // Tags - labels
+    'tag.completed': 'Completed',
+    'tag.in_progress': 'In Progress',
+    'tag.backlog': 'Backlog',
+    'tag.mastered': 'Mastered',
+    'tag.dropped': 'Dropped',
+    // Tags - descriptions
+    'tag.completed.desc': 'Beat the main story (playtime ≥ HLTB main story time)',
+    'tag.in_progress.desc': 'Currently playing (playtime ≥ 30 minutes)',
+    'tag.backlog.desc': 'Not started yet (no playtime or minimal playtime)',
+    'tag.mastered.desc': 'Unlocked {threshold}%+ of all achievements',
+    'tag.dropped.desc': 'Not played for over 1 year',
+    // Badge (on game banner)
+    'badge.addTag': 'Add Tag',
+    'badge.clickToAddTag': 'Click to add tag',
+    'badge.manualTagEdit': 'Manual tag - Click to edit',
+    'badge.autoTagEdit': 'Automatic tag - Click to edit',
+    // TagManager modal
+    'tagManager.loading': 'Loading...',
+    'tagManager.failedToLoad': 'Failed to load game details',
+    'tagManager.failedToSetTag': 'Failed to set tag',
+    'tagManager.failedToReset': 'Failed to reset tag',
+    'tagManager.failedToRemove': 'Failed to remove tag',
+    'tagManager.close': 'Close',
+    'tagManager.statistics': 'Statistics',
+    'tagManager.playtime': 'Playtime:',
+    'tagManager.achievements': 'Achievements:',
+    'tagManager.hltbMatch': 'HLTB Match:',
+    'tagManager.mainStory': 'Main Story:',
+    'tagManager.hltb': 'HLTB:',
+    'tagManager.noData': 'No data',
+    'tagManager.manualTag': '(Manual)',
+    'tagManager.autoTag': '(Auto)',
+    'tagManager.setTag': 'Set Tag',
+    'tagManager.resetToAuto': 'Reset to Auto',
+    'tagManager.remove': 'Remove',
+    'tagManager.manualSearchOpen': 'Search HLTB manually',
+    'tagManager.manualSearchClose': 'Close manual search',
+    'tagManager.manualSearchButton': 'Search',
+    'tagManager.manualSearching': 'Searching...',
+    'tagManager.manualSearchNoResults': 'No results found',
+    'tagManager.gameFallback': 'Game {appid}',
+};
+
+/**
+ * Brazilian Portuguese translations
+ */
+const ptBR = {
+    // Settings - Library section
+    'settings.library': 'Biblioteca',
+    'settings.noGamesFound': 'Nenhum jogo encontrado',
+    'settings.manual': 'manual',
+    // Settings - Sync
+    'settings.syncLibrary': 'Sincronizar Biblioteca Inteira',
+    'settings.syncing': 'Sincronizando...',
+    'settings.syncStarting': 'Iniciando sincronização...',
+    'settings.syncingProgress': 'Sincronizando: {current}/{total} jogos',
+    'settings.syncComplete': 'Sincronização concluída! Biblioteca atualizada.',
+    'settings.syncCompleteDetailed': 'Sincronização concluída! {synced} jogos atualizados{newTags}.',
+    'settings.syncCompleteNewTags': ', {count} novas tags',
+    'settings.syncError': 'Erro na sincronização: {error}',
+    // Settings - Badge Position
+    'settings.badgePosition': 'Posição do Badge',
+    'settings.horizontal': 'Horizontal',
+    'settings.vertical': 'Vertical',
+    'settings.left': 'Esquerda',
+    'settings.center': 'Centro',
+    'settings.right': 'Direita',
+    'settings.top': 'Topo',
+    'settings.bottom': 'Baixo',
+    'settings.avoidOverlap': 'Deslocamento vertical',
+    'settings.avoidOverlapDesc': 'Desloca o badge verticalmente por essa quantidade de pixels, para evitar sobrepor o badge de outro plugin no mesmo local.',
+    // Settings - Tagging
+    'settings.tagging': 'Marcação de Tags',
+    'settings.inProgressThreshold': 'Limite para "Em Progresso"',
+    'settings.minutesSuffix': ' min',
+    'settings.masteredThreshold': 'Limite para "Dominado"',
+    'settings.masteredThresholdDesc': 'Percentual mínimo de conquistas desbloqueadas para o jogo ser marcado como Dominado.',
+    'settings.customizeTags': 'Personalizar Tags',
+    'settings.resetTagCustomization': 'Redefinir para o Padrão',
+    // Settings page / panel
+    'settings.openSettings': 'Configurações',
+    'settings.title': 'Deck Progress Tracker',
+    'settings.pageGeneral': 'Geral',
+    'settings.pageBadges': 'Selos',
+    'settings.syncSection': 'Sincronização da biblioteca',
+    'settings.syncDesc': 'Verifica novamente o tempo de jogo e as conquistas de todos os jogos e atualiza as tags.',
+    'settings.badgePositionDesc': 'Onde o selo da tag aparece no banner da página do jogo.',
+    'settings.customizeTagsDesc': 'Renomeie as tags e escolha suas cores. As cores são usadas nas listas, na página do jogo e nos blocos da biblioteca.',
+    // Settings - Library tile badges
+    'settings.libraryBadgeSection': 'Blocos da biblioteca',
+    'settings.libraryBadgePosition': 'Posição do selo na biblioteca',
+    'settings.libraryBadgePositionDesc': 'Pequeno ícone da tag em cada jogo da biblioteca, das coleções e da tela inicial. O ProtonDB Badges usa o canto inferior esquerdo por padrão; se ambos estiverem no mesmo canto, este selo se afasta.',
+    'settings.positionNone': 'Nenhuma (desligado)',
+    'settings.positionTopLeft': 'Superior esquerdo',
+    'settings.positionTopRight': 'Superior direito',
+    'settings.positionBottomLeft': 'Inferior esquerdo',
+    'settings.positionBottomRight': 'Inferior direito',
+    // Settings - Language
+    'settings.language': 'Idioma',
+    'settings.languageAuto': 'Automático (Sistema)',
+    'settings.languageEnglish': 'English',
+    'settings.languagePortuguese': 'Português (Brasil)',
+    // Settings - About
+    'settings.about': 'Sobre',
+    'settings.aboutDataSource': 'Dados do HowLongToBeat & Steam',
+    'settings.supportPatreon': 'Apoie no Patreon',
+    // Tags - labels
+    'tag.completed': 'Completo',
+    'tag.in_progress': 'Em Progresso',
+    'tag.backlog': 'Backlog',
+    'tag.mastered': 'Dominado',
+    'tag.dropped': 'Abandonado',
+    // Tags - descriptions
+    'tag.completed.desc': 'Terminou a história principal (tempo jogado ≥ tempo da história principal no HLTB)',
+    'tag.in_progress.desc': 'Jogando atualmente (tempo jogado ≥ 30 minutos)',
+    'tag.backlog.desc': 'Ainda não iniciado (sem tempo jogado ou tempo mínimo)',
+    'tag.mastered.desc': 'Desbloqueou {threshold}%+ de todas as conquistas',
+    'tag.dropped.desc': 'Não jogado por mais de 1 ano',
+    // Badge (on game banner)
+    'badge.addTag': 'Adicionar Tag',
+    'badge.clickToAddTag': 'Clique para adicionar uma tag',
+    'badge.manualTagEdit': 'Tag manual - Clique para editar',
+    'badge.autoTagEdit': 'Tag automática - Clique para editar',
+    // TagManager modal
+    'tagManager.loading': 'Carregando...',
+    'tagManager.failedToLoad': 'Falha ao carregar detalhes do jogo',
+    'tagManager.failedToSetTag': 'Falha ao definir a tag',
+    'tagManager.failedToReset': 'Falha ao redefinir a tag',
+    'tagManager.failedToRemove': 'Falha ao remover a tag',
+    'tagManager.close': 'Fechar',
+    'tagManager.statistics': 'Estatísticas',
+    'tagManager.playtime': 'Tempo jogado:',
+    'tagManager.achievements': 'Conquistas:',
+    'tagManager.hltbMatch': 'Correspondência HLTB:',
+    'tagManager.mainStory': 'História Principal:',
+    'tagManager.hltb': 'HLTB:',
+    'tagManager.noData': 'Sem dados',
+    'tagManager.manualTag': '(Manual)',
+    'tagManager.autoTag': '(Automática)',
+    'tagManager.setTag': 'Definir Tag',
+    'tagManager.resetToAuto': 'Voltar ao Automático',
+    'tagManager.remove': 'Remover',
+    'tagManager.manualSearchOpen': 'Buscar HLTB manualmente',
+    'tagManager.manualSearchClose': 'Fechar busca manual',
+    'tagManager.manualSearchButton': 'Buscar',
+    'tagManager.manualSearching': 'Buscando...',
+    'tagManager.manualSearchNoResults': 'Nenhum resultado encontrado',
+    'tagManager.gameFallback': 'Jogo {appid}',
+};
+
+const DICTIONARIES = {
+    en,
+    'pt-BR': ptBR,
+};
+const LANGUAGE_UPDATED_EVENT = 'deck-progress-tracker:language-updated';
+function detectSystemLanguage() {
+    const systemLanguage = (navigator.language || 'en').toLowerCase();
+    return systemLanguage.startsWith('pt') ? 'pt-BR' : 'en';
+}
+let currentLanguage = detectSystemLanguage();
+let initialized = false;
+const listeners$1 = new Set();
+async function resolveLanguage() {
+    try {
+        const result = await call('get_settings');
+        const preference = result.settings?.language || 'auto';
+        return preference === 'auto' ? detectSystemLanguage() : preference;
+    }
+    catch (e) {
+        return detectSystemLanguage();
+    }
+}
+async function refreshLanguage() {
+    currentLanguage = await resolveLanguage();
+    listeners$1.forEach((listener) => listener());
+}
+function ensureInitialized() {
+    if (initialized) {
+        return;
+    }
+    initialized = true;
+    refreshLanguage();
+    window.addEventListener(LANGUAGE_UPDATED_EVENT, refreshLanguage);
+}
+function translate(key, vars) {
+    const template = DICTIONARIES[currentLanguage][key] ?? en[key] ?? key;
+    if (!vars) {
+        return template;
+    }
+    return Object.entries(vars).reduce((acc, [name, value]) => acc.split(`{${name}}`).join(String(value)), template);
+}
+/**
+ * Subscribes to language changes (triggered via LANGUAGE_UPDATED_EVENT,
+ * dispatched by Settings after the user changes their preference).
+ */
+function subscribeToLanguage(listener) {
+    ensureInitialized();
+    listeners$1.add(listener);
+    return () => listeners$1.delete(listener);
+}
+/**
+ * React hook giving components a `t()` function that re-renders when the
+ * resolved language changes (system detection or manual override).
+ */
+function useTranslation() {
+    const [, forceRender] = SP_REACT.useState(0);
+    SP_REACT.useEffect(() => subscribeToLanguage(() => forceRender((n) => n + 1)), []);
+    return { t: translate, language: currentLanguage };
+}
+
+/**
+ * Shared helpers for user-customizable tag labels/colors
+ * (https://github.com/maroun2/deck-progress-tracker/issues/6)
+ */
+// These match named presets in TAG_COLOR_PRESETS below exactly (Pink, Green,
+// Blue, Brown), so the default color always shows up selected in the
+// dropdown instead of needing a separate synthetic "Default" entry.
+const DEFAULT_TAG_COLORS = {
+    mastered: '#f5576c', // Pink
+    completed: '#2ecc71', // Green
+    in_progress: '#3498db', // Blue
+    dropped: '#8d6e63', // Brown
+};
+const TAG_LABEL_SETTING_KEY = {
+    mastered: 'tag_label_mastered',
+    completed: 'tag_label_completed',
+    in_progress: 'tag_label_in_progress',
+    dropped: 'tag_label_dropped',
+};
+const TAG_COLOR_SETTING_KEY = {
+    mastered: 'tag_color_mastered',
+    completed: 'tag_color_completed',
+    in_progress: 'tag_color_in_progress',
+    dropped: 'tag_color_dropped',
+};
+const DEFAULT_TAG_LABEL_KEY = {
+    mastered: 'tag.mastered',
+    completed: 'tag.completed',
+    in_progress: 'tag.in_progress',
+    dropped: 'tag.dropped',
+};
+// Curated palette instead of a free color picker - @decky/ui has no native
+// color input, and a raw HTML <input type="color"> doesn't play well with
+// gamepad navigation (same class of issue fixed elsewhere in this plugin).
+const TAG_COLOR_PRESETS = [
+    { label: 'Pink', value: '#f5576c' },
+    { label: 'Red', value: '#e74c3c' },
+    { label: 'Orange', value: '#e67e22' },
+    { label: 'Yellow', value: '#f1c40f' },
+    { label: 'Green', value: '#2ecc71' },
+    { label: 'Teal', value: '#1abc9c' },
+    { label: 'Blue', value: '#3498db' },
+    { label: 'Purple', value: '#9b59b6' },
+    { label: 'Brown', value: '#8d6e63' },
+    { label: 'Gray', value: '#888888' },
+];
+function resolveTagLabel(type, settings, t) {
+    const custom = settings[TAG_LABEL_SETTING_KEY[type]];
+    return custom && custom.trim() ? custom.trim() : t(DEFAULT_TAG_LABEL_KEY[type]);
+}
+function resolveTagColor(type, settings) {
+    const custom = settings[TAG_COLOR_SETTING_KEY[type]];
+    return custom && custom.trim() ? custom.trim() : DEFAULT_TAG_COLORS[type];
+}
+
+/**
+ * TypeScript type definitions for Game Progress Tracker
+ */
+const BADGE_SETTINGS_UPDATED_EVENT = 'deck-progress-tracker:badge-settings-updated';
+// Fired whenever game tags may have changed (manual tag edit, sync), so the
+// library tile badges can refresh their cached tag map.
+const TAGS_UPDATED_EVENT = 'deck-progress-tracker:tags-updated';
+const DEFAULT_LIBRARY_BADGE_POSITION = 'top-right';
+
+/**
+ * Shared plugin settings state for the main panel and the settings page.
+ */
+const DEFAULT_SETTINGS = {
+    auto_tag_enabled: true,
+    mastered_threshold: 85,
+    in_progress_threshold: 30,
+    cache_ttl: 7200,
+    source_installed: true,
+    source_non_steam: true,
+    source_all_owned: true,
+    badge_position_h: 'right',
+    badge_position_v: 'top',
+    badge_overlap_offset: 0,
+    library_badge_position: DEFAULT_LIBRARY_BADGE_POSITION,
+    language: 'auto',
+    tag_label_mastered: '',
+    tag_label_completed: '',
+    tag_label_in_progress: '',
+    tag_label_dropped: '',
+    tag_color_mastered: '',
+    tag_color_completed: '',
+    tag_color_in_progress: '',
+    tag_color_dropped: '',
+};
+/**
+ * @param reloadOnChange re-read settings whenever another view changes
+ *   them. Off for the settings page itself, where a reload racing the
+ *   user's typing could overwrite a text field mid-edit.
+ */
+function usePluginSettings({ reloadOnChange = false } = {}) {
+    const [settings, setSettings] = SP_REACT.useState(DEFAULT_SETTINGS);
+    const [loaded, setLoaded] = SP_REACT.useState(false);
+    SP_REACT.useEffect(() => {
+        let cancelled = false;
+        const load = () => call('get_settings')
+            .then((res) => {
+            if (!cancelled && res?.settings) {
+                setSettings({ ...DEFAULT_SETTINGS, ...res.settings });
+            }
+        })
+            .catch(() => { })
+            .finally(() => {
+            if (!cancelled)
+                setLoaded(true);
+        });
+        load();
+        // The Quick Access panel stays mounted while the settings page changes
+        // tag labels/colours, so pick those changes up live.
+        if (reloadOnChange)
+            window.addEventListener(BADGE_SETTINGS_UPDATED_EVENT, load);
+        return () => {
+            cancelled = true;
+            if (reloadOnChange)
+                window.removeEventListener(BADGE_SETTINGS_UPDATED_EVENT, load);
+        };
+    }, []);
+    /**
+     * Optimistically apply and persist a settings change, then dispatch
+     * `event` (if given) so other live UI (badges, language) picks it up.
+     */
+    const updateSettings = async (patch, event) => {
+        setSettings((prev) => ({ ...prev, ...patch }));
+        try {
+            await call('update_settings', patch);
+            if (event) {
+                window.dispatchEvent(new CustomEvent(event));
+            }
+        }
+        catch (err) {
+            // Keep the optimistic value; the next load will resync
+        }
+    };
+    return { settings, loaded, updateSettings };
+}
+
+/**
+ * Shared, cached state for the library tile badges.
+ *
+ * Steam can render hundreds of game capsules at once (library grid, Home
+ * shelves, collections), so tiles never talk to the backend themselves:
+ * the whole {appid: tag} map is fetched with a single `get_tag_map` call and
+ * cached here, together with the badge position and tag colour settings.
+ * Tiles subscribe and only re-render when their own derived badge changes.
+ */
+const VALID_POSITIONS = ['none', 'top-left', 'top-right', 'bottom-left', 'bottom-right'];
+// A tile mounting after this long triggers one background refresh of the
+// tag map (covers tag changes made by the automatic background checks).
+const TAG_MAP_STALE_MS = 60000;
+// Coalesce bursts of "tags changed" events (e.g. during a library sync).
+const TAG_REFRESH_DEBOUNCE_MS = 1500;
+let state = {
+    position: DEFAULT_LIBRARY_BADGE_POSITION,
+    tags: {},
+    colors: {},
+};
+const listeners = new Set();
+let lastTagFetch = 0;
+let tagFetchInFlight = false;
+let tagRefreshTimer = null;
+let active = false;
+function emit(next) {
+    state = next;
+    listeners.forEach((listener) => {
+        try {
+            listener();
+        }
+        catch (e) {
+            // A broken subscriber must never break the others
+        }
+    });
+}
+function getLibraryBadgeState() {
+    return state;
+}
+function subscribeLibraryBadges(listener) {
+    listeners.add(listener);
+    return () => {
+        listeners.delete(listener);
+    };
+}
+async function loadSettings() {
+    try {
+        const result = await call('get_settings');
+        const s = result?.settings;
+        if (!s || !active)
+            return;
+        const position = VALID_POSITIONS.includes(s.library_badge_position)
+            ? s.library_badge_position
+            : DEFAULT_LIBRARY_BADGE_POSITION;
+        const colors = {};
+        Object.keys(TAG_COLOR_SETTING_KEY).forEach((type) => {
+            const key = TAG_COLOR_SETTING_KEY[type];
+            colors[key] = s[key] || '';
+        });
+        if (position !== state.position || JSON.stringify(colors) !== JSON.stringify(state.colors)) {
+            emit({ ...state, position, colors });
+        }
+    }
+    catch (e) {
+        // Keep previous settings on failure
+    }
+}
+async function loadTags() {
+    if (tagFetchInFlight)
+        return;
+    tagFetchInFlight = true;
+    try {
+        const result = await call('get_tag_map');
+        lastTagFetch = Date.now();
+        if (result?.success && result.tags && active) {
+            if (JSON.stringify(result.tags) !== JSON.stringify(state.tags)) {
+                emit({ ...state, tags: result.tags });
+            }
+        }
+    }
+    catch (e) {
+        // Keep previous tags on failure
+    }
+    finally {
+        tagFetchInFlight = false;
+    }
+}
+function scheduleTagRefresh() {
+    if (tagRefreshTimer)
+        clearTimeout(tagRefreshTimer);
+    tagRefreshTimer = setTimeout(() => {
+        tagRefreshTimer = null;
+        loadTags();
+    }, TAG_REFRESH_DEBOUNCE_MS);
+}
+/**
+ * Called by tiles on mount; refreshes the tag map at most once per
+ * TAG_MAP_STALE_MS no matter how many tiles mount.
+ */
+function refreshTagsIfStale() {
+    if (active && !tagFetchInFlight && Date.now() - lastTagFetch > TAG_MAP_STALE_MS) {
+        loadTags();
+    }
+}
+/**
+ * Tell the library badges that tags changed (manual edit, sync, ...).
+ */
+function notifyTagsChanged() {
+    window.dispatchEvent(new CustomEvent(TAGS_UPDATED_EVENT));
+}
+function initLibraryBadgeStore() {
+    active = true;
+    const onSettings = () => loadSettings();
+    const onTags = () => scheduleTagRefresh();
+    window.addEventListener(BADGE_SETTINGS_UPDATED_EVENT, onSettings);
+    window.addEventListener(TAGS_UPDATED_EVENT, onTags);
+    loadSettings();
+    loadTags();
+    return () => {
+        window.removeEventListener(BADGE_SETTINGS_UPDATED_EVENT, onSettings);
+        window.removeEventListener(TAGS_UPDATED_EVENT, onTags);
+        if (tagRefreshTimer)
+            clearTimeout(tagRefreshTimer);
+        tagRefreshTimer = null;
+        active = false;
+        // Hide every badge that is still mounted when the plugin unloads
+        emit({ ...state, position: 'none' });
+    };
+}
 
 /**
  * Sync Utilities
@@ -476,6 +1025,9 @@ const syncGames = async (appids) => {
  */
 const syncSingleGameWithFrontendData = async (appid) => {
     const result = await syncGames([appid]);
+    if (result.success) {
+        notifyTagsChanged();
+    }
     return { success: result.success, error: result.error };
 };
 /**
@@ -549,6 +1101,8 @@ const syncLibraryProgressive = async (onProgress) => {
                     synced++;
                     if (result.tag_changed) {
                         newTags++;
+                        // Debounced in libraryBadgeStore, so a burst is one refresh
+                        notifyTagsChanged();
                     }
                 }
                 else {
@@ -559,6 +1113,7 @@ const syncLibraryProgressive = async (onProgress) => {
                 errors++;
             }
         }
+        notifyTagsChanged();
         return {
             success: true,
             total,
@@ -573,306 +1128,95 @@ const syncLibraryProgressive = async (onProgress) => {
 };
 
 /**
- * English (default/fallback) translations
+ * Library sync state shared by the main panel (status line) and the
+ * settings page (Sync button). Polls the backend so a sync started from
+ * anywhere (startup auto-sync, the other view) is reflected.
  */
-const en = {
-    // Settings - Library section
-    'settings.library': 'Library',
-    'settings.noGamesFound': 'No games found',
-    'settings.manual': 'manual',
-    // Settings - Sync
-    'settings.syncLibrary': 'Sync Entire Library',
-    'settings.syncing': 'Syncing...',
-    'settings.syncStarting': 'Starting sync...',
-    'settings.syncingProgress': 'Syncing: {current}/{total} games',
-    'settings.syncComplete': 'Sync complete! Library updated.',
-    'settings.syncCompleteDetailed': 'Sync complete! {synced} games updated{newTags}.',
-    'settings.syncCompleteNewTags': ', {count} new tags',
-    'settings.syncError': 'Sync error: {error}',
-    // Settings - Badge Position
-    'settings.badgePosition': 'Badge Position',
-    'settings.horizontal': 'Horizontal',
-    'settings.vertical': 'Vertical',
-    'settings.left': 'Left',
-    'settings.center': 'Center',
-    'settings.right': 'Right',
-    'settings.top': 'Top',
-    'settings.bottom': 'Bottom',
-    'settings.avoidOverlap': 'Vertical nudge',
-    'settings.avoidOverlapDesc': 'Shifts the badge vertically by this many pixels, to avoid overlapping another plugin\'s badge in the same spot.',
-    // Settings - Tagging
-    'settings.tagging': 'Tagging',
-    'settings.inProgressThreshold': 'In Progress threshold',
-    'settings.minutesSuffix': ' min',
-    'settings.masteredThreshold': 'Mastered threshold',
-    'settings.masteredThresholdDesc': 'Minimum percentage of achievements unlocked for a game to be tagged Mastered.',
-    'settings.customizeTags': 'Customize Tags',
-    'settings.resetTagCustomization': 'Reset to Default',
-    // Settings - Language
-    'settings.language': 'Language',
-    'settings.languageAuto': 'Automatic (System)',
-    'settings.languageEnglish': 'English',
-    'settings.languagePortuguese': 'Português (Brasil)',
-    // Settings - About
-    'settings.about': 'About',
-    'settings.aboutDataSource': 'Data from HowLongToBeat & Steam',
-    'settings.supportPatreon': 'Support on Patreon',
-    // Tags - labels
-    'tag.completed': 'Completed',
-    'tag.in_progress': 'In Progress',
-    'tag.backlog': 'Backlog',
-    'tag.mastered': 'Mastered',
-    'tag.dropped': 'Dropped',
-    // Tags - descriptions
-    'tag.completed.desc': 'Beat the main story (playtime ≥ HLTB main story time)',
-    'tag.in_progress.desc': 'Currently playing (playtime ≥ 30 minutes)',
-    'tag.backlog.desc': 'Not started yet (no playtime or minimal playtime)',
-    'tag.mastered.desc': 'Unlocked {threshold}%+ of all achievements',
-    'tag.dropped.desc': 'Not played for over 1 year',
-    // Badge (on game banner)
-    'badge.addTag': 'Add Tag',
-    'badge.clickToAddTag': 'Click to add tag',
-    'badge.manualTagEdit': 'Manual tag - Click to edit',
-    'badge.autoTagEdit': 'Automatic tag - Click to edit',
-    // TagManager modal
-    'tagManager.loading': 'Loading...',
-    'tagManager.failedToLoad': 'Failed to load game details',
-    'tagManager.failedToSetTag': 'Failed to set tag',
-    'tagManager.failedToReset': 'Failed to reset tag',
-    'tagManager.failedToRemove': 'Failed to remove tag',
-    'tagManager.close': 'Close',
-    'tagManager.statistics': 'Statistics',
-    'tagManager.playtime': 'Playtime:',
-    'tagManager.achievements': 'Achievements:',
-    'tagManager.hltbMatch': 'HLTB Match:',
-    'tagManager.mainStory': 'Main Story:',
-    'tagManager.hltb': 'HLTB:',
-    'tagManager.noData': 'No data',
-    'tagManager.manualTag': '(Manual)',
-    'tagManager.autoTag': '(Auto)',
-    'tagManager.setTag': 'Set Tag',
-    'tagManager.resetToAuto': 'Reset to Auto',
-    'tagManager.remove': 'Remove',
-    'tagManager.manualSearchOpen': 'Search HLTB manually',
-    'tagManager.manualSearchClose': 'Close manual search',
-    'tagManager.manualSearchButton': 'Search',
-    'tagManager.manualSearching': 'Searching...',
-    'tagManager.manualSearchNoResults': 'No results found',
-    'tagManager.gameFallback': 'Game {appid}',
-};
-
-/**
- * Brazilian Portuguese translations
- */
-const ptBR = {
-    // Settings - Library section
-    'settings.library': 'Biblioteca',
-    'settings.noGamesFound': 'Nenhum jogo encontrado',
-    'settings.manual': 'manual',
-    // Settings - Sync
-    'settings.syncLibrary': 'Sincronizar Biblioteca Inteira',
-    'settings.syncing': 'Sincronizando...',
-    'settings.syncStarting': 'Iniciando sincronização...',
-    'settings.syncingProgress': 'Sincronizando: {current}/{total} jogos',
-    'settings.syncComplete': 'Sincronização concluída! Biblioteca atualizada.',
-    'settings.syncCompleteDetailed': 'Sincronização concluída! {synced} jogos atualizados{newTags}.',
-    'settings.syncCompleteNewTags': ', {count} novas tags',
-    'settings.syncError': 'Erro na sincronização: {error}',
-    // Settings - Badge Position
-    'settings.badgePosition': 'Posição do Badge',
-    'settings.horizontal': 'Horizontal',
-    'settings.vertical': 'Vertical',
-    'settings.left': 'Esquerda',
-    'settings.center': 'Centro',
-    'settings.right': 'Direita',
-    'settings.top': 'Topo',
-    'settings.bottom': 'Baixo',
-    'settings.avoidOverlap': 'Deslocamento vertical',
-    'settings.avoidOverlapDesc': 'Desloca o badge verticalmente por essa quantidade de pixels, para evitar sobrepor o badge de outro plugin no mesmo local.',
-    // Settings - Tagging
-    'settings.tagging': 'Marcação de Tags',
-    'settings.inProgressThreshold': 'Limite para "Em Progresso"',
-    'settings.minutesSuffix': ' min',
-    'settings.masteredThreshold': 'Limite para "Dominado"',
-    'settings.masteredThresholdDesc': 'Percentual mínimo de conquistas desbloqueadas para o jogo ser marcado como Dominado.',
-    'settings.customizeTags': 'Personalizar Tags',
-    'settings.resetTagCustomization': 'Redefinir para o Padrão',
-    // Settings - Language
-    'settings.language': 'Idioma',
-    'settings.languageAuto': 'Automático (Sistema)',
-    'settings.languageEnglish': 'English',
-    'settings.languagePortuguese': 'Português (Brasil)',
-    // Settings - About
-    'settings.about': 'Sobre',
-    'settings.aboutDataSource': 'Dados do HowLongToBeat & Steam',
-    'settings.supportPatreon': 'Apoie no Patreon',
-    // Tags - labels
-    'tag.completed': 'Completo',
-    'tag.in_progress': 'Em Progresso',
-    'tag.backlog': 'Backlog',
-    'tag.mastered': 'Dominado',
-    'tag.dropped': 'Abandonado',
-    // Tags - descriptions
-    'tag.completed.desc': 'Terminou a história principal (tempo jogado ≥ tempo da história principal no HLTB)',
-    'tag.in_progress.desc': 'Jogando atualmente (tempo jogado ≥ 30 minutos)',
-    'tag.backlog.desc': 'Ainda não iniciado (sem tempo jogado ou tempo mínimo)',
-    'tag.mastered.desc': 'Desbloqueou {threshold}%+ de todas as conquistas',
-    'tag.dropped.desc': 'Não jogado por mais de 1 ano',
-    // Badge (on game banner)
-    'badge.addTag': 'Adicionar Tag',
-    'badge.clickToAddTag': 'Clique para adicionar uma tag',
-    'badge.manualTagEdit': 'Tag manual - Clique para editar',
-    'badge.autoTagEdit': 'Tag automática - Clique para editar',
-    // TagManager modal
-    'tagManager.loading': 'Carregando...',
-    'tagManager.failedToLoad': 'Falha ao carregar detalhes do jogo',
-    'tagManager.failedToSetTag': 'Falha ao definir a tag',
-    'tagManager.failedToReset': 'Falha ao redefinir a tag',
-    'tagManager.failedToRemove': 'Falha ao remover a tag',
-    'tagManager.close': 'Fechar',
-    'tagManager.statistics': 'Estatísticas',
-    'tagManager.playtime': 'Tempo jogado:',
-    'tagManager.achievements': 'Conquistas:',
-    'tagManager.hltbMatch': 'Correspondência HLTB:',
-    'tagManager.mainStory': 'História Principal:',
-    'tagManager.hltb': 'HLTB:',
-    'tagManager.noData': 'Sem dados',
-    'tagManager.manualTag': '(Manual)',
-    'tagManager.autoTag': '(Automática)',
-    'tagManager.setTag': 'Definir Tag',
-    'tagManager.resetToAuto': 'Voltar ao Automático',
-    'tagManager.remove': 'Remover',
-    'tagManager.manualSearchOpen': 'Buscar HLTB manualmente',
-    'tagManager.manualSearchClose': 'Fechar busca manual',
-    'tagManager.manualSearchButton': 'Buscar',
-    'tagManager.manualSearching': 'Buscando...',
-    'tagManager.manualSearchNoResults': 'Nenhum resultado encontrado',
-    'tagManager.gameFallback': 'Jogo {appid}',
-};
-
-const DICTIONARIES = {
-    en,
-    'pt-BR': ptBR,
-};
-const LANGUAGE_UPDATED_EVENT = 'deck-progress-tracker:language-updated';
-function detectSystemLanguage() {
-    const systemLanguage = (navigator.language || 'en').toLowerCase();
-    return systemLanguage.startsWith('pt') ? 'pt-BR' : 'en';
-}
-let currentLanguage = detectSystemLanguage();
-let initialized = false;
-const listeners = new Set();
-async function resolveLanguage() {
-    try {
-        const result = await call('get_settings');
-        const preference = result.settings?.language || 'auto';
-        return preference === 'auto' ? detectSystemLanguage() : preference;
-    }
-    catch (e) {
-        return detectSystemLanguage();
-    }
-}
-async function refreshLanguage() {
-    currentLanguage = await resolveLanguage();
-    listeners.forEach((listener) => listener());
-}
-function ensureInitialized() {
-    if (initialized) {
-        return;
-    }
-    initialized = true;
-    refreshLanguage();
-    window.addEventListener(LANGUAGE_UPDATED_EVENT, refreshLanguage);
-}
-function translate(key, vars) {
-    const template = DICTIONARIES[currentLanguage][key] ?? en[key] ?? key;
-    if (!vars) {
-        return template;
-    }
-    return Object.entries(vars).reduce((acc, [name, value]) => acc.split(`{${name}}`).join(String(value)), template);
-}
-/**
- * Subscribes to language changes (triggered via LANGUAGE_UPDATED_EVENT,
- * dispatched by Settings after the user changes their preference).
- */
-function subscribeToLanguage(listener) {
-    ensureInitialized();
-    listeners.add(listener);
-    return () => listeners.delete(listener);
-}
-/**
- * React hook giving components a `t()` function that re-renders when the
- * resolved language changes (system detection or manual override).
- */
-function useTranslation() {
-    const [, forceRender] = SP_REACT.useState(0);
-    SP_REACT.useEffect(() => subscribeToLanguage(() => forceRender((n) => n + 1)), []);
-    return { t: translate, language: currentLanguage };
+function useLibrarySync(onProgressUpdate) {
+    const { t } = useTranslation();
+    const [syncing, setSyncing] = SP_REACT.useState(false);
+    const [message, setMessage] = SP_REACT.useState(null);
+    // Set while a sync started from this view is running - its own
+    // completion message wins over the poller's generic one.
+    const localSyncRef = SP_REACT.useRef(false);
+    const onUpdateRef = SP_REACT.useRef(onProgressUpdate);
+    onUpdateRef.current = onProgressUpdate;
+    const clearTimerRef = SP_REACT.useRef(null);
+    const showTransient = (msg, ms) => {
+        setMessage(msg);
+        if (clearTimerRef.current)
+            clearTimeout(clearTimerRef.current);
+        clearTimerRef.current = setTimeout(() => setMessage(null), ms);
+    };
+    SP_REACT.useEffect(() => () => {
+        if (clearTimerRef.current)
+            clearTimeout(clearTimerRef.current);
+    }, []);
+    SP_REACT.useEffect(() => {
+        const pollSync = async () => {
+            if (localSyncRef.current)
+                return;
+            try {
+                const res = await call('get_sync_progress');
+                if (res.success && res.syncing) {
+                    setMessage(t('settings.syncingProgress', { current: res.current, total: res.total }));
+                    setSyncing(true);
+                }
+                else if (res.success && !res.syncing && syncing) {
+                    setSyncing(false);
+                    onUpdateRef.current?.();
+                    if (res.total && res.total > 0) {
+                        showTransient(t('settings.syncComplete'), 5000);
+                    }
+                    else {
+                        setMessage(null);
+                    }
+                }
+            }
+            catch (err) { }
+        };
+        const interval = setInterval(pollSync, syncing ? 500 : 2000);
+        return () => clearInterval(interval);
+    }, [syncing]);
+    const syncLibrary = async () => {
+        localSyncRef.current = true;
+        try {
+            setSyncing(true);
+            setMessage(t('settings.syncStarting'));
+            const result = await syncLibraryProgressive((current, total) => {
+                setMessage(t('settings.syncingProgress', { current, total }));
+                if (current % 10 === 0 || current === total) {
+                    onUpdateRef.current?.();
+                }
+            });
+            onUpdateRef.current?.();
+            const newTagsSuffix = result.new_tags
+                ? t('settings.syncCompleteNewTags', { count: result.new_tags })
+                : '';
+            const msg = t('settings.syncCompleteDetailed', { synced: result.synced ?? 0, newTags: newTagsSuffix });
+            showTransient(msg, 10000);
+            toaster.toast({ title: 'Deck Progress Tracker', body: msg, duration: 5000 });
+        }
+        catch (err) {
+            setMessage(t('settings.syncError', { error: err?.message || 'Unknown' }));
+        }
+        finally {
+            localSyncRef.current = false;
+            setSyncing(false);
+        }
+    };
+    return { syncing, message, syncLibrary };
 }
 
 /**
- * Shared helpers for user-customizable tag labels/colors
- * (https://github.com/maroun2/deck-progress-tracker/issues/6)
+ * MainPanel - the Quick Access panel content.
+ * Kept deliberately clean: the tag lists, a Settings button (opens the
+ * full-screen settings page) and the About info. Every setting lives on
+ * the settings page (src/components/SettingsPage.tsx).
  */
-// These match named presets in TAG_COLOR_PRESETS below exactly (Pink, Green,
-// Blue, Brown), so the default color always shows up selected in the
-// dropdown instead of needing a separate synthetic "Default" entry.
-const DEFAULT_TAG_COLORS = {
-    mastered: '#f5576c', // Pink
-    completed: '#2ecc71', // Green
-    in_progress: '#3498db', // Blue
-    dropped: '#8d6e63', // Brown
-};
-const TAG_LABEL_SETTING_KEY = {
-    mastered: 'tag_label_mastered',
-    completed: 'tag_label_completed',
-    in_progress: 'tag_label_in_progress',
-    dropped: 'tag_label_dropped',
-};
-const TAG_COLOR_SETTING_KEY = {
-    mastered: 'tag_color_mastered',
-    completed: 'tag_color_completed',
-    in_progress: 'tag_color_in_progress',
-    dropped: 'tag_color_dropped',
-};
-const DEFAULT_TAG_LABEL_KEY = {
-    mastered: 'tag.mastered',
-    completed: 'tag.completed',
-    in_progress: 'tag.in_progress',
-    dropped: 'tag.dropped',
-};
-// Curated palette instead of a free color picker - @decky/ui has no native
-// color input, and a raw HTML <input type="color"> doesn't play well with
-// gamepad navigation (same class of issue fixed elsewhere in this plugin).
-const TAG_COLOR_PRESETS = [
-    { label: 'Pink', value: '#f5576c' },
-    { label: 'Red', value: '#e74c3c' },
-    { label: 'Orange', value: '#e67e22' },
-    { label: 'Yellow', value: '#f1c40f' },
-    { label: 'Green', value: '#2ecc71' },
-    { label: 'Teal', value: '#1abc9c' },
-    { label: 'Blue', value: '#3498db' },
-    { label: 'Purple', value: '#9b59b6' },
-    { label: 'Brown', value: '#8d6e63' },
-    { label: 'Gray', value: '#888888' },
-];
-function resolveTagLabel(type, settings, t) {
-    const custom = settings[TAG_LABEL_SETTING_KEY[type]];
-    return custom && custom.trim() ? custom.trim() : t(DEFAULT_TAG_LABEL_KEY[type]);
-}
-function resolveTagColor(type, settings) {
-    const custom = settings[TAG_COLOR_SETTING_KEY[type]];
-    return custom && custom.trim() ? custom.trim() : DEFAULT_TAG_COLORS[type];
-}
-
-const TAG_COLORS = {
-    completed: '#38ef7d',
-    in_progress: '#764ba2',
-    mastered: '#f5576c',
-    backlog: '#888',
-    dropped: '#c9a171',
-};
-const TAG_LABEL_KEY = {
+const SETTINGS_ROUTE = '/deck-progress-tracker/settings';
+const BACKLOG_COLOR = '#888';
+const TAG_LABEL_KEY$1 = {
     completed: 'tag.completed',
     in_progress: 'tag.in_progress',
     backlog: 'tag.backlog',
@@ -886,51 +1230,10 @@ const TAG_DESCRIPTION_KEY = {
     mastered: 'tag.mastered.desc',
     dropped: 'tag.dropped.desc',
 };
-const Settings = () => {
+const MainPanel = () => {
     const { t } = useTranslation();
-    const BADGE_H_OPTIONS = [
-        { data: 'left', label: t('settings.left') },
-        { data: 'center', label: t('settings.center') },
-        { data: 'right', label: t('settings.right') },
-    ];
-    const BADGE_V_OPTIONS = [
-        { data: 'top', label: t('settings.top') },
-        { data: 'center', label: t('settings.center') },
-        { data: 'bottom', label: t('settings.bottom') },
-    ];
-    // Size both dropdowns off the longest option label (across both axes) so
-    // they always match, regardless of how long each language's words are.
-    const longestPositionLabelLength = Math.max(...BADGE_H_OPTIONS.map((o) => o.label.length), ...BADGE_V_OPTIONS.map((o) => o.label.length));
-    const positionDropdownWidth = `${longestPositionLabelLength + 4}ch`;
-    const LANGUAGE_OPTIONS = [
-        { data: 'auto', label: t('settings.languageAuto') },
-        { data: 'en', label: t('settings.languageEnglish') },
-        { data: 'pt-BR', label: t('settings.languagePortuguese') },
-    ];
-    const [settings, setSettings] = SP_REACT.useState({
-        auto_tag_enabled: true,
-        mastered_threshold: 85,
-        in_progress_threshold: 30,
-        cache_ttl: 7200,
-        source_installed: true,
-        source_non_steam: true,
-        source_all_owned: true,
-        badge_position_h: 'right',
-        badge_position_v: 'top',
-        badge_overlap_offset: 0,
-        language: 'auto',
-        tag_label_mastered: '',
-        tag_label_completed: '',
-        tag_label_in_progress: '',
-        tag_label_dropped: '',
-        tag_color_mastered: '',
-        tag_color_completed: '',
-        tag_color_in_progress: '',
-        tag_color_dropped: '',
-    });
+    const { settings } = usePluginSettings({ reloadOnChange: true });
     const [stats, setStats] = SP_REACT.useState(null);
-    const [syncing, setSyncing] = SP_REACT.useState(false);
-    const [message, setMessage] = SP_REACT.useState(null);
     const [taggedGames, setTaggedGames] = SP_REACT.useState([]);
     const [backlogGames, setBacklogGames] = SP_REACT.useState([]);
     const [expandedSections, setExpandedSections] = SP_REACT.useState({});
@@ -956,164 +1259,35 @@ const Settings = () => {
         }
         catch (err) { }
     };
+    // Read-only here: shows sync progress started from the settings page or
+    // the automatic startup sync, and refreshes the lists as tags change.
+    const { message } = useLibrarySync(smartUpdateUI);
     SP_REACT.useEffect(() => {
-        // Scroll to top when component mounts
         if (containerRef.current) {
             containerRef.current.scrollIntoView({ block: 'start' });
         }
-        call('get_settings').then(res => res.settings && setSettings(res.settings));
         smartUpdateUI();
         const interval = setInterval(smartUpdateUI, 10000);
         return () => clearInterval(interval);
     }, []);
-    // Track if we're waiting for backend to start (during data collection phase)
-    const [waitingForBackend, setWaitingForBackend] = SP_REACT.useState(false);
-    SP_REACT.useEffect(() => {
-        const pollSync = async () => {
-            try {
-                const res = await call('get_sync_progress');
-                if (res.success && res.syncing) {
-                    // Backend is syncing - always show progress regardless of frontend state
-                    // This handles sync from any source (manual, auto, initial load)
-                    setMessage(t('settings.syncingProgress', { current: res.current, total: res.total }));
-                    setSyncing(true);
-                    setWaitingForBackend(false);
-                }
-                else if (res.success && !res.syncing && syncing) {
-                    // Backend finished but frontend still thinks it's syncing
-                    // If we were waiting for backend to start, keep waiting
-                    if (waitingForBackend) {
-                        // Still preparing data, don't change state
-                        return;
-                    }
-                    // Backend actually finished - clear syncing state and show completion
-                    setSyncing(false);
-                    smartUpdateUI();
-                    // If the sync wasn't initiated by the button (no finally block to handle it),
-                    // we should still show completion
-                    if (res.total && res.total > 0) {
-                        setMessage(t('settings.syncComplete'));
-                        setTimeout(() => setMessage(null), 5000);
-                    }
-                }
-            }
-            catch (err) { }
-        };
-        const interval = setInterval(pollSync, syncing ? 500 : 2000);
-        return () => clearInterval(interval);
-    }, [syncing, waitingForBackend]);
     const toggleSection = async (tagType) => {
         const willExpand = !expandedSections[tagType];
         setExpandedSections(prev => ({ ...prev, [tagType]: willExpand }));
         if (tagType === 'backlog' && willExpand && backlogGames.length === 0) {
             setLoadingBacklog(true);
-            const res = await call('get_backlog_games');
-            if (res.success)
-                setBacklogGames(res.games);
-            setLoadingBacklog(false);
+            try {
+                const res = await call('get_backlog_games');
+                if (res.success)
+                    setBacklogGames(res.games);
+            }
+            finally {
+                setLoadingBacklog(false);
+            }
         }
     };
-    const syncLibrary = async () => {
-        try {
-            setSyncing(true);
-            setWaitingForBackend(false); // No longer waiting since we process immediately
-            setMessage(t('settings.syncStarting'));
-            // Use progressive sync with progress callback
-            const result = await syncLibraryProgressive((current, total, gameName) => {
-                // Only show consistent progress numbers, no game names to avoid flickering
-                setMessage(t('settings.syncingProgress', { current, total }));
-                // Periodically update UI to show new tags
-                if (current % 10 === 0 || current === total) {
-                    smartUpdateUI();
-                }
-            });
-            // Sync completed
-            smartUpdateUI();
-            const newTagsSuffix = result.new_tags
-                ? t('settings.syncCompleteNewTags', { count: result.new_tags })
-                : '';
-            const msg = t('settings.syncCompleteDetailed', { synced: result.synced ?? 0, newTags: newTagsSuffix });
-            setMessage(msg);
-            toaster.toast({ title: 'Deck Progress Tracker', body: msg, duration: 5000 });
-            // Clear message after a delay
-            setTimeout(() => setMessage(null), 10000);
-        }
-        catch (err) {
-            setMessage(t('settings.syncError', { error: err?.message || 'Unknown' }));
-        }
-        finally {
-            setSyncing(false);
-            setWaitingForBackend(false);
-        }
-    };
-    const updateBadgePosition = async (key, value) => {
-        setSettings(prev => ({ ...prev, [key]: value }));
-        try {
-            await call('update_settings', { [key]: value });
-            window.dispatchEvent(new CustomEvent(BADGE_SETTINGS_UPDATED_EVENT));
-        }
-        catch (err) { }
-    };
-    const updateBadgeOverlapOffset = async (value) => {
-        setSettings(prev => ({ ...prev, badge_overlap_offset: value }));
-        try {
-            await call('update_settings', { badge_overlap_offset: value });
-            window.dispatchEvent(new CustomEvent(BADGE_SETTINGS_UPDATED_EVENT));
-        }
-        catch (err) { }
-    };
-    const updateLanguage = async (value) => {
-        setSettings(prev => ({ ...prev, language: value }));
-        try {
-            await call('update_settings', { language: value });
-            window.dispatchEvent(new CustomEvent(LANGUAGE_UPDATED_EVENT));
-        }
-        catch (err) { }
-    };
-    const updateInProgressThreshold = async (value) => {
-        setSettings(prev => ({ ...prev, in_progress_threshold: value }));
-        try {
-            await call('update_settings', { in_progress_threshold: value });
-        }
-        catch (err) { }
-    };
-    const updateMasteredThreshold = async (value) => {
-        setSettings(prev => ({ ...prev, mastered_threshold: value }));
-        try {
-            await call('update_settings', { mastered_threshold: value });
-        }
-        catch (err) { }
-    };
-    const updateTagLabel = async (type, value) => {
-        const key = TAG_LABEL_SETTING_KEY[type];
-        setSettings(prev => ({ ...prev, [key]: value }));
-        try {
-            await call('update_settings', { [key]: value });
-            window.dispatchEvent(new CustomEvent(BADGE_SETTINGS_UPDATED_EVENT));
-        }
-        catch (err) { }
-    };
-    const updateTagColor = async (type, value) => {
-        const key = TAG_COLOR_SETTING_KEY[type];
-        setSettings(prev => ({ ...prev, [key]: value }));
-        try {
-            await call('update_settings', { [key]: value });
-            window.dispatchEvent(new CustomEvent(BADGE_SETTINGS_UPDATED_EVENT));
-        }
-        catch (err) { }
-    };
-    const resetTagCustomization = async () => {
-        const cleared = {};
-        ['mastered', 'completed', 'in_progress', 'dropped'].forEach((type) => {
-            cleared[TAG_LABEL_SETTING_KEY[type]] = '';
-            cleared[TAG_COLOR_SETTING_KEY[type]] = '';
-        });
-        setSettings(prev => ({ ...prev, ...cleared }));
-        try {
-            await call('update_settings', cleared);
-            window.dispatchEvent(new CustomEvent(BADGE_SETTINGS_UPDATED_EVENT));
-        }
-        catch (err) { }
+    const openSettings = () => {
+        DFL.Navigation.Navigate(SETTINGS_ROUTE);
+        DFL.Navigation.CloseSideMenus();
     };
     const groupedGames = taggedGames.reduce((acc, g) => {
         if (!acc[g.tag])
@@ -1121,10 +1295,10 @@ const Settings = () => {
         acc[g.tag].push(g);
         return acc;
     }, {});
-    return (SP_REACT.createElement("div", { ref: containerRef, style: styles$1.container },
-        message && SP_REACT.createElement("div", { style: styles$1.message }, message),
-        SP_REACT.createElement("div", { style: styles$1.section },
-            SP_REACT.createElement("h3", { style: styles$1.sectionTitle },
+    return (SP_REACT.createElement("div", { ref: containerRef, style: styles$2.container },
+        message && SP_REACT.createElement("div", { style: styles$2.message }, message),
+        SP_REACT.createElement("div", { style: styles$2.section },
+            SP_REACT.createElement("h3", { style: styles$2.sectionTitle },
                 t('settings.library'),
                 " (",
                 stats?.total || 0,
@@ -1134,89 +1308,52 @@ const Settings = () => {
                 const games = isBacklog ? backlogGames : (groupedGames[tagType] || []);
                 const count = isBacklog ? (stats?.backlog || 0) : games.length;
                 const isExpanded = !!expandedSections[tagType];
-                const label = isBacklog ? t(TAG_LABEL_KEY[tagType]) : resolveTagLabel(tagType, settings, t);
-                const color = isBacklog ? TAG_COLORS[tagType] : resolveTagColor(tagType, settings);
+                const label = isBacklog ? t(TAG_LABEL_KEY$1[tagType]) : resolveTagLabel(tagType, settings, t);
+                const color = isBacklog ? BACKLOG_COLOR : resolveTagColor(tagType, settings);
                 return (SP_REACT.createElement(SP_REACT.Fragment, { key: tagType },
                     SP_REACT.createElement(DFL.PanelSectionRow, null,
                         SP_REACT.createElement(DFL.ButtonItem, { layout: "below", onClick: () => toggleSection(tagType) },
-                            SP_REACT.createElement("div", { style: styles$1.tagSectionContent },
-                                SP_REACT.createElement("div", { style: styles$1.tagSectionLeft },
+                            SP_REACT.createElement("div", { style: styles$2.tagSectionContent },
+                                SP_REACT.createElement("div", { style: styles$2.tagSectionLeft },
                                     SP_REACT.createElement(TagIcon, { type: tagType, size: 18, color: isBacklog ? undefined : color }),
-                                    SP_REACT.createElement("span", { style: styles$1.tagSectionTitle }, label)),
-                                SP_REACT.createElement("div", { style: styles$1.tagSectionRight },
-                                    SP_REACT.createElement("span", { style: { ...styles$1.tagCount, color } }, count),
-                                    SP_REACT.createElement("span", { style: styles$1.expandIcon }, isExpanded ? '−' : '+'))))),
-                    isExpanded && (SP_REACT.createElement("div", { style: styles$1.tagDescription }, t(TAG_DESCRIPTION_KEY[tagType], tagType === 'mastered' ? { threshold: settings.mastered_threshold } : undefined))),
+                                    SP_REACT.createElement("span", { style: styles$2.tagSectionTitle }, label)),
+                                SP_REACT.createElement("div", { style: styles$2.tagSectionRight },
+                                    SP_REACT.createElement("span", { style: { ...styles$2.tagCount, color } }, count),
+                                    SP_REACT.createElement("span", { style: styles$2.expandIcon }, isExpanded ? '−' : '+'))))),
+                    isExpanded && (SP_REACT.createElement("div", { style: styles$2.tagDescription }, t(TAG_DESCRIPTION_KEY[tagType], tagType === 'mastered' ? { threshold: settings.mastered_threshold } : undefined))),
                     isExpanded && games.length > 0 && games.map(game => (SP_REACT.createElement(DFL.PanelSectionRow, { key: game.appid },
-                        SP_REACT.createElement(DFL.ButtonItem, { layout: "below", onClick: () => { DFL.Navigation.Navigate(`/library/app/${game.appid}`); DFL.Navigation.CloseSideMenus(); }, style: { width: '100%', overflow: 'hidden' } },
+                        SP_REACT.createElement(DFL.ButtonItem, { layout: "below", onClick: () => { DFL.Navigation.Navigate(`/library/app/${game.appid}`); DFL.Navigation.CloseSideMenus(); }, ...{ style: { width: '100%', overflow: 'hidden' } } },
                             SP_REACT.createElement("div", { style: { display: 'table', tableLayout: 'fixed', width: '100%' } },
-                                SP_REACT.createElement("div", { style: styles$1.gameItemContent },
-                                    SP_REACT.createElement("span", { style: { ...styles$1.smallDot, backgroundColor: game.tag === 'backlog' ? TAG_COLORS.backlog : resolveTagColor(game.tag, settings) } }),
-                                    SP_REACT.createElement("span", { style: styles$1.gameName }, game.game_name),
-                                    game.is_manual && SP_REACT.createElement("span", { style: styles$1.manualBadge }, t('settings.manual')))))))),
-                    isExpanded && games.length === 0 && !loadingBacklog && SP_REACT.createElement("div", { style: styles$1.emptySection }, t('settings.noGamesFound'))));
+                                SP_REACT.createElement("div", { style: styles$2.gameItemContent },
+                                    SP_REACT.createElement("span", { style: { ...styles$2.smallDot, backgroundColor: game.tag === 'backlog' ? BACKLOG_COLOR : resolveTagColor(game.tag, settings) } }),
+                                    SP_REACT.createElement("span", { style: styles$2.gameName }, game.game_name),
+                                    game.is_manual && SP_REACT.createElement("span", { style: styles$2.manualBadge }, t('settings.manual')))))))),
+                    isExpanded && games.length === 0 && !loadingBacklog && SP_REACT.createElement("div", { style: styles$2.emptySection }, t('settings.noGamesFound'))));
             }))),
-        SP_REACT.createElement(DFL.PanelSection, { title: t('settings.badgePosition') },
-            SP_REACT.createElement(DFL.PanelSectionRow, null,
-                SP_REACT.createElement("div", { style: styles$1.dropdownRow },
-                    SP_REACT.createElement("span", null, t('settings.horizontal')),
-                    SP_REACT.createElement("div", { style: { width: positionDropdownWidth } },
-                        SP_REACT.createElement(DFL.Dropdown, { rgOptions: BADGE_H_OPTIONS, selectedOption: settings.badge_position_h, onChange: (option) => updateBadgePosition('badge_position_h', option.data) })))),
-            SP_REACT.createElement(DFL.PanelSectionRow, null,
-                SP_REACT.createElement("div", { style: styles$1.dropdownRow },
-                    SP_REACT.createElement("span", null, t('settings.vertical')),
-                    SP_REACT.createElement("div", { style: { width: positionDropdownWidth } },
-                        SP_REACT.createElement(DFL.Dropdown, { rgOptions: BADGE_V_OPTIONS, selectedOption: settings.badge_position_v, onChange: (option) => updateBadgePosition('badge_position_v', option.data) })))),
-            SP_REACT.createElement(DFL.PanelSectionRow, null,
-                SP_REACT.createElement("div", { style: styles$1.avoidOverlapRow },
-                    SP_REACT.createElement(DFL.SliderField, { label: t('settings.avoidOverlap'), description: t('settings.avoidOverlapDesc'), value: settings.badge_overlap_offset, min: 0, max: 100, step: 1, editableValue: true, valueSuffix: "px", onChange: updateBadgeOverlapOffset })))),
-        SP_REACT.createElement(DFL.PanelSection, { title: t('settings.tagging') },
-            SP_REACT.createElement(DFL.PanelSectionRow, null,
-                SP_REACT.createElement(DFL.SliderField, { label: t('settings.inProgressThreshold'), value: settings.in_progress_threshold, min: 1, max: 120, step: 1, editableValue: true, valueSuffix: t('settings.minutesSuffix'), onChange: updateInProgressThreshold })),
-            SP_REACT.createElement(DFL.PanelSectionRow, null,
-                SP_REACT.createElement(DFL.SliderField, { label: t('settings.masteredThreshold'), description: t('settings.masteredThresholdDesc'), value: settings.mastered_threshold, min: 50, max: 100, step: 1, editableValue: true, valueSuffix: "%", onChange: updateMasteredThreshold }))),
-        SP_REACT.createElement(DFL.PanelSection, { title: t('settings.customizeTags') },
-            ['mastered', 'completed', 'in_progress', 'dropped'].map((type, index) => (SP_REACT.createElement(DFL.PanelSectionRow, { key: type },
-                SP_REACT.createElement("div", { style: index > 0 ? { ...styles$1.customTagRow, ...styles$1.customTagRowSeparator } : styles$1.customTagRow },
-                    SP_REACT.createElement(DFL.TextField, { label: t(TAG_LABEL_KEY[type]), value: resolveTagLabel(type, settings, t), onChange: (e) => updateTagLabel(type, e.target.value) }),
-                    SP_REACT.createElement("div", { style: styles$1.customTagColorWrapper },
-                        SP_REACT.createElement(DFL.Dropdown, { rgOptions: TAG_COLOR_PRESETS.map((preset) => ({ data: preset.value, label: preset.label })), selectedOption: resolveTagColor(type, settings), onChange: (option) => updateTagColor(type, option.data) })))))),
-            SP_REACT.createElement(DFL.PanelSectionRow, null,
-                SP_REACT.createElement("div", { style: styles$1.customTagRowSeparator },
-                    SP_REACT.createElement(DFL.ButtonItem, { layout: "below", onClick: resetTagCustomization }, t('settings.resetTagCustomization'))))),
-        SP_REACT.createElement(DFL.PanelSection, { title: t('settings.language') },
-            SP_REACT.createElement(DFL.PanelSectionRow, null,
-                SP_REACT.createElement("div", { style: { width: '100%' } },
-                    SP_REACT.createElement(DFL.Dropdown, { rgOptions: LANGUAGE_OPTIONS, selectedOption: settings.language, onChange: (option) => updateLanguage(option.data) })))),
         SP_REACT.createElement(DFL.PanelSection, null,
             SP_REACT.createElement(DFL.PanelSectionRow, null,
-                SP_REACT.createElement(DFL.ButtonItem, { layout: "below", onClick: syncLibrary, disabled: syncing }, syncing ? t('settings.syncing') : t('settings.syncLibrary')))),
+                SP_REACT.createElement(DFL.ButtonItem, { layout: "below", onClick: openSettings },
+                    SP_REACT.createElement("div", { style: styles$2.settingsButton },
+                        SP_REACT.createElement(FaCog, null),
+                        SP_REACT.createElement("span", null, t('settings.openSettings')))))),
         SP_REACT.createElement(DFL.PanelSection, { title: t('settings.about') },
-            SP_REACT.createElement("div", { style: styles$1.about },
-                SP_REACT.createElement("p", { style: styles$1.aboutLine }, "Deck Progress Tracker"),
-                SP_REACT.createElement("p", { style: styles$1.aboutLine }, "1.4.7"),
-                SP_REACT.createElement("p", { style: styles$1.aboutLine }, t('settings.aboutDataSource'))),
+            SP_REACT.createElement("div", { style: styles$2.about },
+                SP_REACT.createElement("p", { style: styles$2.aboutLine }, "Deck Progress Tracker"),
+                SP_REACT.createElement("p", { style: styles$2.aboutLine }, "1.4.7"),
+                SP_REACT.createElement("p", { style: styles$2.aboutLine }, t('settings.aboutDataSource'))),
             SP_REACT.createElement(DFL.PanelSectionRow, null,
                 SP_REACT.createElement(DFL.ButtonItem, { layout: "below", onClick: () => DFL.Navigation.NavigateToExternalWeb('https://patreon.com/DeckProgressTracker') }, t('settings.supportPatreon'))))));
 };
-const styles$1 = {
+const styles$2 = {
     container: { paddingTop: '16px', color: 'white', width: '100%', maxWidth: '100%', overflow: 'hidden' },
     message: { padding: '12px', backgroundColor: 'rgba(102, 126, 234, 0.2)', borderRadius: '4px', marginBottom: '16px', fontSize: '14px', border: '1px solid rgba(102, 126, 234, 0.5)', marginLeft: '16px', marginRight: '16px' },
-    section: { marginBottom: '24px', paddingBottom: '16px', borderBottom: '1px solid #333', width: '100%', overflow: 'hidden' },
+    section: { marginBottom: '8px', paddingBottom: '16px', borderBottom: '1px solid #333', width: '100%', overflow: 'hidden' },
     sectionTitle: { margin: '0 0 12px 0', fontSize: '16px', fontWeight: 'bold', color: '#aaa', marginLeft: '16px' },
     gameItemContent: { display: 'flex', alignItems: 'center', gap: '8px', width: '100%', overflow: 'hidden', flexFlow: 'row nowrap' },
     smallDot: { width: '8px', height: '8px', borderRadius: '50%', flexShrink: 0 },
     gameName: { fontSize: '13px', color: 'inherit', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'inline-block', verticalAlign: 'middle', maxWidth: 'calc(100% - 40px)', flexShrink: 1 },
     manualBadge: { fontSize: '10px', color: '#888', backgroundColor: '#333', padding: '2px 6px', borderRadius: '3px', flexShrink: 0 },
     tagSectionContent: { width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between' },
-    dropdownRow: { width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between' },
-    avoidOverlapRow: { width: '100%', marginTop: '12px', paddingTop: '12px', borderTop: '1px solid #333' },
-    customTagRow: { width: '100%', display: 'flex', flexDirection: 'column' },
-    customTagRowSeparator: { marginTop: '16px', paddingTop: '16px' },
-    // Dropdown (like TextField) carries its own built-in top margin from
-    // Decky's Field wrapper - a flex `gap` on the parent has no effect on
-    // it, so pull it up directly to actually halve the visual distance.
-    customTagColorWrapper: { marginTop: '-8px' },
     tagSectionLeft: { display: 'flex', alignItems: 'center', gap: '10px' },
     tagSectionRight: { display: 'flex', alignItems: 'center', gap: '12px' },
     tagSectionTitle: { fontWeight: 'bold' },
@@ -1224,9 +1361,127 @@ const styles$1 = {
     expandIcon: { fontSize: '18px', color: '#888', width: '20px', textAlign: 'center' },
     emptySection: { padding: '12px 16px', color: '#666', fontSize: '13px', fontStyle: 'italic' },
     tagDescription: { padding: '8px 16px 12px 16px', color: '#999', fontSize: '12px', fontStyle: 'italic', borderBottom: '1px solid #2a2a2a' },
+    settingsButton: { display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' },
     about: { fontSize: '14px', lineHeight: '1.6', marginLeft: '16px', marginRight: '16px' },
     aboutLine: { margin: '8px 0', color: '#ccc' },
-    donationText: { margin: '12px 0 0 0', fontSize: '12px', color: '#888', fontStyle: 'italic' }
+};
+
+/**
+ * SettingsPage - full-screen settings, opened from the Settings button in
+ * the Quick Access panel (route SETTINGS_ROUTE, registered in index.tsx).
+ *
+ * Uses Steam's own SidebarNavigation so it looks and navigates like the
+ * system settings: D-pad between pages and controls, B goes back.
+ */
+const CUSTOMIZABLE_TAGS = ['mastered', 'completed', 'in_progress', 'dropped'];
+const TAG_LABEL_KEY = {
+    mastered: 'tag.mastered',
+    completed: 'tag.completed',
+    in_progress: 'tag.in_progress',
+    dropped: 'tag.dropped',
+};
+const GeneralPage = ({ settings, update }) => {
+    const { t } = useTranslation();
+    const { syncing, message, syncLibrary } = useLibrarySync();
+    return (SP_REACT.createElement(SP_REACT.Fragment, null,
+        SP_REACT.createElement(DFL.Field, { label: t('settings.syncSection'), description: message || t('settings.syncDesc'), bottomSeparator: "none" }),
+        SP_REACT.createElement(DFL.ButtonItem, { layout: "below", onClick: syncLibrary, disabled: syncing }, syncing ? t('settings.syncing') : t('settings.syncLibrary')),
+        SP_REACT.createElement(DFL.Field, { label: t('settings.tagging'), bottomSeparator: "none" }),
+        SP_REACT.createElement(DFL.SliderField, { label: t('settings.inProgressThreshold'), value: settings.in_progress_threshold, min: 1, max: 120, step: 1, editableValue: true, valueSuffix: t('settings.minutesSuffix'), onChange: (value) => update({ in_progress_threshold: value }) }),
+        SP_REACT.createElement(DFL.SliderField, { label: t('settings.masteredThreshold'), description: t('settings.masteredThresholdDesc'), value: settings.mastered_threshold, min: 50, max: 100, step: 1, editableValue: true, valueSuffix: "%", onChange: (value) => update({ mastered_threshold: value }) })));
+};
+const BadgesPage = ({ settings, update }) => {
+    const { t } = useTranslation();
+    const libraryOptions = [
+        { data: 'none', label: t('settings.positionNone') },
+        { data: 'top-left', label: t('settings.positionTopLeft') },
+        { data: 'top-right', label: t('settings.positionTopRight') },
+        { data: 'bottom-left', label: t('settings.positionBottomLeft') },
+        { data: 'bottom-right', label: t('settings.positionBottomRight') },
+    ];
+    const hOptions = [
+        { data: 'left', label: t('settings.left') },
+        { data: 'center', label: t('settings.center') },
+        { data: 'right', label: t('settings.right') },
+    ];
+    const vOptions = [
+        { data: 'top', label: t('settings.top') },
+        { data: 'center', label: t('settings.center') },
+        { data: 'bottom', label: t('settings.bottom') },
+    ];
+    return (SP_REACT.createElement(SP_REACT.Fragment, null,
+        SP_REACT.createElement(DFL.Field, { label: t('settings.libraryBadgeSection'), bottomSeparator: "none" }),
+        SP_REACT.createElement(DFL.DropdownItem, { label: t('settings.libraryBadgePosition'), description: t('settings.libraryBadgePositionDesc'), menuLabel: t('settings.libraryBadgePosition'), rgOptions: libraryOptions, selectedOption: settings.library_badge_position, onChange: (option) => update({ library_badge_position: option.data }, BADGE_SETTINGS_UPDATED_EVENT) }),
+        SP_REACT.createElement(DFL.Field, { label: t('settings.badgePosition'), description: t('settings.badgePositionDesc'), bottomSeparator: "none" }),
+        SP_REACT.createElement(DFL.DropdownItem, { label: t('settings.horizontal'), menuLabel: t('settings.horizontal'), rgOptions: hOptions, selectedOption: settings.badge_position_h, onChange: (option) => update({ badge_position_h: option.data }, BADGE_SETTINGS_UPDATED_EVENT) }),
+        SP_REACT.createElement(DFL.DropdownItem, { label: t('settings.vertical'), menuLabel: t('settings.vertical'), rgOptions: vOptions, selectedOption: settings.badge_position_v, onChange: (option) => update({ badge_position_v: option.data }, BADGE_SETTINGS_UPDATED_EVENT) }),
+        SP_REACT.createElement(DFL.SliderField, { label: t('settings.avoidOverlap'), description: t('settings.avoidOverlapDesc'), value: settings.badge_overlap_offset, min: 0, max: 100, step: 1, editableValue: true, valueSuffix: "px", onChange: (value) => update({ badge_overlap_offset: value }, BADGE_SETTINGS_UPDATED_EVENT) })));
+};
+const CustomizeTagsPage = ({ settings, update }) => {
+    const { t } = useTranslation();
+    const colorOptions = TAG_COLOR_PRESETS.map((preset) => ({ data: preset.value, label: preset.label }));
+    const reset = () => {
+        const cleared = {};
+        CUSTOMIZABLE_TAGS.forEach((type) => {
+            cleared[TAG_LABEL_SETTING_KEY[type]] = '';
+            cleared[TAG_COLOR_SETTING_KEY[type]] = '';
+        });
+        update(cleared, BADGE_SETTINGS_UPDATED_EVENT);
+    };
+    return (SP_REACT.createElement(SP_REACT.Fragment, null,
+        SP_REACT.createElement(DFL.Field, { description: t('settings.customizeTagsDesc'), bottomSeparator: "none" }),
+        CUSTOMIZABLE_TAGS.map((type) => (SP_REACT.createElement(DFL.Field, { key: type, label: t(TAG_LABEL_KEY[type]), childrenLayout: "below", bottomSeparator: "standard" },
+            SP_REACT.createElement("div", { style: styles$1.customTagRow },
+                SP_REACT.createElement("div", { style: styles$1.customTagLabel },
+                    SP_REACT.createElement(DFL.TextField, { value: resolveTagLabel(type, settings, t), onChange: (e) => update({ [TAG_LABEL_SETTING_KEY[type]]: e.target.value }, BADGE_SETTINGS_UPDATED_EVENT) })),
+                SP_REACT.createElement("div", { style: styles$1.customTagColor },
+                    SP_REACT.createElement("span", { style: { ...styles$1.colorSwatch, background: resolveTagColor(type, settings) } }),
+                    SP_REACT.createElement(DFL.Dropdown, { menuLabel: t(TAG_LABEL_KEY[type]), rgOptions: colorOptions, selectedOption: resolveTagColor(type, settings), onChange: (option) => update({ [TAG_COLOR_SETTING_KEY[type]]: option.data }, BADGE_SETTINGS_UPDATED_EVENT) })))))),
+        SP_REACT.createElement(DFL.ButtonItem, { layout: "below", onClick: reset }, t('settings.resetTagCustomization'))));
+};
+const LanguagePage = ({ settings, update }) => {
+    const { t } = useTranslation();
+    const options = [
+        { data: 'auto', label: t('settings.languageAuto') },
+        { data: 'en', label: t('settings.languageEnglish') },
+        { data: 'pt-BR', label: t('settings.languagePortuguese') },
+    ];
+    return (SP_REACT.createElement(DFL.DropdownItem, { label: t('settings.language'), menuLabel: t('settings.language'), rgOptions: options, selectedOption: settings.language, onChange: (option) => update({ language: option.data }, LANGUAGE_UPDATED_EVENT) }));
+};
+const SettingsPage = () => {
+    const { t } = useTranslation();
+    const { settings, updateSettings } = usePluginSettings();
+    return (SP_REACT.createElement("div", { style: styles$1.page },
+        SP_REACT.createElement(DFL.SidebarNavigation, { title: t('settings.title'), showTitle: true, pages: [
+                {
+                    title: t('settings.pageGeneral'),
+                    icon: SP_REACT.createElement(FaSyncAlt, null),
+                    content: SP_REACT.createElement(GeneralPage, { settings: settings, update: updateSettings }),
+                },
+                {
+                    title: t('settings.pageBadges'),
+                    icon: SP_REACT.createElement(FaThLarge, null),
+                    content: SP_REACT.createElement(BadgesPage, { settings: settings, update: updateSettings }),
+                },
+                {
+                    title: t('settings.customizeTags'),
+                    icon: SP_REACT.createElement(FaTags, null),
+                    content: SP_REACT.createElement(CustomizeTagsPage, { settings: settings, update: updateSettings }),
+                },
+                {
+                    title: t('settings.language'),
+                    icon: SP_REACT.createElement(FaGlobe, null),
+                    content: SP_REACT.createElement(LanguagePage, { settings: settings, update: updateSettings }),
+                },
+            ] })));
+};
+const styles$1 = {
+    // Full-screen plugin routes render under Steam's top bar
+    page: { marginTop: '40px', height: 'calc(100% - 40px)', background: '#0e141b' },
+    customTagRow: { display: 'flex', alignItems: 'center', gap: '16px', width: '100%' },
+    customTagLabel: { flex: 1, minWidth: 0 },
+    customTagColor: { display: 'flex', alignItems: 'center', gap: '8px', width: '180px', flexShrink: 0 },
+    colorSwatch: { width: '16px', height: '16px', borderRadius: '50%', flexShrink: 0, border: '1px solid rgba(255,255,255,0.4)' },
 };
 
 /**
@@ -1312,6 +1567,7 @@ const TagManager = ({ appid, onClose }) => {
         try {
             await call('set_manual_tag', { appid, tag });
             await fetchDetails();
+            notifyTagsChanged();
         }
         catch (err) {
             const errorMsg = err?.message || t('tagManager.failedToSetTag');
@@ -1323,6 +1579,7 @@ const TagManager = ({ appid, onClose }) => {
         try {
             await call('reset_to_auto_tag', { appid });
             await fetchDetails();
+            notifyTagsChanged();
         }
         catch (err) {
             const errorMsg = err?.message || t('tagManager.failedToReset');
@@ -1334,6 +1591,7 @@ const TagManager = ({ appid, onClose }) => {
         try {
             await call('remove_tag', { appid });
             await fetchDetails();
+            notifyTagsChanged();
         }
         catch (err) {
             const errorMsg = err?.message || t('tagManager.failedToRemove');
@@ -1384,6 +1642,7 @@ const TagManager = ({ appid, onClose }) => {
             setManualSearchOpen(false);
             setManualResults([]);
             await fetchDetails();
+            notifyTagsChanged();
         }
         catch (err) {
             setManualError(err?.message || t('tagManager.manualSearchNoResults'));
@@ -2074,6 +2333,203 @@ function patchLibraryApp() {
 }
 
 /**
+ * LibraryTileBadge
+ * Small icon-only tag badge drawn on top of a game capsule wherever Steam
+ * lists games (library grid/tabs, collections, Home shelves).
+ *
+ * Injected by src/lib/patchLibraryCapsules.tsx. Reads everything from the
+ * shared cache in libraryBadgeStore - never calls the backend per tile.
+ */
+const LIBRARY_BADGE_CLASS = 'dpt-library-badge';
+const STYLE_ELEMENT_ID = 'dpt-library-badge-style';
+// Mirrors ProtonDB Badges' library dot (24px incl. padding, 4px inset) so
+// the two plugins look consistent next to each other.
+const BADGE_SIZE = 24;
+const BADGE_INSET = 6;
+const ICON_SIZE = 14;
+// ProtonDB Badges' grid dot occupies 4px..28px from its corner. When it sits
+// in the same corner as ours, step ours inward horizontally past it.
+const PROTONDB_DOT = '.protondb-grid-dot';
+const NUDGED_INSET = 32;
+const CORNERS = {
+    'top-left': { v: 'top', h: 'left' },
+    'top-right': { v: 'top', h: 'right' },
+    'bottom-left': { v: 'bottom', h: 'left' },
+    'bottom-right': { v: 'bottom', h: 'right' },
+};
+function buildStylesheet() {
+    const rules = [
+        `.${LIBRARY_BADGE_CLASS}{position:absolute;z-index:5;width:${BADGE_SIZE}px;height:${BADGE_SIZE}px;` +
+            'box-sizing:border-box;border-radius:50%;display:flex;align-items:center;justify-content:center;' +
+            'pointer-events:none;box-shadow:0 1px 4px rgba(0,0,0,0.6);border:1px solid rgba(255,255,255,0.35);}',
+    ];
+    Object.keys(CORNERS).forEach((pos) => {
+        const { v, h } = CORNERS[pos];
+        const sel = `.${LIBRARY_BADGE_CLASS}[data-pos="${pos}"]`;
+        rules.push(`${sel}{${v}:${BADGE_INSET}px;${h}:${BADGE_INSET}px;}`);
+        // ProtonDB sets its dot position via inline style, e.g. "top: 4px; right: 4px;".
+        // Its dot can end up before or after ours in the DOM, so match both orders.
+        const dot = `${PROTONDB_DOT}[style*="${v}: 4px"][style*="${h}: 4px"]`;
+        rules.push(`${sel}:has(~ ${dot}), ${dot} ~ ${sel}{${h}:${NUDGED_INSET}px;}`);
+    });
+    return rules.join('\n');
+}
+const styledDocuments = new Set();
+/**
+ * The capsules live in Steam's Big Picture window document, not in the
+ * plugin's own JS context, so the stylesheet is injected into whichever
+ * document a badge actually renders in (once per document).
+ */
+function ensureStylesheet(doc) {
+    if (!doc || styledDocuments.has(doc))
+        return;
+    try {
+        if (!doc.getElementById(STYLE_ELEMENT_ID)) {
+            const style = doc.createElement('style');
+            style.id = STYLE_ELEMENT_ID;
+            style.textContent = buildStylesheet();
+            (doc.head || doc.documentElement).appendChild(style);
+        }
+        styledDocuments.add(doc);
+    }
+    catch (e) {
+        // Never break Steam's UI over a stylesheet
+    }
+}
+function removeLibraryBadgeStylesheets() {
+    styledDocuments.forEach((doc) => {
+        try {
+            doc.getElementById(STYLE_ELEMENT_ID)?.remove();
+        }
+        catch (e) {
+            // Window may already be gone
+        }
+    });
+    styledDocuments.clear();
+}
+function derive(appid) {
+    const { position, tags, colors } = getLibraryBadgeState();
+    const tag = tags[appid] || null;
+    let background = '';
+    if (tag) {
+        const custom = colors[TAG_COLOR_SETTING_KEY[tag]];
+        // Same colour logic as the game page badge: custom colour if the user
+        // picked one, otherwise the default tag gradient.
+        background = custom && custom.trim() ? custom.trim() : (TAG_STYLES[tag]?.background || '#555');
+    }
+    return { position, tag, background };
+}
+function sameDerived(a, b) {
+    return a.position === b.position && a.tag === b.tag && a.background === b.background;
+}
+const LibraryTileBadge = ({ appid }) => {
+    const [badge, setBadge] = SP_REACT.useState(() => derive(appid));
+    const ref = SP_REACT.useRef(null);
+    SP_REACT.useEffect(() => {
+        const update = () => setBadge((prev) => {
+            const next = derive(appid);
+            return sameDerived(prev, next) ? prev : next;
+        });
+        update();
+        const unsubscribe = subscribeLibraryBadges(update);
+        refreshTagsIfStale();
+        return unsubscribe;
+    }, [appid]);
+    const visible = badge.position !== 'none' && !!badge.tag;
+    SP_REACT.useLayoutEffect(() => {
+        if (visible)
+            ensureStylesheet(ref.current?.ownerDocument);
+    }, [visible]);
+    if (!visible) {
+        return null;
+    }
+    return (SP_REACT.createElement("div", { ref: ref, className: LIBRARY_BADGE_CLASS, "data-pos": badge.position, "data-tag": badge.tag, style: { background: badge.background } },
+        SP_REACT.createElement(TagIcon, { type: badge.tag, size: ICON_SIZE, color: "white" })));
+};
+
+/**
+ * Library capsule patching - adds a small tag badge to every game tile.
+ *
+ * ProtonDB Badges (v1.3.x, src/patches/LibraryGridPatch.ts) does this by
+ * polling the Big Picture DOM every 1-3s for the grid's hashed
+ * `Draggable` class, reading the appid from the capsule <img> src and
+ * appending a plain DOM node. That only covers the library grid and costs
+ * a full DOM scan per second.
+ *
+ * We hook the same tiles one level up, at the React component Steam uses
+ * for *every* game capsule item (library tabs/grids, collections, Home
+ * shelves incl. the large "current game" tile). It's found through
+ * webpack by a stable prototype method of the portrait capsule image
+ * class it renders (`OnVerticalCapsuleLoad`), and patched with
+ * `afterPatch` + `findInReactTree` like our game page patch. The tile's
+ * `app` overview prop gives us the appid directly (Steam + non-Steam).
+ * Badges are React children of the tile, so they mount/unmount with
+ * Steam's virtualized lists - no polling, no DOM scans.
+ */
+const BADGE_KEY = 'dpt-library-badge';
+const REACT_MEMO = Symbol.for('react.memo');
+/** Steam's capsule image classes (portrait `OnVerticalCapsuleLoad`, landscape `OnLandscapeImageLoaded`) both expose `GetAssetImage`. */
+function isCapsuleImageElement(el) {
+    const proto = el?.type?.prototype;
+    return !!proto && typeof proto.GetAssetImage === 'function' && typeof proto.render === 'function';
+}
+function findCapsuleItemComponent() {
+    try {
+        const [module] = DFL.findModuleDetailsByExport((e) => typeof e === 'function' && !!e?.prototype?.OnVerticalCapsuleLoad);
+        if (!module)
+            return null;
+        // The capsule item itself is the (only) React.memo export of that
+        // module; it renders either the portrait or the landscape image class.
+        const memos = Object.values(module).filter((e) => e && e.$$typeof === REACT_MEMO && typeof e.type === 'function');
+        return memos.length === 1 ? memos[0] : null;
+    }
+    catch (e) {
+        return null;
+    }
+}
+/**
+ * Returns a cleanup function, or null if the capsule component couldn't be
+ * found (e.g. after a Steam UI update) - in which case nothing is patched.
+ */
+function patchLibraryCapsules() {
+    const capsuleItem = findCapsuleItemComponent();
+    if (!capsuleItem) {
+        return null;
+    }
+    const patch = DFL.afterPatch(capsuleItem, 'type', (args, ret) => {
+        try {
+            // Injected even when the position is 'none': the badge then renders
+            // nothing, but switching the setting back on applies live to tiles
+            // that are already on screen instead of only after a remount.
+            const appid = args?.[0]?.app?.appid;
+            if (appid === undefined || appid === null)
+                return ret;
+            // The array holding the capsule image element; its DOM parent is the
+            // tile box (position: relative), so our absolutely positioned badge
+            // lands on the artwork and follows Steam's focus scale animation.
+            const container = DFL.findInReactTree(ret, (x) => Array.isArray(x?.props?.children) && x.props.children.some(isCapsuleImageElement));
+            if (!container || container.props.children.some((c) => c?.key === BADGE_KEY)) {
+                return ret;
+            }
+            container.props.children.push(SP_REACT.createElement(LibraryTileBadge, { key: BADGE_KEY, appid: String(appid) }));
+        }
+        catch (e) {
+            // Never break Steam's library rendering
+        }
+        return ret;
+    });
+    return () => {
+        try {
+            patch.unpatch();
+        }
+        catch (e) {
+            // ignore
+        }
+        removeLibraryBadgeStylesheets();
+    };
+}
+
+/**
  * Achievement Cache Watcher
  * Monitors URL changes and syncs achievements when user views "Your Stuff" tab
  */
@@ -2209,6 +2665,11 @@ var index = definePlugin(() => {
     // backend-reported Decky version first and skip patching on old versions
     // instead of showing that crash screen to the user.
     let libraryPatch = null;
+    let unpatchLibraryCapsules = null;
+    let stopLibraryBadgeStore = null;
+    let disposed = false;
+    // Full-screen settings page, opened from the panel's Settings button
+    routerHook.addRoute(SETTINGS_ROUTE, SettingsPage, { exact: true });
     (async () => {
         let compatible = true;
         let minVersion = '';
@@ -2233,11 +2694,24 @@ var index = definePlugin(() => {
             });
             return;
         }
+        if (disposed)
+            return;
         try {
             libraryPatch = patchLibraryApp();
         }
         catch (error) {
             // Failed to register library app patch
+        }
+        // Tag badges on every game capsule (library grid, collections, Home)
+        try {
+            stopLibraryBadgeStore = initLibraryBadgeStore();
+            unpatchLibraryCapsules = patchLibraryCapsules();
+            if (!unpatchLibraryCapsules) {
+                call('log_frontend', 'warn', 'Library capsule component not found - library tile badges disabled').catch(() => { });
+            }
+        }
+        catch (error) {
+            call('log_frontend', 'error', `Library capsule patch failed: ${error}`).catch(() => { });
         }
     })();
     // Start achievement cache watcher (monitors when user views "Your Stuff" tab)
@@ -2314,9 +2788,23 @@ var index = definePlugin(() => {
     return {
         name: 'Deck Progress Tracker',
         titleView: SP_REACT.createElement("div", { className: DFL.staticClasses.Title }, "Deck Progress Tracker"),
-        content: SP_REACT.createElement(Settings, null),
+        content: SP_REACT.createElement(MainPanel, null),
         icon: SP_REACT.createElement(FaTrophy, null),
         onDismount() {
+            disposed = true;
+            try {
+                unpatchLibraryCapsules?.();
+                stopLibraryBadgeStore?.();
+            }
+            catch (error) {
+                // Error removing library capsule patch
+            }
+            try {
+                routerHook.removeRoute(SETTINGS_ROUTE);
+            }
+            catch (error) {
+                // Error removing settings route
+            }
             // Stop achievement cache watcher
             stopAchievementCacheWatcher();
             // Stop play session tracking

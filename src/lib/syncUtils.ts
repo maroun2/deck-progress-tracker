@@ -4,6 +4,7 @@
  */
 
 import { call } from '@decky/api';
+import { notifyTagsChanged } from './libraryBadgeStore';
 
 /**
  * Achievement data structure
@@ -412,6 +413,9 @@ const syncGames = async (appids: string[]): Promise<SyncResult> => {
  */
 export const syncSingleGameWithFrontendData = async (appid: string): Promise<{ success: boolean; error?: string }> => {
   const result = await syncGames([appid]);
+  if (result.success) {
+    notifyTagsChanged();
+  }
 
   return { success: result.success, error: result.error };
 };
@@ -503,6 +507,8 @@ export const syncLibraryProgressive = async (
           synced++;
           if (result.tag_changed) {
             newTags++;
+            // Debounced in libraryBadgeStore, so a burst is one refresh
+            notifyTagsChanged();
           }
         } else {
           errors++;
@@ -512,6 +518,8 @@ export const syncLibraryProgressive = async (
         errors++;
       }
     }
+
+    notifyTagsChanged();
 
     return {
       success: true,
