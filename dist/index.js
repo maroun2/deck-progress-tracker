@@ -1203,7 +1203,13 @@ async function runStartupSync(deps) {
         }
         if (deps.isDisposed())
             return { ok: false, attempts: attempt - 1 };
-        const ready = await deps.waitUntilReady(attempt === 1 ? FIRST_READY_CAP_MS : RETRY_READY_CAP_MS);
+        let ready = false;
+        try {
+            ready = await deps.waitUntilReady(attempt === 1 ? FIRST_READY_CAP_MS : RETRY_READY_CAP_MS);
+        }
+        catch (e) {
+            deps.log(`Startup sync readiness check failed: ${e?.message || e}`);
+        }
         if (deps.isDisposed())
             return { ok: false, attempts: attempt - 1 };
         let result;
@@ -2852,8 +2858,14 @@ function isOnline() {
     return navigator.onLine !== false;
 }
 function steamAppsReady() {
-    const allApps = window.collectionStore?.allAppsCollection?.allApps;
-    return Array.isArray(allApps) && allApps.length > 0;
+    try {
+        // The store getters throw while Steam is still loading them.
+        const allApps = window.collectionStore?.allAppsCollection?.allApps;
+        return Array.isArray(allApps) && allApps.length > 0;
+    }
+    catch (e) {
+        return false;
+    }
 }
 async function backendResponds() {
     try {

@@ -87,7 +87,12 @@ export async function runStartupSync(deps: StartupSyncDeps): Promise<{ ok: boole
     }
     if (deps.isDisposed()) return { ok: false, attempts: attempt - 1 };
 
-    const ready = await deps.waitUntilReady(attempt === 1 ? FIRST_READY_CAP_MS : RETRY_READY_CAP_MS);
+    let ready = false;
+    try {
+      ready = await deps.waitUntilReady(attempt === 1 ? FIRST_READY_CAP_MS : RETRY_READY_CAP_MS);
+    } catch (e: any) {
+      deps.log(`Startup sync readiness check failed: ${e?.message || e}`);
+    }
     if (deps.isDisposed()) return { ok: false, attempts: attempt - 1 };
 
     let result: SyncResult;

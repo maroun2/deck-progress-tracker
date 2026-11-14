@@ -24,8 +24,13 @@ function isOnline(): boolean {
 }
 
 function steamAppsReady(): boolean {
-  const allApps = (window as any).collectionStore?.allAppsCollection?.allApps;
-  return Array.isArray(allApps) && allApps.length > 0;
+  try {
+    // The store getters throw while Steam is still loading them.
+    const allApps = (window as any).collectionStore?.allAppsCollection?.allApps;
+    return Array.isArray(allApps) && allApps.length > 0;
+  } catch (e) {
+    return false;
+  }
 }
 
 async function backendResponds(): Promise<boolean> {
