@@ -85,16 +85,10 @@ function IconBase(props) {
 }
 
 // THIS FILE IS AUTO GENERATED
-function FaCog (props) {
+function FaArrowLeft (props) {
+  return GenIcon({"tag":"svg","attr":{"viewBox":"0 0 448 512"},"child":[{"tag":"path","attr":{"d":"M257.5 445.1l-22.2 22.2c-9.4 9.4-24.6 9.4-33.9 0L7 273c-9.4-9.4-9.4-24.6 0-33.9L201.4 44.7c9.4-9.4 24.6-9.4 33.9 0l22.2 22.2c9.5 9.5 9.3 25-.4 34.3L136.6 216H424c13.3 0 24 10.7 24 24v32c0 13.3-10.7 24-24 24H136.6l120.5 114.8c9.8 9.3 10 24.8.4 34.3z"},"child":[]}]})(props);
+}function FaCog (props) {
   return GenIcon({"tag":"svg","attr":{"viewBox":"0 0 512 512"},"child":[{"tag":"path","attr":{"d":"M487.4 315.7l-42.6-24.6c4.3-23.2 4.3-47 0-70.2l42.6-24.6c4.9-2.8 7.1-8.6 5.5-14-11.1-35.6-30-67.8-54.7-94.6-3.8-4.1-10-5.1-14.8-2.3L380.8 110c-17.9-15.4-38.5-27.3-60.8-35.1V25.8c0-5.6-3.9-10.5-9.4-11.7-36.7-8.2-74.3-7.8-109.2 0-5.5 1.2-9.4 6.1-9.4 11.7V75c-22.2 7.9-42.8 19.8-60.8 35.1L88.7 85.5c-4.9-2.8-11-1.9-14.8 2.3-24.7 26.7-43.6 58.9-54.7 94.6-1.7 5.4.6 11.2 5.5 14L67.3 221c-4.3 23.2-4.3 47 0 70.2l-42.6 24.6c-4.9 2.8-7.1 8.6-5.5 14 11.1 35.6 30 67.8 54.7 94.6 3.8 4.1 10 5.1 14.8 2.3l42.6-24.6c17.9 15.4 38.5 27.3 60.8 35.1v49.2c0 5.6 3.9 10.5 9.4 11.7 36.7 8.2 74.3 7.8 109.2 0 5.5-1.2 9.4-6.1 9.4-11.7v-49.2c22.2-7.9 42.8-19.8 60.8-35.1l42.6 24.6c4.9 2.8 11 1.9 14.8-2.3 24.7-26.7 43.6-58.9 54.7-94.6 1.5-5.5-.7-11.3-5.6-14.1zM256 336c-44.1 0-80-35.9-80-80s35.9-80 80-80 80 35.9 80 80-35.9 80-80 80z"},"child":[]}]})(props);
-}function FaGlobe (props) {
-  return GenIcon({"tag":"svg","attr":{"viewBox":"0 0 496 512"},"child":[{"tag":"path","attr":{"d":"M336.5 160C322 70.7 287.8 8 248 8s-74 62.7-88.5 152h177zM152 256c0 22.2 1.2 43.5 3.3 64h185.3c2.1-20.5 3.3-41.8 3.3-64s-1.2-43.5-3.3-64H155.3c-2.1 20.5-3.3 41.8-3.3 64zm324.7-96c-28.6-67.9-86.5-120.4-158-141.6 24.4 33.8 41.2 84.7 50 141.6h108zM177.2 18.4C105.8 39.6 47.8 92.1 19.3 160h108c8.7-56.9 25.5-107.8 49.9-141.6zM487.4 192H372.7c2.1 21 3.3 42.5 3.3 64s-1.2 43-3.3 64h114.6c5.5-20.5 8.6-41.8 8.6-64s-3.1-43.5-8.5-64zM120 256c0-21.5 1.2-43 3.3-64H8.6C3.2 212.5 0 233.8 0 256s3.2 43.5 8.6 64h114.6c-2-21-3.2-42.5-3.2-64zm39.5 96c14.5 89.3 48.7 152 88.5 152s74-62.7 88.5-152h-177zm159.3 141.6c71.4-21.2 129.4-73.7 158-141.6h-108c-8.8 56.9-25.6 107.8-50 141.6zM19.3 352c28.6 67.9 86.5 120.4 158 141.6-24.4-33.8-41.2-84.7-50-141.6h-108z"},"child":[]}]})(props);
-}function FaSyncAlt (props) {
-  return GenIcon({"tag":"svg","attr":{"viewBox":"0 0 512 512"},"child":[{"tag":"path","attr":{"d":"M370.72 133.28C339.458 104.008 298.888 87.962 255.848 88c-77.458.068-144.328 53.178-162.791 126.85-1.344 5.363-6.122 9.15-11.651 9.15H24.103c-7.498 0-13.194-6.807-11.807-14.176C33.933 94.924 134.813 8 256 8c66.448 0 126.791 26.136 171.315 68.685L463.03 40.97C478.149 25.851 504 36.559 504 57.941V192c0 13.255-10.745 24-24 24H345.941c-21.382 0-32.09-25.851-16.971-40.971l41.75-41.749zM32 296h134.059c21.382 0 32.09 25.851 16.971 40.971l-41.75 41.75c31.262 29.273 71.835 45.319 114.876 45.28 77.418-.07 144.315-53.144 162.787-126.849 1.344-5.363 6.122-9.15 11.651-9.15h57.304c7.498 0 13.194 6.807 11.807 14.176C478.067 417.076 377.187 504 256 504c-66.448 0-126.791-26.136-171.315-68.685L48.97 471.03C33.851 486.149 8 475.441 8 454.059V320c0-13.255 10.745-24 24-24z"},"child":[]}]})(props);
-}function FaTags (props) {
-  return GenIcon({"tag":"svg","attr":{"viewBox":"0 0 640 512"},"child":[{"tag":"path","attr":{"d":"M497.941 225.941L286.059 14.059A48 48 0 0 0 252.118 0H48C21.49 0 0 21.49 0 48v204.118a48 48 0 0 0 14.059 33.941l211.882 211.882c18.744 18.745 49.136 18.746 67.882 0l204.118-204.118c18.745-18.745 18.745-49.137 0-67.882zM112 160c-26.51 0-48-21.49-48-48s21.49-48 48-48 48 21.49 48 48-21.49 48-48 48zm513.941 133.823L421.823 497.941c-18.745 18.745-49.137 18.745-67.882 0l-.36-.36L527.64 323.522c16.999-16.999 26.36-39.6 26.36-63.64s-9.362-46.641-26.36-63.64L331.397 0h48.721a48 48 0 0 1 33.941 14.059l211.882 211.882c18.745 18.745 18.745 49.137 0 67.882z"},"child":[]}]})(props);
-}function FaThLarge (props) {
-  return GenIcon({"tag":"svg","attr":{"viewBox":"0 0 512 512"},"child":[{"tag":"path","attr":{"d":"M296 32h192c13.255 0 24 10.745 24 24v160c0 13.255-10.745 24-24 24H296c-13.255 0-24-10.745-24-24V56c0-13.255 10.745-24 24-24zm-80 0H24C10.745 32 0 42.745 0 56v160c0 13.255 10.745 24 24 24h192c13.255 0 24-10.745 24-24V56c0-13.255-10.745-24-24-24zM0 296v160c0 13.255 10.745 24 24 24h192c13.255 0 24-10.745 24-24V296c0-13.255-10.745-24-24-24H24c-13.255 0-24 10.745-24 24zm296 184h192c13.255 0 24-10.745 24-24V296c0-13.255-10.745-24-24-24H296c-13.255 0-24 10.745-24 24v160c0 13.255 10.745 24 24 24z"},"child":[]}]})(props);
 }function FaTrophy (props) {
   return GenIcon({"tag":"svg","attr":{"viewBox":"0 0 576 512"},"child":[{"tag":"path","attr":{"d":"M552 64H448V24c0-13.3-10.7-24-24-24H152c-13.3 0-24 10.7-24 24v40H24C10.7 64 0 74.7 0 88v56c0 35.7 22.5 72.4 61.9 100.7 31.5 22.7 69.8 37.1 110 41.7C203.3 338.5 240 360 240 360v72h-48c-35.3 0-64 20.7-64 56v12c0 6.6 5.4 12 12 12h296c6.6 0 12-5.4 12-12v-12c0-35.3-28.7-56-64-56h-48v-72s36.7-21.5 68.1-73.6c40.3-4.6 78.6-19 110-41.7 39.3-28.3 61.9-65 61.9-100.7V88c0-13.3-10.7-24-24-24zM99.3 192.8C74.9 175.2 64 155.6 64 144v-16h64.2c1 32.6 5.8 61.2 12.8 86.2-15.1-5.2-29.2-12.4-41.7-21.4zM512 144c0 16.1-17.7 36.1-35.3 48.8-12.5 9-26.7 16.2-41.8 21.4 7-25 11.8-53.6 12.8-86.2H512v16z"},"child":[]}]})(props);
 }
@@ -189,16 +183,13 @@ const en = {
     'settings.customizeTags': 'Customize Tags',
     'settings.resetTagCustomization': 'Reset to Default',
     // Settings page / panel
+    'settings.back': 'Back',
     'settings.openSettings': 'Settings',
-    'settings.title': 'Deck Progress Tracker',
-    'settings.pageGeneral': 'General',
-    'settings.pageBadges': 'Badges',
     'settings.syncSection': 'Library sync',
     'settings.syncDesc': 'Re-scan playtime and achievements for every game and update tags.',
     'settings.badgePositionDesc': 'Where the tag badge sits on a game\'s page banner.',
     'settings.customizeTagsDesc': 'Rename tags and pick their colours. Colours are used in the lists, on the game page and on library tiles.',
     // Settings - Library tile badges
-    'settings.libraryBadgeSection': 'Library tiles',
     'settings.libraryBadgePosition': 'Library badge position',
     'settings.libraryBadgePositionDesc': 'Small tag icon on every game tile in the library, collections and Home. ProtonDB Badges uses the bottom left by default; if both are in the same corner, this badge steps aside.',
     'settings.positionNone': 'None (off)',
@@ -296,16 +287,13 @@ const ptBR = {
     'settings.customizeTags': 'Personalizar Tags',
     'settings.resetTagCustomization': 'Redefinir para o Padrão',
     // Settings page / panel
+    'settings.back': 'Voltar',
     'settings.openSettings': 'Configurações',
-    'settings.title': 'Deck Progress Tracker',
-    'settings.pageGeneral': 'Geral',
-    'settings.pageBadges': 'Badges',
     'settings.syncSection': 'Sincronização da biblioteca',
     'settings.syncDesc': 'Verifica novamente o tempo de jogo e as conquistas de todos os jogos e atualiza as tags.',
     'settings.badgePositionDesc': 'Onde o badge da tag aparece no banner da página do jogo.',
     'settings.customizeTagsDesc': 'Renomeie as tags e escolha suas cores. As cores são usadas nas listas, na página do jogo e nos blocos da biblioteca.',
     // Settings - Library tile badges
-    'settings.libraryBadgeSection': 'Blocos da biblioteca',
     'settings.libraryBadgePosition': 'Posição do badge na biblioteca',
     'settings.libraryBadgePositionDesc': 'Pequeno ícone da tag em cada jogo da biblioteca, das coleções e da tela inicial. O ProtonDB Badges usa o canto inferior esquerdo por padrão; se ambos estiverem no mesmo canto, este badge se afasta.',
     'settings.positionNone': 'Nenhuma (desligado)',
@@ -1209,14 +1197,162 @@ function useLibrarySync(onProgressUpdate) {
 }
 
 /**
- * MainPanel - the Quick Access panel content.
- * Kept deliberately clean: the tag lists, a Settings button (opens the
- * full-screen settings page) and the About info. Every setting lives on
- * the settings page (src/components/SettingsPage.tsx).
+ * SettingsPanel - the plugin settings, shown inside the Quick Access panel.
+ *
+ * MainPanel swaps its whole content for this view when the Settings button
+ * is pressed (like other Decky plugins, everything stays in the sidebar);
+ * the Back button at the top returns to the tag lists.
  */
-const SETTINGS_ROUTE = '/deck-progress-tracker/settings';
-const BACKLOG_COLOR = '#888';
+const CUSTOMIZABLE_TAGS = ['mastered', 'completed', 'in_progress', 'dropped'];
 const TAG_LABEL_KEY$1 = {
+    mastered: 'tag.mastered',
+    completed: 'tag.completed',
+    in_progress: 'tag.in_progress',
+    dropped: 'tag.dropped',
+};
+/**
+ * Give controller focus to the first button inside `el`. Used when the panel
+ * swaps views, because the previously focused button unmounts and Steam's
+ * focus would otherwise be lost (D-pad does nothing until B / reopen).
+ * Returns a cleanup for useEffect.
+ */
+function focusFirstButton(el, scrollToTop = false) {
+    const timer = setTimeout(() => {
+        try {
+            el?.querySelector('.DialogButton')?.focus();
+            if (scrollToTop) {
+                // focus() can leave the button under the panel's sticky title;
+                // reset the Quick Access scroller so the view starts at the top.
+                for (let p = el?.parentElement; p; p = p.parentElement) {
+                    if (p.scrollHeight > p.clientHeight && /(auto|scroll)/.test(getComputedStyle(p).overflowY)) {
+                        p.scrollTop = 0;
+                        break;
+                    }
+                }
+            }
+        }
+        catch (e) {
+            // ignore
+        }
+    }, 0);
+    return () => clearTimeout(timer);
+}
+const SettingsPanel = ({ onBack, focusBack }) => {
+    const { t } = useTranslation();
+    const { settings, updateSettings: update } = usePluginSettings();
+    const { syncing, message, syncLibrary } = useLibrarySync();
+    const containerRef = SP_REACT.useRef(null);
+    // The Settings button that had controller focus is gone now; hand focus
+    // to Back and start the view at the top.
+    SP_REACT.useEffect(() => (focusBack ? focusFirstButton(containerRef.current, true) : undefined), []);
+    const libraryOptions = [
+        { data: 'none', label: t('settings.positionNone') },
+        { data: 'top-left', label: t('settings.positionTopLeft') },
+        { data: 'top-right', label: t('settings.positionTopRight') },
+        { data: 'bottom-left', label: t('settings.positionBottomLeft') },
+        { data: 'bottom-right', label: t('settings.positionBottomRight') },
+    ];
+    const hOptions = [
+        { data: 'left', label: t('settings.left') },
+        { data: 'center', label: t('settings.center') },
+        { data: 'right', label: t('settings.right') },
+    ];
+    const vOptions = [
+        { data: 'top', label: t('settings.top') },
+        { data: 'center', label: t('settings.center') },
+        { data: 'bottom', label: t('settings.bottom') },
+    ];
+    const languageOptions = [
+        { data: 'auto', label: t('settings.languageAuto') },
+        { data: 'en', label: t('settings.languageEnglish') },
+        { data: 'pt-BR', label: t('settings.languagePortuguese') },
+    ];
+    const colorOptions = TAG_COLOR_PRESETS.map((preset) => ({ data: preset.value, label: preset.label }));
+    // Size both game page dropdowns off the longest label so they match in
+    // every language.
+    const positionDropdownWidth = `${Math.max(...hOptions.map((o) => o.label.length), ...vOptions.map((o) => o.label.length)) + 4}ch`;
+    const resetTagCustomization = () => {
+        const cleared = {};
+        CUSTOMIZABLE_TAGS.forEach((type) => {
+            cleared[TAG_LABEL_SETTING_KEY[type]] = '';
+            cleared[TAG_COLOR_SETTING_KEY[type]] = '';
+        });
+        update(cleared, BADGE_SETTINGS_UPDATED_EVENT);
+    };
+    return (SP_REACT.createElement("div", { ref: containerRef, style: styles$2.container },
+        SP_REACT.createElement(DFL.PanelSection, null,
+            SP_REACT.createElement(DFL.PanelSectionRow, null,
+                SP_REACT.createElement(DFL.ButtonItem, { layout: "below", onClick: onBack },
+                    SP_REACT.createElement("div", { style: styles$2.backButton },
+                        SP_REACT.createElement(FaArrowLeft, null),
+                        SP_REACT.createElement("span", null, t('settings.back')))))),
+        SP_REACT.createElement(DFL.PanelSection, { title: t('settings.syncSection') },
+            message && SP_REACT.createElement("div", { style: styles$2.message }, message),
+            SP_REACT.createElement(DFL.PanelSectionRow, null,
+                SP_REACT.createElement(DFL.ButtonItem, { layout: "below", description: t('settings.syncDesc'), onClick: syncLibrary, disabled: syncing }, syncing ? t('settings.syncing') : t('settings.syncLibrary')))),
+        SP_REACT.createElement(DFL.PanelSection, { title: t('settings.tagging') },
+            SP_REACT.createElement(DFL.PanelSectionRow, null,
+                SP_REACT.createElement(DFL.SliderField, { label: t('settings.inProgressThreshold'), value: settings.in_progress_threshold, min: 1, max: 120, step: 1, editableValue: true, valueSuffix: t('settings.minutesSuffix'), onChange: (value) => update({ in_progress_threshold: value }) })),
+            SP_REACT.createElement(DFL.PanelSectionRow, null,
+                SP_REACT.createElement(DFL.SliderField, { label: t('settings.masteredThreshold'), description: t('settings.masteredThresholdDesc'), value: settings.mastered_threshold, min: 50, max: 100, step: 1, editableValue: true, valueSuffix: "%", onChange: (value) => update({ mastered_threshold: value }) }))),
+        SP_REACT.createElement(DFL.PanelSection, { title: t('settings.libraryBadgePosition') },
+            SP_REACT.createElement("div", { style: styles$2.description }, t('settings.libraryBadgePositionDesc')),
+            SP_REACT.createElement(DFL.PanelSectionRow, null,
+                SP_REACT.createElement("div", { style: styles$2.fullWidth },
+                    SP_REACT.createElement(DFL.Dropdown, { menuLabel: t('settings.libraryBadgePosition'), rgOptions: libraryOptions, selectedOption: settings.library_badge_position, onChange: (option) => update({ library_badge_position: option.data }, BADGE_SETTINGS_UPDATED_EVENT) })))),
+        SP_REACT.createElement(DFL.PanelSection, { title: t('settings.badgePosition') },
+            SP_REACT.createElement("div", { style: styles$2.description }, t('settings.badgePositionDesc')),
+            SP_REACT.createElement(DFL.PanelSectionRow, null,
+                SP_REACT.createElement("div", { style: styles$2.dropdownRow },
+                    SP_REACT.createElement("span", null, t('settings.horizontal')),
+                    SP_REACT.createElement("div", { style: { width: positionDropdownWidth } },
+                        SP_REACT.createElement(DFL.Dropdown, { menuLabel: t('settings.horizontal'), rgOptions: hOptions, selectedOption: settings.badge_position_h, onChange: (option) => update({ badge_position_h: option.data }, BADGE_SETTINGS_UPDATED_EVENT) })))),
+            SP_REACT.createElement(DFL.PanelSectionRow, null,
+                SP_REACT.createElement("div", { style: styles$2.dropdownRow },
+                    SP_REACT.createElement("span", null, t('settings.vertical')),
+                    SP_REACT.createElement("div", { style: { width: positionDropdownWidth } },
+                        SP_REACT.createElement(DFL.Dropdown, { menuLabel: t('settings.vertical'), rgOptions: vOptions, selectedOption: settings.badge_position_v, onChange: (option) => update({ badge_position_v: option.data }, BADGE_SETTINGS_UPDATED_EVENT) })))),
+            SP_REACT.createElement(DFL.PanelSectionRow, null,
+                SP_REACT.createElement("div", { style: styles$2.avoidOverlapRow },
+                    SP_REACT.createElement(DFL.SliderField, { label: t('settings.avoidOverlap'), description: t('settings.avoidOverlapDesc'), value: settings.badge_overlap_offset, min: 0, max: 100, step: 1, editableValue: true, valueSuffix: "px", onChange: (value) => update({ badge_overlap_offset: value }, BADGE_SETTINGS_UPDATED_EVENT) })))),
+        SP_REACT.createElement(DFL.PanelSection, { title: t('settings.customizeTags') },
+            SP_REACT.createElement("div", { style: styles$2.description }, t('settings.customizeTagsDesc')),
+            CUSTOMIZABLE_TAGS.map((type, index) => (SP_REACT.createElement(DFL.PanelSectionRow, { key: type },
+                SP_REACT.createElement("div", { style: index > 0 ? { ...styles$2.customTagRow, ...styles$2.customTagRowSeparator } : styles$2.customTagRow },
+                    SP_REACT.createElement(DFL.TextField, { label: t(TAG_LABEL_KEY$1[type]), value: resolveTagLabel(type, settings, t), onChange: (e) => update({ [TAG_LABEL_SETTING_KEY[type]]: e.target.value }, BADGE_SETTINGS_UPDATED_EVENT) }),
+                    SP_REACT.createElement("div", { style: styles$2.customTagColorWrapper },
+                        SP_REACT.createElement(DFL.Dropdown, { menuLabel: t(TAG_LABEL_KEY$1[type]), rgOptions: colorOptions, selectedOption: resolveTagColor(type, settings), onChange: (option) => update({ [TAG_COLOR_SETTING_KEY[type]]: option.data }, BADGE_SETTINGS_UPDATED_EVENT) })))))),
+            SP_REACT.createElement(DFL.PanelSectionRow, null,
+                SP_REACT.createElement("div", { style: styles$2.customTagRowSeparator },
+                    SP_REACT.createElement(DFL.ButtonItem, { layout: "below", onClick: resetTagCustomization }, t('settings.resetTagCustomization'))))),
+        SP_REACT.createElement(DFL.PanelSection, { title: t('settings.language') },
+            SP_REACT.createElement(DFL.PanelSectionRow, null,
+                SP_REACT.createElement("div", { style: styles$2.fullWidth },
+                    SP_REACT.createElement(DFL.Dropdown, { menuLabel: t('settings.language'), rgOptions: languageOptions, selectedOption: settings.language, onChange: (option) => update({ language: option.data }, LANGUAGE_UPDATED_EVENT) }))))));
+};
+const styles$2 = {
+    container: { paddingTop: '8px', color: 'white', width: '100%', maxWidth: '100%', overflow: 'hidden' },
+    backButton: { display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' },
+    message: { padding: '12px', backgroundColor: 'rgba(102, 126, 234, 0.2)', borderRadius: '4px', marginBottom: '8px', fontSize: '14px', border: '1px solid rgba(102, 126, 234, 0.5)' },
+    description: { fontSize: '12px', color: '#8b929a', marginBottom: '8px', lineHeight: '1.4' },
+    fullWidth: { width: '100%' },
+    dropdownRow: { width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between' },
+    avoidOverlapRow: { width: '100%', marginTop: '12px', paddingTop: '12px', borderTop: '1px solid #333' },
+    customTagRow: { width: '100%', display: 'flex', flexDirection: 'column' },
+    customTagRowSeparator: { marginTop: '16px', paddingTop: '16px' },
+    // Dropdown (like TextField) carries its own built-in top margin from
+    // Decky's Field wrapper; pull it up so the colour sits under its label.
+    customTagColorWrapper: { marginTop: '-8px' },
+};
+
+/**
+ * MainPanel - the Quick Access panel content.
+ * Kept deliberately clean: the tag lists, a Settings button and the About
+ * info. The Settings button swaps the whole panel for SettingsPanel (still
+ * inside the sidebar); its Back button returns here.
+ */
+const BACKLOG_COLOR = '#888';
+const TAG_LABEL_KEY = {
     completed: 'tag.completed',
     in_progress: 'tag.in_progress',
     backlog: 'tag.backlog',
@@ -1230,7 +1366,30 @@ const TAG_DESCRIPTION_KEY = {
     mastered: 'tag.mastered.desc',
     dropped: 'tag.dropped.desc',
 };
+// Opening any Dropdown in the Quick Access panel makes Steam hide the panel
+// while the option menu (a popup in the main window) is up, which unmounts
+// the plugin; it remounts once an option is picked. Remember the view
+// outside React so that doesn't throw the user out of the settings.
+// After a longer close (user left the panel) start on the lists again.
+const RESTORE_VIEW_WITHIN_MS = 2 * 60 * 1000;
+let lastView = 'lists';
+let lastUnmountAt = 0;
 const MainPanel = () => {
+    // 'returned' = back from settings: put focus on the Settings button again
+    const [view, setView] = SP_REACT.useState(() => lastView === 'settings' && Date.now() - lastUnmountAt < RESTORE_VIEW_WITHIN_MS ? 'settings' : 'lists');
+    // Restored after a remount: Steam puts focus back itself, don't jump to Back
+    const [restored] = SP_REACT.useState(view === 'settings');
+    SP_REACT.useEffect(() => {
+        lastView = view;
+    }, [view]);
+    SP_REACT.useEffect(() => () => {
+        lastUnmountAt = Date.now();
+    }, []);
+    return view === 'settings'
+        ? SP_REACT.createElement(SettingsPanel, { onBack: () => setView('returned'), focusBack: !restored })
+        : SP_REACT.createElement(TagListsPanel, { onOpenSettings: () => setView('settings'), focusSettings: view === 'returned' });
+};
+const TagListsPanel = ({ onOpenSettings, focusSettings }) => {
     const { t } = useTranslation();
     const { settings } = usePluginSettings({ reloadOnChange: true });
     const [stats, setStats] = SP_REACT.useState(null);
@@ -1241,6 +1400,8 @@ const MainPanel = () => {
     const prevStatsRef = SP_REACT.useRef('');
     const prevGamesRef = SP_REACT.useRef('');
     const containerRef = SP_REACT.useRef(null);
+    const settingsButtonRef = SP_REACT.useRef(null);
+    SP_REACT.useEffect(() => (focusSettings ? focusFirstButton(settingsButtonRef.current) : undefined), []);
     const smartUpdateUI = async () => {
         try {
             const statsResult = await call('get_tag_statistics');
@@ -1263,7 +1424,7 @@ const MainPanel = () => {
     // the automatic startup sync, and refreshes the lists as tags change.
     const { message } = useLibrarySync(smartUpdateUI);
     SP_REACT.useEffect(() => {
-        if (containerRef.current) {
+        if (containerRef.current && !focusSettings) {
             containerRef.current.scrollIntoView({ block: 'start' });
         }
         smartUpdateUI();
@@ -1285,20 +1446,16 @@ const MainPanel = () => {
             }
         }
     };
-    const openSettings = () => {
-        DFL.Navigation.Navigate(SETTINGS_ROUTE);
-        DFL.Navigation.CloseSideMenus();
-    };
     const groupedGames = taggedGames.reduce((acc, g) => {
         if (!acc[g.tag])
             acc[g.tag] = [];
         acc[g.tag].push(g);
         return acc;
     }, {});
-    return (SP_REACT.createElement("div", { ref: containerRef, style: styles$2.container },
-        message && SP_REACT.createElement("div", { style: styles$2.message }, message),
-        SP_REACT.createElement("div", { style: styles$2.section },
-            SP_REACT.createElement("h3", { style: styles$2.sectionTitle },
+    return (SP_REACT.createElement("div", { ref: containerRef, style: styles$1.container },
+        message && SP_REACT.createElement("div", { style: styles$1.message }, message),
+        SP_REACT.createElement("div", { style: styles$1.section },
+            SP_REACT.createElement("h3", { style: styles$1.sectionTitle },
                 t('settings.library'),
                 " (",
                 stats?.total || 0,
@@ -1308,43 +1465,44 @@ const MainPanel = () => {
                 const games = isBacklog ? backlogGames : (groupedGames[tagType] || []);
                 const count = isBacklog ? (stats?.backlog || 0) : games.length;
                 const isExpanded = !!expandedSections[tagType];
-                const label = isBacklog ? t(TAG_LABEL_KEY$1[tagType]) : resolveTagLabel(tagType, settings, t);
+                const label = isBacklog ? t(TAG_LABEL_KEY[tagType]) : resolveTagLabel(tagType, settings, t);
                 const color = isBacklog ? BACKLOG_COLOR : resolveTagColor(tagType, settings);
                 return (SP_REACT.createElement(SP_REACT.Fragment, { key: tagType },
                     SP_REACT.createElement(DFL.PanelSectionRow, null,
                         SP_REACT.createElement(DFL.ButtonItem, { layout: "below", onClick: () => toggleSection(tagType) },
-                            SP_REACT.createElement("div", { style: styles$2.tagSectionContent },
-                                SP_REACT.createElement("div", { style: styles$2.tagSectionLeft },
+                            SP_REACT.createElement("div", { style: styles$1.tagSectionContent },
+                                SP_REACT.createElement("div", { style: styles$1.tagSectionLeft },
                                     SP_REACT.createElement(TagIcon, { type: tagType, size: 18, color: isBacklog ? undefined : color }),
-                                    SP_REACT.createElement("span", { style: styles$2.tagSectionTitle }, label)),
-                                SP_REACT.createElement("div", { style: styles$2.tagSectionRight },
-                                    SP_REACT.createElement("span", { style: { ...styles$2.tagCount, color } }, count),
-                                    SP_REACT.createElement("span", { style: styles$2.expandIcon }, isExpanded ? '−' : '+'))))),
-                    isExpanded && (SP_REACT.createElement("div", { style: styles$2.tagDescription }, t(TAG_DESCRIPTION_KEY[tagType], tagType === 'mastered' ? { threshold: settings.mastered_threshold } : undefined))),
+                                    SP_REACT.createElement("span", { style: styles$1.tagSectionTitle }, label)),
+                                SP_REACT.createElement("div", { style: styles$1.tagSectionRight },
+                                    SP_REACT.createElement("span", { style: { ...styles$1.tagCount, color } }, count),
+                                    SP_REACT.createElement("span", { style: styles$1.expandIcon }, isExpanded ? '−' : '+'))))),
+                    isExpanded && (SP_REACT.createElement("div", { style: styles$1.tagDescription }, t(TAG_DESCRIPTION_KEY[tagType], tagType === 'mastered' ? { threshold: settings.mastered_threshold } : undefined))),
                     isExpanded && games.length > 0 && games.map(game => (SP_REACT.createElement(DFL.PanelSectionRow, { key: game.appid },
                         SP_REACT.createElement(DFL.ButtonItem, { layout: "below", onClick: () => { DFL.Navigation.Navigate(`/library/app/${game.appid}`); DFL.Navigation.CloseSideMenus(); }, ...{ style: { width: '100%', overflow: 'hidden' } } },
                             SP_REACT.createElement("div", { style: { display: 'table', tableLayout: 'fixed', width: '100%' } },
-                                SP_REACT.createElement("div", { style: styles$2.gameItemContent },
-                                    SP_REACT.createElement("span", { style: { ...styles$2.smallDot, backgroundColor: game.tag === 'backlog' ? BACKLOG_COLOR : resolveTagColor(game.tag, settings) } }),
-                                    SP_REACT.createElement("span", { style: styles$2.gameName }, game.game_name),
-                                    game.is_manual && SP_REACT.createElement("span", { style: styles$2.manualBadge }, t('settings.manual')))))))),
-                    isExpanded && games.length === 0 && !loadingBacklog && SP_REACT.createElement("div", { style: styles$2.emptySection }, t('settings.noGamesFound'))));
+                                SP_REACT.createElement("div", { style: styles$1.gameItemContent },
+                                    SP_REACT.createElement("span", { style: { ...styles$1.smallDot, backgroundColor: game.tag === 'backlog' ? BACKLOG_COLOR : resolveTagColor(game.tag, settings) } }),
+                                    SP_REACT.createElement("span", { style: styles$1.gameName }, game.game_name),
+                                    game.is_manual && SP_REACT.createElement("span", { style: styles$1.manualBadge }, t('settings.manual')))))))),
+                    isExpanded && games.length === 0 && !loadingBacklog && SP_REACT.createElement("div", { style: styles$1.emptySection }, t('settings.noGamesFound'))));
             }))),
         SP_REACT.createElement(DFL.PanelSection, null,
             SP_REACT.createElement(DFL.PanelSectionRow, null,
-                SP_REACT.createElement(DFL.ButtonItem, { layout: "below", onClick: openSettings },
-                    SP_REACT.createElement("div", { style: styles$2.settingsButton },
-                        SP_REACT.createElement(FaCog, null),
-                        SP_REACT.createElement("span", null, t('settings.openSettings')))))),
+                SP_REACT.createElement("div", { ref: settingsButtonRef, style: { width: '100%' } },
+                    SP_REACT.createElement(DFL.ButtonItem, { layout: "below", onClick: onOpenSettings },
+                        SP_REACT.createElement("div", { style: styles$1.settingsButton },
+                            SP_REACT.createElement(FaCog, null),
+                            SP_REACT.createElement("span", null, t('settings.openSettings'))))))),
         SP_REACT.createElement(DFL.PanelSection, { title: t('settings.about') },
-            SP_REACT.createElement("div", { style: styles$2.about },
-                SP_REACT.createElement("p", { style: styles$2.aboutLine }, "Deck Progress Tracker"),
-                SP_REACT.createElement("p", { style: styles$2.aboutLine }, "1.4.7"),
-                SP_REACT.createElement("p", { style: styles$2.aboutLine }, t('settings.aboutDataSource'))),
+            SP_REACT.createElement("div", { style: styles$1.about },
+                SP_REACT.createElement("p", { style: styles$1.aboutLine }, "Deck Progress Tracker"),
+                SP_REACT.createElement("p", { style: styles$1.aboutLine }, "1.4.7"),
+                SP_REACT.createElement("p", { style: styles$1.aboutLine }, t('settings.aboutDataSource'))),
             SP_REACT.createElement(DFL.PanelSectionRow, null,
                 SP_REACT.createElement(DFL.ButtonItem, { layout: "below", onClick: () => DFL.Navigation.NavigateToExternalWeb('https://patreon.com/DeckProgressTracker') }, t('settings.supportPatreon'))))));
 };
-const styles$2 = {
+const styles$1 = {
     container: { paddingTop: '16px', color: 'white', width: '100%', maxWidth: '100%', overflow: 'hidden' },
     message: { padding: '12px', backgroundColor: 'rgba(102, 126, 234, 0.2)', borderRadius: '4px', marginBottom: '16px', fontSize: '14px', border: '1px solid rgba(102, 126, 234, 0.5)', marginLeft: '16px', marginRight: '16px' },
     section: { marginBottom: '8px', paddingBottom: '16px', borderBottom: '1px solid #333', width: '100%', overflow: 'hidden' },
@@ -1364,128 +1522,6 @@ const styles$2 = {
     settingsButton: { display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' },
     about: { fontSize: '14px', lineHeight: '1.6', marginLeft: '16px', marginRight: '16px' },
     aboutLine: { margin: '8px 0', color: '#ccc' },
-};
-
-/**
- * SettingsPage - full-screen settings, opened from the Settings button in
- * the Quick Access panel (route SETTINGS_ROUTE, registered in index.tsx).
- *
- * Uses Steam's own SidebarNavigation so it looks and navigates like the
- * system settings: D-pad between pages and controls, B goes back.
- */
-const CUSTOMIZABLE_TAGS = ['mastered', 'completed', 'in_progress', 'dropped'];
-const TAG_LABEL_KEY = {
-    mastered: 'tag.mastered',
-    completed: 'tag.completed',
-    in_progress: 'tag.in_progress',
-    dropped: 'tag.dropped',
-};
-const GeneralPage = ({ settings, update }) => {
-    const { t } = useTranslation();
-    const { syncing, message, syncLibrary } = useLibrarySync();
-    return (SP_REACT.createElement(SP_REACT.Fragment, null,
-        SP_REACT.createElement(DFL.DialogControlsSection, null,
-            SP_REACT.createElement(DFL.DialogControlsSectionHeader, null, t('settings.syncSection')),
-            SP_REACT.createElement(DFL.ButtonItem, { layout: "below", description: message || t('settings.syncDesc'), onClick: syncLibrary, disabled: syncing }, syncing ? t('settings.syncing') : t('settings.syncLibrary'))),
-        SP_REACT.createElement(DFL.DialogControlsSection, null,
-            SP_REACT.createElement(DFL.DialogControlsSectionHeader, null, t('settings.tagging')),
-            SP_REACT.createElement(DFL.SliderField, { label: t('settings.inProgressThreshold'), value: settings.in_progress_threshold, min: 1, max: 120, step: 1, editableValue: true, valueSuffix: t('settings.minutesSuffix'), onChange: (value) => update({ in_progress_threshold: value }) }),
-            SP_REACT.createElement(DFL.SliderField, { label: t('settings.masteredThreshold'), description: t('settings.masteredThresholdDesc'), value: settings.mastered_threshold, min: 50, max: 100, step: 1, editableValue: true, valueSuffix: "%", onChange: (value) => update({ mastered_threshold: value }) }))));
-};
-const BadgesPage = ({ settings, update }) => {
-    const { t } = useTranslation();
-    const libraryOptions = [
-        { data: 'none', label: t('settings.positionNone') },
-        { data: 'top-left', label: t('settings.positionTopLeft') },
-        { data: 'top-right', label: t('settings.positionTopRight') },
-        { data: 'bottom-left', label: t('settings.positionBottomLeft') },
-        { data: 'bottom-right', label: t('settings.positionBottomRight') },
-    ];
-    const hOptions = [
-        { data: 'left', label: t('settings.left') },
-        { data: 'center', label: t('settings.center') },
-        { data: 'right', label: t('settings.right') },
-    ];
-    const vOptions = [
-        { data: 'top', label: t('settings.top') },
-        { data: 'center', label: t('settings.center') },
-        { data: 'bottom', label: t('settings.bottom') },
-    ];
-    return (SP_REACT.createElement(SP_REACT.Fragment, null,
-        SP_REACT.createElement(DFL.DialogControlsSection, null,
-            SP_REACT.createElement(DFL.DialogControlsSectionHeader, null, t('settings.libraryBadgeSection')),
-            SP_REACT.createElement(DFL.DropdownItem, { label: t('settings.libraryBadgePosition'), description: t('settings.libraryBadgePositionDesc'), menuLabel: t('settings.libraryBadgePosition'), rgOptions: libraryOptions, selectedOption: settings.library_badge_position, onChange: (option) => update({ library_badge_position: option.data }, BADGE_SETTINGS_UPDATED_EVENT) })),
-        SP_REACT.createElement(DFL.DialogControlsSection, null,
-            SP_REACT.createElement(DFL.DialogControlsSectionHeader, null, t('settings.badgePosition')),
-            SP_REACT.createElement(DFL.DropdownItem, { label: t('settings.horizontal'), description: t('settings.badgePositionDesc'), menuLabel: t('settings.horizontal'), rgOptions: hOptions, selectedOption: settings.badge_position_h, onChange: (option) => update({ badge_position_h: option.data }, BADGE_SETTINGS_UPDATED_EVENT) }),
-            SP_REACT.createElement(DFL.DropdownItem, { label: t('settings.vertical'), menuLabel: t('settings.vertical'), rgOptions: vOptions, selectedOption: settings.badge_position_v, onChange: (option) => update({ badge_position_v: option.data }, BADGE_SETTINGS_UPDATED_EVENT) }),
-            SP_REACT.createElement(DFL.SliderField, { label: t('settings.avoidOverlap'), description: t('settings.avoidOverlapDesc'), value: settings.badge_overlap_offset, min: 0, max: 100, step: 1, editableValue: true, valueSuffix: "px", onChange: (value) => update({ badge_overlap_offset: value }, BADGE_SETTINGS_UPDATED_EVENT) }))));
-};
-const CustomizeTagsPage = ({ settings, update }) => {
-    const { t } = useTranslation();
-    const colorOptions = TAG_COLOR_PRESETS.map((preset) => ({ data: preset.value, label: preset.label }));
-    const reset = () => {
-        const cleared = {};
-        CUSTOMIZABLE_TAGS.forEach((type) => {
-            cleared[TAG_LABEL_SETTING_KEY[type]] = '';
-            cleared[TAG_COLOR_SETTING_KEY[type]] = '';
-        });
-        update(cleared, BADGE_SETTINGS_UPDATED_EVENT);
-    };
-    return (SP_REACT.createElement(SP_REACT.Fragment, null,
-        SP_REACT.createElement(DFL.Field, { description: t('settings.customizeTagsDesc'), bottomSeparator: "none" }),
-        CUSTOMIZABLE_TAGS.map((type) => (SP_REACT.createElement(DFL.Field, { key: type, label: t(TAG_LABEL_KEY[type]), childrenLayout: "below", bottomSeparator: "standard" },
-            SP_REACT.createElement("div", { style: styles$1.customTagRow },
-                SP_REACT.createElement("div", { style: styles$1.customTagLabel },
-                    SP_REACT.createElement(DFL.TextField, { value: resolveTagLabel(type, settings, t), onChange: (e) => update({ [TAG_LABEL_SETTING_KEY[type]]: e.target.value }, BADGE_SETTINGS_UPDATED_EVENT) })),
-                SP_REACT.createElement("div", { style: styles$1.customTagColor },
-                    SP_REACT.createElement("span", { style: { ...styles$1.colorSwatch, background: resolveTagColor(type, settings) } }),
-                    SP_REACT.createElement(DFL.Dropdown, { menuLabel: t(TAG_LABEL_KEY[type]), rgOptions: colorOptions, selectedOption: resolveTagColor(type, settings), onChange: (option) => update({ [TAG_COLOR_SETTING_KEY[type]]: option.data }, BADGE_SETTINGS_UPDATED_EVENT) })))))),
-        SP_REACT.createElement(DFL.ButtonItem, { layout: "below", onClick: reset }, t('settings.resetTagCustomization'))));
-};
-const LanguagePage = ({ settings, update }) => {
-    const { t } = useTranslation();
-    const options = [
-        { data: 'auto', label: t('settings.languageAuto') },
-        { data: 'en', label: t('settings.languageEnglish') },
-        { data: 'pt-BR', label: t('settings.languagePortuguese') },
-    ];
-    return (SP_REACT.createElement(DFL.DropdownItem, { label: t('settings.language'), menuLabel: t('settings.language'), rgOptions: options, selectedOption: settings.language, onChange: (option) => update({ language: option.data }, LANGUAGE_UPDATED_EVENT) }));
-};
-const SettingsPage = () => {
-    const { t } = useTranslation();
-    const { settings, updateSettings } = usePluginSettings();
-    return (SP_REACT.createElement("div", { style: styles$1.page },
-        SP_REACT.createElement(DFL.SidebarNavigation, { title: t('settings.title'), showTitle: true, pages: [
-                {
-                    title: t('settings.pageGeneral'),
-                    icon: SP_REACT.createElement(FaSyncAlt, null),
-                    content: SP_REACT.createElement(GeneralPage, { settings: settings, update: updateSettings }),
-                },
-                {
-                    title: t('settings.pageBadges'),
-                    icon: SP_REACT.createElement(FaThLarge, null),
-                    content: SP_REACT.createElement(BadgesPage, { settings: settings, update: updateSettings }),
-                },
-                {
-                    title: t('settings.customizeTags'),
-                    icon: SP_REACT.createElement(FaTags, null),
-                    content: SP_REACT.createElement(CustomizeTagsPage, { settings: settings, update: updateSettings }),
-                },
-                {
-                    title: t('settings.language'),
-                    icon: SP_REACT.createElement(FaGlobe, null),
-                    content: SP_REACT.createElement(LanguagePage, { settings: settings, update: updateSettings }),
-                },
-            ] })));
-};
-const styles$1 = {
-    // Full-screen plugin routes render under Steam's top bar
-    page: { marginTop: '40px', height: 'calc(100% - 40px)', background: '#0e141b' },
-    customTagRow: { display: 'flex', alignItems: 'center', gap: '16px', width: '100%' },
-    customTagLabel: { flex: 1, minWidth: 0 },
-    customTagColor: { display: 'flex', alignItems: 'center', gap: '8px', width: '180px', flexShrink: 0 },
-    colorSwatch: { width: '16px', height: '16px', borderRadius: '50%', flexShrink: 0, border: '1px solid rgba(255,255,255,0.4)' },
 };
 
 /**
@@ -2677,8 +2713,6 @@ var index = definePlugin(() => {
     let unpatchLibraryCapsules = null;
     let stopLibraryBadgeStore = null;
     let disposed = false;
-    // Full-screen settings page, opened from the panel's Settings button
-    routerHook.addRoute(SETTINGS_ROUTE, SettingsPage, { exact: true });
     (async () => {
         let compatible = true;
         let minVersion = '';
@@ -2807,12 +2841,6 @@ var index = definePlugin(() => {
             }
             catch (error) {
                 // Error removing library capsule patch
-            }
-            try {
-                routerHook.removeRoute(SETTINGS_ROUTE);
-            }
-            catch (error) {
-                // Error removing settings route
             }
             // Stop achievement cache watcher
             stopAchievementCacheWatcher();

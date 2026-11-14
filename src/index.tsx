@@ -9,8 +9,7 @@ import { staticClasses } from '@decky/ui';
 import { call, definePlugin, routerHook, toaster } from '@decky/api';
 import React from 'react';
 import { FaTrophy } from 'react-icons/fa';
-import { MainPanel, SETTINGS_ROUTE } from './components/MainPanel';
-import { SettingsPage } from './components/SettingsPage';
+import { MainPanel } from './components/MainPanel';
 import patchLibraryApp from './lib/patchLibraryApp';
 import { patchLibraryCapsules } from './lib/patchLibraryCapsules';
 import { initLibraryBadgeStore } from './lib/libraryBadgeStore';
@@ -31,9 +30,6 @@ export default definePlugin(() => {
   let unpatchLibraryCapsules: (() => void) | null = null;
   let stopLibraryBadgeStore: (() => void) | null = null;
   let disposed = false;
-
-  // Full-screen settings page, opened from the panel's Settings button
-  routerHook.addRoute(SETTINGS_ROUTE, SettingsPage, { exact: true });
 
   (async () => {
     let compatible = true;
@@ -171,12 +167,6 @@ export default definePlugin(() => {
         stopLibraryBadgeStore?.();
       } catch (error) {
         // Error removing library capsule patch
-      }
-
-      try {
-        routerHook.removeRoute(SETTINGS_ROUTE);
-      } catch (error) {
-        // Error removing settings route
       }
 
       // Stop achievement cache watcher

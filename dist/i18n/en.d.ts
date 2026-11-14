@@ -30,15 +30,12 @@ export declare const en: {
     'settings.masteredThresholdDesc': string;
     'settings.customizeTags': string;
     'settings.resetTagCustomization': string;
+    'settings.back': string;
     'settings.openSettings': string;
-    'settings.title': string;
-    'settings.pageGeneral': string;
-    'settings.pageBadges': string;
     'settings.syncSection': string;
     'settings.syncDesc': string;
     'settings.badgePositionDesc': string;
     'settings.customizeTagsDesc': string;
-    'settings.libraryBadgeSection': string;
     'settings.libraryBadgePosition': string;
     'settings.libraryBadgePositionDesc': string;
     'settings.positionNone': string;

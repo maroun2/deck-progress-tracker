@@ -1,8 +1,8 @@
 /**
  * MainPanel - the Quick Access panel content.
- * Kept deliberately clean: the tag lists, a Settings button (opens the
- * full-screen settings page) and the About info. Every setting lives on
- * the settings page (src/components/SettingsPage.tsx).
+ * Kept deliberately clean: the tag lists, a Settings button and the About
+ * info. The Settings button swaps the whole panel for SettingsPanel (still
+ * inside the sidebar); its Back button returns here.
  */
 
 import React, { FC, useState, useEffect, useRef } from 'react';
@@ -15,8 +15,7 @@ import { useTranslation, TranslationKey } from '../i18n';
 import { CustomizableTagType, resolveTagLabel, resolveTagColor } from '../lib/tagCustomization';
 import { usePluginSettings } from '../hooks/usePluginSettings';
 import { useLibrarySync } from '../hooks/useLibrarySync';
-
-export const SETTINGS_ROUTE = '/deck-progress-tracker/settings';
+import { SettingsPanel, focusFirstButton } from './SettingsPanel';
 
 const BACKLOG_COLOR = '#888';
 
@@ -36,7 +35,38 @@ const TAG_DESCRIPTION_KEY: Record<string, TranslationKey> = {
   dropped: 'tag.dropped.desc',
 };
 
+type PanelView = 'lists' | 'settings' | 'returned';
+
+// Opening any Dropdown in the Quick Access panel makes Steam hide the panel
+// while the option menu (a popup in the main window) is up, which unmounts
+// the plugin; it remounts once an option is picked. Remember the view
+// outside React so that doesn't throw the user out of the settings.
+// After a longer close (user left the panel) start on the lists again.
+const RESTORE_VIEW_WITHIN_MS = 2 * 60 * 1000;
+let lastView: PanelView = 'lists';
+let lastUnmountAt = 0;
+
 export const MainPanel: FC = () => {
+  // 'returned' = back from settings: put focus on the Settings button again
+  const [view, setView] = useState<PanelView>(() =>
+    lastView === 'settings' && Date.now() - lastUnmountAt < RESTORE_VIEW_WITHIN_MS ? 'settings' : 'lists'
+  );
+  // Restored after a remount: Steam puts focus back itself, don't jump to Back
+  const [restored] = useState(view === 'settings');
+
+  useEffect(() => {
+    lastView = view;
+  }, [view]);
+  useEffect(() => () => {
+    lastUnmountAt = Date.now();
+  }, []);
+
+  return view === 'settings'
+    ? <SettingsPanel onBack={() => setView('returned')} focusBack={!restored} />
+    : <TagListsPanel onOpenSettings={() => setView('settings')} focusSettings={view === 'returned'} />;
+};
+
+const TagListsPanel: FC<{ onOpenSettings: () => void; focusSettings: boolean }> = ({ onOpenSettings, focusSettings }) => {
   const { t } = useTranslation();
   const { settings } = usePluginSettings({ reloadOnChange: true });
 
@@ -49,6 +79,9 @@ export const MainPanel: FC = () => {
   const prevStatsRef = useRef<string>('');
   const prevGamesRef = useRef<string>('');
   const containerRef = useRef<HTMLDivElement>(null);
+  const settingsButtonRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => (focusSettings ? focusFirstButton(settingsButtonRef.current) : undefined), []);
 
   const smartUpdateUI = async () => {
     try {
@@ -74,7 +107,7 @@ export const MainPanel: FC = () => {
   const { message } = useLibrarySync(smartUpdateUI);
 
   useEffect(() => {
-    if (containerRef.current) {
+    if (containerRef.current && !focusSettings) {
       containerRef.current.scrollIntoView({ block: 'start' });
     }
 
@@ -96,11 +129,6 @@ export const MainPanel: FC = () => {
         setLoadingBacklog(false);
       }
     }
-  };
-
-  const openSettings = () => {
-    Navigation.Navigate(SETTINGS_ROUTE);
-    Navigation.CloseSideMenus();
   };
 
   const groupedGames = taggedGames.reduce((acc, g) => {
@@ -173,12 +201,14 @@ export const MainPanel: FC = () => {
 
       <PanelSection>
         <PanelSectionRow>
-          <ButtonItem layout="below" onClick={openSettings}>
-            <div style={styles.settingsButton}>
-              <FaCog />
-              <span>{t('settings.openSettings')}</span>
-            </div>
-          </ButtonItem>
+          <div ref={settingsButtonRef} style={{ width: '100%' }}>
+            <ButtonItem layout="below" onClick={onOpenSettings}>
+              <div style={styles.settingsButton}>
+                <FaCog />
+                <span>{t('settings.openSettings')}</span>
+              </div>
+            </ButtonItem>
+          </div>
         </PanelSectionRow>
       </PanelSection>
 

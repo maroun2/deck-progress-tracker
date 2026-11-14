@@ -39,17 +39,14 @@ export const en = {
   'settings.resetTagCustomization': 'Reset to Default',
 
   // Settings page / panel
+  'settings.back': 'Back',
   'settings.openSettings': 'Settings',
-  'settings.title': 'Deck Progress Tracker',
-  'settings.pageGeneral': 'General',
-  'settings.pageBadges': 'Badges',
   'settings.syncSection': 'Library sync',
   'settings.syncDesc': 'Re-scan playtime and achievements for every game and update tags.',
   'settings.badgePositionDesc': 'Where the tag badge sits on a game\'s page banner.',
   'settings.customizeTagsDesc': 'Rename tags and pick their colours. Colours are used in the lists, on the game page and on library tiles.',
 
   // Settings - Library tile badges
-  'settings.libraryBadgeSection': 'Library tiles',
   'settings.libraryBadgePosition': 'Library badge position',
   'settings.libraryBadgePositionDesc': 'Small tag icon on every game tile in the library, collections and Home. ProtonDB Badges uses the bottom left by default; if both are in the same corner, this badge steps aside.',
   'settings.positionNone': 'None (off)',
