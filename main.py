@@ -77,6 +77,48 @@ logger = decky.logger
 logger.info(f"=== Deck Progress Tracker v{PLUGIN_VERSION} starting ===")
 logger.info(f"Plugin dir: {PLUGIN_DIR}")
 
+# Minimum Decky Loader version this plugin's library-page patch is known to
+# work on. On v3.2.10, patching the library page crashed Decky's entire UI
+# with "An error occurred while rendering this content"; v3.3.1 was
+# confirmed working. plugin.json has no field for this (as of v3.3.1 Decky
+# only reads name/author/flags/api_version from it), but Decky sets the
+# DECKY_VERSION env var for every plugin backend, so we check that instead
+# and let the frontend skip the library patch on older versions.
+MIN_DECKY_VERSION_STR = "3.3.1"
+MIN_DECKY_VERSION = (3, 3, 1)
+
+
+def _parse_decky_version(raw: str):
+    """Parse a DECKY_VERSION string like 'v3.3.1' into a (major, minor, patch) tuple."""
+    if not raw:
+        return None
+    cleaned = raw.strip().lstrip("vV").split("-")[0]
+    try:
+        parts = tuple(int(p) for p in cleaned.split(".")[:3])
+        return parts if parts else None
+    except ValueError:
+        return None
+
+
+def _is_decky_version_supported(raw: str) -> bool:
+    parsed = _parse_decky_version(raw)
+    if parsed is None:
+        # Unrecognized format - don't block the plugin on a version string
+        # we failed to understand, only on ones we can confirm are too old.
+        return True
+    return parsed >= MIN_DECKY_VERSION
+
+
+DECKY_VERSION = os.environ.get("DECKY_VERSION", "")
+DECKY_VERSION_SUPPORTED = _is_decky_version_supported(DECKY_VERSION)
+logger.info(f"Detected Decky Loader version: {DECKY_VERSION or 'unknown'}")
+if not DECKY_VERSION_SUPPORTED:
+    logger.warning(
+        f"Decky Loader {DECKY_VERSION} is older than the minimum supported "
+        f"version {MIN_DECKY_VERSION_STR}; the frontend will skip patching "
+        "the library page to avoid crashing Decky's UI."
+    )
+
 # Import backend modules
 try:
     from database import Database
@@ -564,6 +606,15 @@ class Plugin:
             import traceback
             logger.error(traceback.format_exc())
             return {"success": False, "error": str(e)}
+
+    async def get_decky_version_info(self) -> Dict[str, Any]:
+        """Report the detected Decky Loader version and whether it meets our minimum"""
+        return {
+            "success": True,
+            "decky_version": DECKY_VERSION,
+            "min_version": MIN_DECKY_VERSION_STR,
+            "compatible": DECKY_VERSION_SUPPORTED,
+        }
 
     async def get_settings(self) -> Dict[str, Any]:
         """Get all plugin settings"""

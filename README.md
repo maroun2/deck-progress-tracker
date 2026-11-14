@@ -57,6 +57,10 @@ If you find this plugin useful, consider supporting its development — it helps
 
 [![Support on Patreon](https://img.shields.io/badge/Support_on-Patreon-F96854?style=for-the-badge&logo=patreon&logoColor=white)](https://patreon.com/DeckProgressTracker)
 
+## Requirements
+
+- **Decky Loader v3.3.1 or newer.** On older versions (confirmed on v3.2.10), the library page integration crashes Decky's UI. The plugin detects the running Decky Loader version at startup and automatically disables the library page tags on older versions instead of crashing, but all other features require v3.3.1+ to work correctly.
+
 ## Installation
 
 ### Via URL (Recommended)
