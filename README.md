@@ -20,12 +20,21 @@ Steam tools and apps (dedicated servers, SDKs, redistributables, etc.) are autom
 - **Configurable thresholds**: adjust the achievement percentage required for Mastered and the playtime required for In Progress
 - **Manual HLTB search**: look up and pick the correct HowLongToBeat match yourself when the automatic search fails or picks the wrong game
 - **Customizable tags**: rename any tag label and pick its color from a curated palette, with a one-click reset to defaults
+- **Library badges**: every game tile in the library grid shows its tag (untagged games show Backlog), in the corner you choose or turned off
 - **Configurable badge position**: place the progress badge anywhere on the game banner (left/center/right × top/center/bottom), with a vertical nudge offset to avoid overlapping another plugin's badge in the same spot
 - **Localization**: English and Brazilian Portuguese, auto-detected from your system language with a manual override
 - **Full gamepad navigation** throughout the badge, tag dialog, and Settings panel
 - Automatically filters out non-game Steam tools/apps from your library
 
 ## Screenshots
+
+![Library badges](assets/library-badges.png)
+
+Tag badges on every game in the library, with the plugin open in the Quick Access menu.
+
+![Game page badge](assets/game-page-badge.png)
+
+The tag badge on a game's page.
 
 ![Deck Progress Tracker Dashboard](assets/20260313182447_1.jpg)
 
