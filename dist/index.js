@@ -2355,6 +2355,8 @@ const ICON_SIZE = 14;
 // in the same corner as ours, step ours inward horizontally past it.
 const PROTONDB_DOT = '.protondb-grid-dot';
 const NUDGED_INSET = 32;
+// Backlog isn't customizable; a neutral grey matching the panel's Backlog row.
+const BACKLOG_BACKGROUND = 'linear-gradient(135deg, #6e6e6e 0%, #4a4a4a 100%)';
 const CORNERS = {
     'top-left': { v: 'top', h: 'left' },
     'top-right': { v: 'top', h: 'right' },
@@ -2415,7 +2417,10 @@ function derive(appid) {
     const { position, tags, colors } = getLibraryBadgeState();
     const tag = tags[appid] || null;
     let background = '';
-    if (tag) {
+    if (tag === 'backlog') {
+        background = BACKLOG_BACKGROUND;
+    }
+    else if (tag) {
         const custom = colors[TAG_COLOR_SETTING_KEY[tag]];
         // Same colour logic as the game page badge: custom colour if the user
         // picked one, otherwise the default tag gradient.

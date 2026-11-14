@@ -10,9 +10,11 @@
 import { LibraryBadgePosition, PluginSettings } from '../types';
 import { CustomizableTagType } from './tagCustomization';
 type TagColorSettings = Partial<Pick<PluginSettings, 'tag_color_mastered' | 'tag_color_completed' | 'tag_color_in_progress' | 'tag_color_dropped'>>;
+/** Backlog = a game with no tag (the backend fills it in, see get_tag_map). */
+export type LibraryBadgeTag = CustomizableTagType | 'backlog';
 interface LibraryBadgeState {
     position: LibraryBadgePosition;
-    tags: Record<string, CustomizableTagType>;
+    tags: Record<string, LibraryBadgeTag>;
     colors: TagColorSettings;
 }
 export declare function getLibraryBadgeState(): LibraryBadgeState;

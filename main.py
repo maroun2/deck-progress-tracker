@@ -1181,12 +1181,16 @@ class Plugin:
         """Lightweight {appid: tag} map for the library tile badges.
 
         One query for the whole library, so the frontend can badge every
-        capsule without calling the backend per tile. Games without a tag
-        (Backlog) are simply absent from the map.
+        capsule without calling the backend per tile. Games without a tag are
+        Backlog, using the same rule as get_backlog_games: every visible
+        (not hidden) game we have stats for. Hidden ones (Steam tools,
+        non-Steam apps without HLTB data) and games not synced yet are absent.
         """
         try:
             all_tags = await self.db.get_all_tags()
             tags = {str(t['appid']): t['tag'] for t in all_tags if t.get('tag')}
+            for game in await self.db.get_all_game_stats(include_hidden=False):
+                tags.setdefault(str(game['appid']), 'backlog')
             return {'success': True, 'tags': tags}
         except Exception as e:
             logger.error(f"Error getting tag map: {e}")

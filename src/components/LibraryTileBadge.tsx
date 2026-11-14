@@ -10,8 +10,8 @@
 import React, { FC, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { TagIcon } from './TagIcon';
 import { TAG_STYLES } from './GameTag';
-import { getLibraryBadgeState, refreshTagsIfStale, subscribeLibraryBadges } from '../lib/libraryBadgeStore';
-import { CustomizableTagType, TAG_COLOR_SETTING_KEY } from '../lib/tagCustomization';
+import { LibraryBadgeTag, getLibraryBadgeState, refreshTagsIfStale, subscribeLibraryBadges } from '../lib/libraryBadgeStore';
+import { TAG_COLOR_SETTING_KEY } from '../lib/tagCustomization';
 import { LibraryBadgePosition } from '../types';
 
 export const LIBRARY_BADGE_CLASS = 'dpt-library-badge';
@@ -26,6 +26,8 @@ const ICON_SIZE = 14;
 // in the same corner as ours, step ours inward horizontally past it.
 const PROTONDB_DOT = '.protondb-grid-dot';
 const NUDGED_INSET = 32;
+// Backlog isn't customizable; a neutral grey matching the panel's Backlog row.
+const BACKLOG_BACKGROUND = 'linear-gradient(135deg, #6e6e6e 0%, #4a4a4a 100%)';
 
 const CORNERS: Record<Exclude<LibraryBadgePosition, 'none'>, { v: 'top' | 'bottom'; h: 'left' | 'right' }> = {
   'top-left': { v: 'top', h: 'left' },
@@ -87,7 +89,7 @@ export function removeLibraryBadgeStylesheets() {
 
 interface Derived {
   position: LibraryBadgePosition;
-  tag: CustomizableTagType | null;
+  tag: LibraryBadgeTag | null;
   background: string;
 }
 
@@ -95,7 +97,9 @@ function derive(appid: string): Derived {
   const { position, tags, colors } = getLibraryBadgeState();
   const tag = tags[appid] || null;
   let background = '';
-  if (tag) {
+  if (tag === 'backlog') {
+    background = BACKLOG_BACKGROUND;
+  } else if (tag) {
     const custom = colors[TAG_COLOR_SETTING_KEY[tag]];
     // Same colour logic as the game page badge: custom colour if the user
     // picked one, otherwise the default tag gradient.
