@@ -20,7 +20,7 @@ export const ptBR: Record<TranslationKey, string> = {
   'settings.syncError': 'Erro na sincronização: {error}',
 
   // Settings - Badge Position
-  'settings.badgePosition': 'Posição do Badge',
+  'settings.badgePosition': 'Badge da página do jogo',
   'settings.horizontal': 'Horizontal',
   'settings.vertical': 'Vertical',
   'settings.left': 'Esquerda',
@@ -44,16 +44,16 @@ export const ptBR: Record<TranslationKey, string> = {
   'settings.openSettings': 'Configurações',
   'settings.title': 'Deck Progress Tracker',
   'settings.pageGeneral': 'Geral',
-  'settings.pageBadges': 'Selos',
+  'settings.pageBadges': 'Badges',
   'settings.syncSection': 'Sincronização da biblioteca',
   'settings.syncDesc': 'Verifica novamente o tempo de jogo e as conquistas de todos os jogos e atualiza as tags.',
-  'settings.badgePositionDesc': 'Onde o selo da tag aparece no banner da página do jogo.',
+  'settings.badgePositionDesc': 'Onde o badge da tag aparece no banner da página do jogo.',
   'settings.customizeTagsDesc': 'Renomeie as tags e escolha suas cores. As cores são usadas nas listas, na página do jogo e nos blocos da biblioteca.',
 
   // Settings - Library tile badges
   'settings.libraryBadgeSection': 'Blocos da biblioteca',
-  'settings.libraryBadgePosition': 'Posição do selo na biblioteca',
-  'settings.libraryBadgePositionDesc': 'Pequeno ícone da tag em cada jogo da biblioteca, das coleções e da tela inicial. O ProtonDB Badges usa o canto inferior esquerdo por padrão; se ambos estiverem no mesmo canto, este selo se afasta.',
+  'settings.libraryBadgePosition': 'Posição do badge na biblioteca',
+  'settings.libraryBadgePositionDesc': 'Pequeno ícone da tag em cada jogo da biblioteca, das coleções e da tela inicial. O ProtonDB Badges usa o canto inferior esquerdo por padrão; se ambos estiverem no mesmo canto, este badge se afasta.',
   'settings.positionNone': 'Nenhuma (desligado)',
   'settings.positionTopLeft': 'Superior esquerdo',
   'settings.positionTopRight': 'Superior direito',

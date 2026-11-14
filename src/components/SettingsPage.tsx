@@ -9,6 +9,8 @@
 import React, { FC } from 'react';
 import {
   ButtonItem,
+  DialogControlsSection,
+  DialogControlsSectionHeader,
   Dropdown,
   DropdownItem,
   Field,
@@ -40,33 +42,37 @@ const GeneralPage: FC<{ settings: PluginSettings; update: Update }> = ({ setting
 
   return (
     <>
-      <Field label={t('settings.syncSection')} description={message || t('settings.syncDesc')} bottomSeparator="none" />
-      <ButtonItem layout="below" onClick={syncLibrary} disabled={syncing}>
-        {syncing ? t('settings.syncing') : t('settings.syncLibrary')}
-      </ButtonItem>
+      <DialogControlsSection>
+        <DialogControlsSectionHeader>{t('settings.syncSection')}</DialogControlsSectionHeader>
+        <ButtonItem layout="below" description={message || t('settings.syncDesc')} onClick={syncLibrary} disabled={syncing}>
+          {syncing ? t('settings.syncing') : t('settings.syncLibrary')}
+        </ButtonItem>
+      </DialogControlsSection>
 
-      <Field label={t('settings.tagging')} bottomSeparator="none" />
-      <SliderField
-        label={t('settings.inProgressThreshold')}
-        value={settings.in_progress_threshold}
-        min={1}
-        max={120}
-        step={1}
-        editableValue
-        valueSuffix={t('settings.minutesSuffix')}
-        onChange={(value) => update({ in_progress_threshold: value })}
-      />
-      <SliderField
-        label={t('settings.masteredThreshold')}
-        description={t('settings.masteredThresholdDesc')}
-        value={settings.mastered_threshold}
-        min={50}
-        max={100}
-        step={1}
-        editableValue
-        valueSuffix="%"
-        onChange={(value) => update({ mastered_threshold: value })}
-      />
+      <DialogControlsSection>
+        <DialogControlsSectionHeader>{t('settings.tagging')}</DialogControlsSectionHeader>
+        <SliderField
+          label={t('settings.inProgressThreshold')}
+          value={settings.in_progress_threshold}
+          min={1}
+          max={120}
+          step={1}
+          editableValue
+          valueSuffix={t('settings.minutesSuffix')}
+          onChange={(value) => update({ in_progress_threshold: value })}
+        />
+        <SliderField
+          label={t('settings.masteredThreshold')}
+          description={t('settings.masteredThresholdDesc')}
+          value={settings.mastered_threshold}
+          min={50}
+          max={100}
+          step={1}
+          editableValue
+          valueSuffix="%"
+          onChange={(value) => update({ mastered_threshold: value })}
+        />
+      </DialogControlsSection>
     </>
   );
 };
@@ -94,42 +100,47 @@ const BadgesPage: FC<{ settings: PluginSettings; update: Update }> = ({ settings
 
   return (
     <>
-      <Field label={t('settings.libraryBadgeSection')} bottomSeparator="none" />
-      <DropdownItem
-        label={t('settings.libraryBadgePosition')}
-        description={t('settings.libraryBadgePositionDesc')}
-        menuLabel={t('settings.libraryBadgePosition')}
-        rgOptions={libraryOptions}
-        selectedOption={settings.library_badge_position}
-        onChange={(option) => update({ library_badge_position: option.data }, BADGE_SETTINGS_UPDATED_EVENT)}
-      />
+      <DialogControlsSection>
+        <DialogControlsSectionHeader>{t('settings.libraryBadgeSection')}</DialogControlsSectionHeader>
+        <DropdownItem
+          label={t('settings.libraryBadgePosition')}
+          description={t('settings.libraryBadgePositionDesc')}
+          menuLabel={t('settings.libraryBadgePosition')}
+          rgOptions={libraryOptions}
+          selectedOption={settings.library_badge_position}
+          onChange={(option) => update({ library_badge_position: option.data }, BADGE_SETTINGS_UPDATED_EVENT)}
+        />
+      </DialogControlsSection>
 
-      <Field label={t('settings.badgePosition')} description={t('settings.badgePositionDesc')} bottomSeparator="none" />
-      <DropdownItem
-        label={t('settings.horizontal')}
-        menuLabel={t('settings.horizontal')}
-        rgOptions={hOptions}
-        selectedOption={settings.badge_position_h}
-        onChange={(option) => update({ badge_position_h: option.data }, BADGE_SETTINGS_UPDATED_EVENT)}
-      />
-      <DropdownItem
-        label={t('settings.vertical')}
-        menuLabel={t('settings.vertical')}
-        rgOptions={vOptions}
-        selectedOption={settings.badge_position_v}
-        onChange={(option) => update({ badge_position_v: option.data }, BADGE_SETTINGS_UPDATED_EVENT)}
-      />
-      <SliderField
-        label={t('settings.avoidOverlap')}
-        description={t('settings.avoidOverlapDesc')}
-        value={settings.badge_overlap_offset}
-        min={0}
-        max={100}
-        step={1}
-        editableValue
-        valueSuffix="px"
-        onChange={(value) => update({ badge_overlap_offset: value }, BADGE_SETTINGS_UPDATED_EVENT)}
-      />
+      <DialogControlsSection>
+        <DialogControlsSectionHeader>{t('settings.badgePosition')}</DialogControlsSectionHeader>
+        <DropdownItem
+          label={t('settings.horizontal')}
+          description={t('settings.badgePositionDesc')}
+          menuLabel={t('settings.horizontal')}
+          rgOptions={hOptions}
+          selectedOption={settings.badge_position_h}
+          onChange={(option) => update({ badge_position_h: option.data }, BADGE_SETTINGS_UPDATED_EVENT)}
+        />
+        <DropdownItem
+          label={t('settings.vertical')}
+          menuLabel={t('settings.vertical')}
+          rgOptions={vOptions}
+          selectedOption={settings.badge_position_v}
+          onChange={(option) => update({ badge_position_v: option.data }, BADGE_SETTINGS_UPDATED_EVENT)}
+        />
+        <SliderField
+          label={t('settings.avoidOverlap')}
+          description={t('settings.avoidOverlapDesc')}
+          value={settings.badge_overlap_offset}
+          min={0}
+          max={100}
+          step={1}
+          editableValue
+          valueSuffix="px"
+          onChange={(value) => update({ badge_overlap_offset: value }, BADGE_SETTINGS_UPDATED_EVENT)}
+        />
+      </DialogControlsSection>
     </>
   );
 };

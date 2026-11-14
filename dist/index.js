@@ -170,7 +170,7 @@ const en = {
     'settings.syncCompleteNewTags': ', {count} new tags',
     'settings.syncError': 'Sync error: {error}',
     // Settings - Badge Position
-    'settings.badgePosition': 'Badge Position',
+    'settings.badgePosition': 'Game page badge',
     'settings.horizontal': 'Horizontal',
     'settings.vertical': 'Vertical',
     'settings.left': 'Left',
@@ -277,7 +277,7 @@ const ptBR = {
     'settings.syncCompleteNewTags': ', {count} novas tags',
     'settings.syncError': 'Erro na sincronização: {error}',
     // Settings - Badge Position
-    'settings.badgePosition': 'Posição do Badge',
+    'settings.badgePosition': 'Badge da página do jogo',
     'settings.horizontal': 'Horizontal',
     'settings.vertical': 'Vertical',
     'settings.left': 'Esquerda',
@@ -299,15 +299,15 @@ const ptBR = {
     'settings.openSettings': 'Configurações',
     'settings.title': 'Deck Progress Tracker',
     'settings.pageGeneral': 'Geral',
-    'settings.pageBadges': 'Selos',
+    'settings.pageBadges': 'Badges',
     'settings.syncSection': 'Sincronização da biblioteca',
     'settings.syncDesc': 'Verifica novamente o tempo de jogo e as conquistas de todos os jogos e atualiza as tags.',
-    'settings.badgePositionDesc': 'Onde o selo da tag aparece no banner da página do jogo.',
+    'settings.badgePositionDesc': 'Onde o badge da tag aparece no banner da página do jogo.',
     'settings.customizeTagsDesc': 'Renomeie as tags e escolha suas cores. As cores são usadas nas listas, na página do jogo e nos blocos da biblioteca.',
     // Settings - Library tile badges
     'settings.libraryBadgeSection': 'Blocos da biblioteca',
-    'settings.libraryBadgePosition': 'Posição do selo na biblioteca',
-    'settings.libraryBadgePositionDesc': 'Pequeno ícone da tag em cada jogo da biblioteca, das coleções e da tela inicial. O ProtonDB Badges usa o canto inferior esquerdo por padrão; se ambos estiverem no mesmo canto, este selo se afasta.',
+    'settings.libraryBadgePosition': 'Posição do badge na biblioteca',
+    'settings.libraryBadgePositionDesc': 'Pequeno ícone da tag em cada jogo da biblioteca, das coleções e da tela inicial. O ProtonDB Badges usa o canto inferior esquerdo por padrão; se ambos estiverem no mesmo canto, este badge se afasta.',
     'settings.positionNone': 'Nenhuma (desligado)',
     'settings.positionTopLeft': 'Superior esquerdo',
     'settings.positionTopRight': 'Superior direito',
@@ -1384,11 +1384,13 @@ const GeneralPage = ({ settings, update }) => {
     const { t } = useTranslation();
     const { syncing, message, syncLibrary } = useLibrarySync();
     return (SP_REACT.createElement(SP_REACT.Fragment, null,
-        SP_REACT.createElement(DFL.Field, { label: t('settings.syncSection'), description: message || t('settings.syncDesc'), bottomSeparator: "none" }),
-        SP_REACT.createElement(DFL.ButtonItem, { layout: "below", onClick: syncLibrary, disabled: syncing }, syncing ? t('settings.syncing') : t('settings.syncLibrary')),
-        SP_REACT.createElement(DFL.Field, { label: t('settings.tagging'), bottomSeparator: "none" }),
-        SP_REACT.createElement(DFL.SliderField, { label: t('settings.inProgressThreshold'), value: settings.in_progress_threshold, min: 1, max: 120, step: 1, editableValue: true, valueSuffix: t('settings.minutesSuffix'), onChange: (value) => update({ in_progress_threshold: value }) }),
-        SP_REACT.createElement(DFL.SliderField, { label: t('settings.masteredThreshold'), description: t('settings.masteredThresholdDesc'), value: settings.mastered_threshold, min: 50, max: 100, step: 1, editableValue: true, valueSuffix: "%", onChange: (value) => update({ mastered_threshold: value }) })));
+        SP_REACT.createElement(DFL.DialogControlsSection, null,
+            SP_REACT.createElement(DFL.DialogControlsSectionHeader, null, t('settings.syncSection')),
+            SP_REACT.createElement(DFL.ButtonItem, { layout: "below", description: message || t('settings.syncDesc'), onClick: syncLibrary, disabled: syncing }, syncing ? t('settings.syncing') : t('settings.syncLibrary'))),
+        SP_REACT.createElement(DFL.DialogControlsSection, null,
+            SP_REACT.createElement(DFL.DialogControlsSectionHeader, null, t('settings.tagging')),
+            SP_REACT.createElement(DFL.SliderField, { label: t('settings.inProgressThreshold'), value: settings.in_progress_threshold, min: 1, max: 120, step: 1, editableValue: true, valueSuffix: t('settings.minutesSuffix'), onChange: (value) => update({ in_progress_threshold: value }) }),
+            SP_REACT.createElement(DFL.SliderField, { label: t('settings.masteredThreshold'), description: t('settings.masteredThresholdDesc'), value: settings.mastered_threshold, min: 50, max: 100, step: 1, editableValue: true, valueSuffix: "%", onChange: (value) => update({ mastered_threshold: value }) }))));
 };
 const BadgesPage = ({ settings, update }) => {
     const { t } = useTranslation();
@@ -1410,12 +1412,14 @@ const BadgesPage = ({ settings, update }) => {
         { data: 'bottom', label: t('settings.bottom') },
     ];
     return (SP_REACT.createElement(SP_REACT.Fragment, null,
-        SP_REACT.createElement(DFL.Field, { label: t('settings.libraryBadgeSection'), bottomSeparator: "none" }),
-        SP_REACT.createElement(DFL.DropdownItem, { label: t('settings.libraryBadgePosition'), description: t('settings.libraryBadgePositionDesc'), menuLabel: t('settings.libraryBadgePosition'), rgOptions: libraryOptions, selectedOption: settings.library_badge_position, onChange: (option) => update({ library_badge_position: option.data }, BADGE_SETTINGS_UPDATED_EVENT) }),
-        SP_REACT.createElement(DFL.Field, { label: t('settings.badgePosition'), description: t('settings.badgePositionDesc'), bottomSeparator: "none" }),
-        SP_REACT.createElement(DFL.DropdownItem, { label: t('settings.horizontal'), menuLabel: t('settings.horizontal'), rgOptions: hOptions, selectedOption: settings.badge_position_h, onChange: (option) => update({ badge_position_h: option.data }, BADGE_SETTINGS_UPDATED_EVENT) }),
-        SP_REACT.createElement(DFL.DropdownItem, { label: t('settings.vertical'), menuLabel: t('settings.vertical'), rgOptions: vOptions, selectedOption: settings.badge_position_v, onChange: (option) => update({ badge_position_v: option.data }, BADGE_SETTINGS_UPDATED_EVENT) }),
-        SP_REACT.createElement(DFL.SliderField, { label: t('settings.avoidOverlap'), description: t('settings.avoidOverlapDesc'), value: settings.badge_overlap_offset, min: 0, max: 100, step: 1, editableValue: true, valueSuffix: "px", onChange: (value) => update({ badge_overlap_offset: value }, BADGE_SETTINGS_UPDATED_EVENT) })));
+        SP_REACT.createElement(DFL.DialogControlsSection, null,
+            SP_REACT.createElement(DFL.DialogControlsSectionHeader, null, t('settings.libraryBadgeSection')),
+            SP_REACT.createElement(DFL.DropdownItem, { label: t('settings.libraryBadgePosition'), description: t('settings.libraryBadgePositionDesc'), menuLabel: t('settings.libraryBadgePosition'), rgOptions: libraryOptions, selectedOption: settings.library_badge_position, onChange: (option) => update({ library_badge_position: option.data }, BADGE_SETTINGS_UPDATED_EVENT) })),
+        SP_REACT.createElement(DFL.DialogControlsSection, null,
+            SP_REACT.createElement(DFL.DialogControlsSectionHeader, null, t('settings.badgePosition')),
+            SP_REACT.createElement(DFL.DropdownItem, { label: t('settings.horizontal'), description: t('settings.badgePositionDesc'), menuLabel: t('settings.horizontal'), rgOptions: hOptions, selectedOption: settings.badge_position_h, onChange: (option) => update({ badge_position_h: option.data }, BADGE_SETTINGS_UPDATED_EVENT) }),
+            SP_REACT.createElement(DFL.DropdownItem, { label: t('settings.vertical'), menuLabel: t('settings.vertical'), rgOptions: vOptions, selectedOption: settings.badge_position_v, onChange: (option) => update({ badge_position_v: option.data }, BADGE_SETTINGS_UPDATED_EVENT) }),
+            SP_REACT.createElement(DFL.SliderField, { label: t('settings.avoidOverlap'), description: t('settings.avoidOverlapDesc'), value: settings.badge_overlap_offset, min: 0, max: 100, step: 1, editableValue: true, valueSuffix: "px", onChange: (value) => update({ badge_overlap_offset: value }, BADGE_SETTINGS_UPDATED_EVENT) }))));
 };
 const CustomizeTagsPage = ({ settings, update }) => {
     const { t } = useTranslation();

@@ -18,7 +18,7 @@ export const en = {
   'settings.syncError': 'Sync error: {error}',
 
   // Settings - Badge Position
-  'settings.badgePosition': 'Badge Position',
+  'settings.badgePosition': 'Game page badge',
   'settings.horizontal': 'Horizontal',
   'settings.vertical': 'Vertical',
   'settings.left': 'Left',
