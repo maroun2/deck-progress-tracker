@@ -1337,7 +1337,7 @@ async function readMode() {
 }
 /** Shows `body` as a toast if the setting allows it. Returns whether it was shown. */
 async function notify(kind, body, duration = 5000) {
-    const mode = kind === 'manual' ? 'all' : await readMode();
+    const mode = await readMode();
     const gameRunning = isGameRunning();
     const show = shouldNotify(mode, kind, gameRunning);
     logFrontend('info', `[notify] kind=${kind} mode=${mode} gameRunning=${gameRunning} -> ${show ? 'shown' : 'suppressed'}: ${body}`);
