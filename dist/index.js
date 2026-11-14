@@ -2888,6 +2888,9 @@ async function waitUntilReady(capMs) {
     }
 }
 function startStartupSync(isDisposed) {
+    // Load the user's language preference now, so the toast text at the end
+    // isn't stuck on the system language when the panel was never opened.
+    const unsubscribeLanguage = subscribeToLanguage(() => { });
     return runStartupSync({
         waitUntilReady,
         sync: async (attempt) => {
@@ -2905,7 +2908,9 @@ function startStartupSync(isDisposed) {
             newTags: result.new_tags ? translate('settings.syncCompleteNewTags', { count: result.new_tags }) : '',
         }),
         failureMessage: (error) => translate('notify.startupSyncFailed', { error }),
-    }).catch((e) => logFrontend('error', `Startup sync crashed: ${e?.message || e}`));
+    })
+        .catch((e) => logFrontend('error', `Startup sync crashed: ${e?.message || e}`))
+        .finally(unsubscribeLanguage);
 }
 
 /**

@@ -7,7 +7,7 @@
  */
 
 import { call } from '@decky/api';
-import { translate } from '../i18n';
+import { subscribeToLanguage, translate } from '../i18n';
 import { syncLibraryProgressive, SyncResult } from './syncUtils';
 import { runStartupSync } from './syncPolicy';
 import { debugOverrides, logFrontend, notify } from './notifications';
@@ -61,6 +61,9 @@ export async function waitUntilReady(capMs: number): Promise<boolean> {
 }
 
 export function startStartupSync(isDisposed: () => boolean): Promise<unknown> {
+  // Load the user's language preference now, so the toast text at the end
+  // isn't stuck on the system language when the panel was never opened.
+  const unsubscribeLanguage = subscribeToLanguage(() => {});
   return runStartupSync({
     waitUntilReady,
     sync: async (attempt) => {
@@ -77,5 +80,7 @@ export function startStartupSync(isDisposed: () => boolean): Promise<unknown> {
       newTags: result.new_tags ? translate('settings.syncCompleteNewTags', { count: result.new_tags }) : '',
     }),
     failureMessage: (error) => translate('notify.startupSyncFailed', { error }),
-  }).catch((e) => logFrontend('error', `Startup sync crashed: ${e?.message || e}`));
+  })
+    .catch((e) => logFrontend('error', `Startup sync crashed: ${e?.message || e}`))
+    .finally(unsubscribeLanguage);
 }
