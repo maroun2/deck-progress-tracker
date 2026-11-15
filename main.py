@@ -19,26 +19,39 @@ PLUGIN_DIR = Path(decky.DECKY_PLUGIN_DIR)
 
 # Decky Loader does NOT install requirements.txt for plugins - it's each
 # plugin's own responsibility. Third-party deps (howlongtobeatpy, aiohttp,
-# etc.) are vendored directly in the zip under py_modules/vendor, built for
-# this specific Python version/platform (see release.sh / CI workflows).
-VENDOR_DIR = PLUGIN_DIR / "py_modules" / "vendor"
-if VENDOR_DIR.exists():
-    sys.path.insert(0, str(VENDOR_DIR))
+# etc.) are committed to the repo in py_modules/vendor (scripts/vendor-deps.sh)
+# as pure-Python wheels: no compiled code, so they work on every Python Decky
+# embeds (3.11 up to v3.2.x, 3.14 since v3.3.0). The Decky store build (decky
+# CLI) and our release zips both copy py_modules/ into the zip as-is.
+DEPENDENCY_DIRS = [
+    PLUGIN_DIR / "py_modules" / "vendor",
+]
+DEPENDENCY_DIR = next((d for d in DEPENDENCY_DIRS if d.is_dir()), None)
+if DEPENDENCY_DIR is not None:
+    sys.path.insert(0, str(DEPENDENCY_DIR))
 
-    # Decky Loader's own frozen Python 3.11 bootstrap already imports a
-    # pruned stdlib `html` package (only what Decky Loader itself needs,
-    # missing html.parser) before our code ever runs. That partial package
-    # is already cached in sys.modules, so sys.path alone can't fix
-    # submodule lookups for it - extend its __path__ directly so Python
-    # finds our bundled html/parser.py (see py_modules/stdlib_shims).
-    try:
-        import html as _html_pkg
-        vendor_html_dir = str(VENDOR_DIR / "html")
-        if vendor_html_dir not in _html_pkg.__path__:
-            _html_pkg.__path__.append(vendor_html_dir)
-    except Exception as _html_patch_error:
-        decky.logger.error(f"Failed to patch html package search path: {_html_patch_error}")
+# Decky Loader's frozen Python bootstrap already imports a pruned stdlib
+# `html` package (only what Decky Loader itself needs, missing html.parser,
+# which BeautifulSoup needs) before our code ever runs. That partial package
+# is already cached in sys.modules, so sys.path alone can't fix submodule
+# lookups for it - extend its __path__ directly so Python finds our bundled
+# html/parser.py (see py_modules/stdlib_shims). Appended last, so a real
+# stdlib html.parser always wins when present.
+try:
+    import html as _html_pkg
+    _html_shim_dir = PLUGIN_DIR / "py_modules" / "stdlib_shims" / "html"
+    if _html_shim_dir.is_dir() and str(_html_shim_dir) not in _html_pkg.__path__:
+        _html_pkg.__path__.append(str(_html_shim_dir))
+except Exception as _html_patch_error:
+    decky.logger.error(f"Failed to patch html package search path: {_html_patch_error}")
 
+if DEPENDENCY_DIR is None:
+    decky.logger.warning(
+        "Bundled Python dependencies not found (looked in "
+        + ", ".join(str(d) for d in DEPENDENCY_DIRS)
+        + "); HLTB lookups will be unavailable"
+    )
+else:
     # Decky Loader's frozen Python can't find a system CA bundle for SSL
     # verification (outbound HTTPS requests, e.g. to howlongtobeat.com, fail
     # with CERTIFICATE_VERIFY_FAILED). Neither SSL_CERT_FILE/DIR env vars nor
@@ -47,7 +60,7 @@ if VENDOR_DIR.exists():
     # in aiohttp.connector._SSL_CONTEXT_VERIFIED - any later patch of the
     # *function* that built it is irrelevant, since the cached *object* is
     # what every request actually reuses. Overwrite that cached object
-    # directly instead, with a context built from our vendored certifi
+    # directly instead, with a context built from our bundled certifi
     # bundle (confirmed as the maintainer-endorsed fix in aio-libs/aiohttp
     # issues #3180 and #7287 - env vars/monkeypatching the function are
     # explicitly called out there as unreliable for this exact reason).
@@ -136,19 +149,32 @@ except ImportError as e:
     class SteamDataService:
         def __init__(self): pass
 
-# HLTB has its own dependency (howlongtobeatpy), which may not be installed
-# yet if requirements.txt was only processed on a prior install (e.g. a dev
-# install done by copying files instead of using Decky's real installer).
+# HLTB needs the bundled third-party deps (howlongtobeatpy, aiohttp, ...).
 # Isolate its import so a missing/broken dependency only disables HLTB
 # lookups instead of taking down the whole plugin (tags, sync, playtime).
+# Catch any Exception, not just ImportError: a broken package can fail its
+# own module-level code with other errors.
 try:
     from hltb_service import HLTBService
-    logger.info("HLTB service imported successfully")
-except ImportError as e:
+    logger.info(f"HLTB service imported successfully (dependencies: {DEPENDENCY_DIR})")
+except Exception as e:
     logger.error(f"HLTB service unavailable (missing dependency?): {e}")
+    _HLTB_UNAVAILABLE_REASON = str(e)
+
     class HLTBService:
-        def __init__(self): pass
-        async def search_game(self, game_name):
+        """Stand-in with the same interface as hltb_service.HLTBService:
+        every lookup finds nothing, so tagging keeps working without HLTB."""
+
+        available = False
+        unavailable_reason = _HLTB_UNAVAILABLE_REASON
+
+        def __init__(self):
+            self.min_similarity = 0.7
+
+        async def search_candidates(self, query: str, limit: int = 8) -> List[Dict[str, Any]]:
+            return []
+
+        async def search_game(self, game_name: str) -> Optional[Dict[str, Any]]:
             return None
 
 
@@ -532,6 +558,10 @@ class Plugin:
 
         if not query:
             return {"success": False, "error": "Missing query parameter"}
+
+        if not getattr(self.hltb_service, "available", True):
+            reason = getattr(self.hltb_service, "unavailable_reason", "")
+            return {"success": False, "error": f"HLTB is unavailable: {reason}"}
 
         try:
             candidates = await self.hltb_service.search_candidates(query)

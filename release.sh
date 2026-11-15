@@ -157,42 +157,9 @@ if [ "$SKIP_BUILD" = false ] || [ "$ONLY_MODE" = "package" ]; then
     rm -rf plugin-build
     rm -f deck-progress-tracker-*.zip
 
-    mkdir -p plugin-build/deck-progress-tracker/py_modules
-
-    # Copy backend modules
-    cp py_modules/database.py plugin-build/deck-progress-tracker/py_modules/
-    cp py_modules/steam_data.py plugin-build/deck-progress-tracker/py_modules/
-    cp py_modules/hltb_service.py plugin-build/deck-progress-tracker/py_modules/
-
-    # Copy other files
-    cp -r dist plugin-build/deck-progress-tracker/
-    cp main.py plugin-build/deck-progress-tracker/
-    cp plugin.json plugin-build/deck-progress-tracker/
-    cp package.json plugin-build/deck-progress-tracker/
-    cp requirements.txt plugin-build/deck-progress-tracker/
-    cp LICENSE plugin-build/deck-progress-tracker/
-    cp README.md plugin-build/deck-progress-tracker/
-    echo "$VERSION" > plugin-build/deck-progress-tracker/VERSION
-
-    # Vendor Python dependencies into the zip itself, since Decky Loader
-    # does NOT install requirements.txt for plugins - it's on the plugin to
-    # bring its own. Decky Loader itself runs on a PyInstaller-frozen
-    # Python 3.11 (NOT the system's python3, which may be a newer version)
-    # with a pruned stdlib (only modules Decky Loader itself imports are
-    # bundled) - so target cp311 specifically, and also bundle the handful
-    # of stdlib modules known to be missing from that frozen environment.
-    echo "  Vendoring Python dependencies..."
-    python3 -m pip install \
-        --target plugin-build/deck-progress-tracker/py_modules/vendor \
-        --platform manylinux2014_x86_64 \
-        --implementation cp \
-        --python-version 3.11 \
-        --abi cp311 \
-        --only-binary=:all: \
-        --no-compile \
-        -r requirements.txt
-    rm -rf plugin-build/deck-progress-tracker/py_modules/vendor/bin
-    cp -r py_modules/stdlib_shims/html plugin-build/deck-progress-tracker/py_modules/vendor/
+    # Same layout as the Decky store build (decky CLI): py_modules/ as-is,
+    # including the committed third-party deps in py_modules/vendor.
+    scripts/package-plugin.sh plugin-build/deck-progress-tracker "$VERSION"
 
     # Create zip
     ZIP_NAME="deck-progress-tracker-${VERSION}.zip"
@@ -264,5 +231,7 @@ echo "======================================"
 echo "Complete!"
 echo "======================================"
 echo "Version: $VERSION"
-[ "$SKIP_RELEASE" = false ] && echo "URL: https://github.com/maroun2/deck-progress-tracker/releases/tag/$VERSION"
-[ "$SKIP_RELEASE" = false ] && echo "Install URL: https://github.com/maroun2/deck-progress-tracker/releases/download/${VERSION}/deck-progress-tracker-${VERSION}.zip"
+if [ "$SKIP_RELEASE" = false ]; then
+    echo "URL: https://github.com/maroun2/deck-progress-tracker/releases/tag/$VERSION"
+    echo "Install URL: https://github.com/maroun2/deck-progress-tracker/releases/download/${VERSION}/deck-progress-tracker-${VERSION}.zip"
+fi

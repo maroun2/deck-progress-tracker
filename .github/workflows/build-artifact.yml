@@ -64,49 +64,20 @@ jobs:
       - name: Build frontend
         run: npm run build
 
-      - name: Create plugin directory structure
+      - name: Check py_modules/vendor matches requirements.txt
         run: |
-          mkdir -p plugin-build/deck-progress-tracker/py_modules
+          # The vendored packages are committed (the Decky store build only
+          # copies py_modules/). Reinstall them from requirements.txt and
+          # fail if the committed copy differs.
+          scripts/vendor-deps.sh "$RUNNER_TEMP/vendor-check"
+          diff -r py_modules/vendor "$RUNNER_TEMP/vendor-check" \
+            || { echo "::error::py_modules/vendor is out of date - run scripts/vendor-deps.sh and commit"; exit 1; }
 
-          # Copy backend modules
-          cp py_modules/database.py plugin-build/deck-progress-tracker/py_modules/
-          cp py_modules/steam_data.py plugin-build/deck-progress-tracker/py_modules/
-          cp py_modules/hltb_service.py plugin-build/deck-progress-tracker/py_modules/
-
-          # Copy other files (with updated versions)
-          cp -r dist plugin-build/deck-progress-tracker/
-          cp main.py plugin-build/deck-progress-tracker/
-          cp plugin.json plugin-build/deck-progress-tracker/
-          cp package.json plugin-build/deck-progress-tracker/
-          cp requirements.txt plugin-build/deck-progress-tracker/
-          cp LICENSE plugin-build/deck-progress-tracker/
-          cp README.md plugin-build/deck-progress-tracker/
-
-      - name: Create VERSION file
+      - name: Package plugin (same layout as the Decky store build)
         run: |
-          VERSION="${{ steps.version.outputs.version }}"
-          echo "$VERSION" > plugin-build/deck-progress-tracker/VERSION
-          echo "VERSION file created with: $VERSION"
-
-      - name: Vendor Python dependencies
-        run: |
-          # Decky Loader does NOT install requirements.txt for plugins, so
-          # bundle backend deps (howlongtobeatpy, aiohttp, etc.) directly in
-          # the zip. Decky Loader itself runs on a PyInstaller-frozen
-          # Python 3.11 (not the system's python3) with a pruned stdlib -
-          # target cp311, and also bundle the stdlib modules known missing
-          # from that frozen environment (see py_modules/stdlib_shims).
-          python3 -m pip install \
-            --target plugin-build/deck-progress-tracker/py_modules/vendor \
-            --platform manylinux2014_x86_64 \
-            --implementation cp \
-            --python-version 3.11 \
-            --abi cp311 \
-            --only-binary=:all: \
-            --no-compile \
-            -r requirements.txt
-          rm -rf plugin-build/deck-progress-tracker/py_modules/vendor/bin
-          cp -r py_modules/stdlib_shims/html plugin-build/deck-progress-tracker/py_modules/vendor/
+          # py_modules/ as-is, including the committed third-party deps in
+          # py_modules/vendor (pure-Python wheels, see scripts/vendor-deps.sh)
+          scripts/package-plugin.sh plugin-build/deck-progress-tracker "${{ steps.version.outputs.version }}"
 
       - name: Verify directory contents
         run: |

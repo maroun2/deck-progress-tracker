@@ -27,43 +27,11 @@ jobs:
       - name: Build frontend
         run: npm run build
 
-      - name: Create plugin directory structure
+      - name: Package plugin (same layout as the Decky store build)
         run: |
-          mkdir -p plugin-build/deck-progress-tracker/py_modules
-          cp -r dist plugin-build/deck-progress-tracker/
-          cp py_modules/database.py plugin-build/deck-progress-tracker/py_modules/
-          cp py_modules/steam_data.py plugin-build/deck-progress-tracker/py_modules/
-          cp py_modules/hltb_service.py plugin-build/deck-progress-tracker/py_modules/
-          cp main.py plugin-build/deck-progress-tracker/
-          cp plugin.json plugin-build/deck-progress-tracker/
-          cp package.json plugin-build/deck-progress-tracker/
-          cp requirements.txt plugin-build/deck-progress-tracker/
-          cp LICENSE plugin-build/deck-progress-tracker/
-          cp README.md plugin-build/deck-progress-tracker/
-
-      - name: Create version file
-        run: |
-          echo "${{ github.ref_name }}" > plugin-build/deck-progress-tracker/VERSION
-
-      - name: Vendor Python dependencies
-        run: |
-          # Decky Loader does NOT install requirements.txt for plugins, so
-          # bundle backend deps (howlongtobeatpy, aiohttp, etc.) directly in
-          # the zip. Decky Loader itself runs on a PyInstaller-frozen
-          # Python 3.11 (not the system's python3) with a pruned stdlib -
-          # target cp311, and also bundle the stdlib modules known missing
-          # from that frozen environment (see py_modules/stdlib_shims).
-          python3 -m pip install \
-            --target plugin-build/deck-progress-tracker/py_modules/vendor \
-            --platform manylinux2014_x86_64 \
-            --implementation cp \
-            --python-version 3.11 \
-            --abi cp311 \
-            --only-binary=:all: \
-            --no-compile \
-            -r requirements.txt
-          rm -rf plugin-build/deck-progress-tracker/py_modules/vendor/bin
-          cp -r py_modules/stdlib_shims/html plugin-build/deck-progress-tracker/py_modules/vendor/
+          # py_modules/ as-is, including the committed third-party deps in
+          # py_modules/vendor (pure-Python wheels, see scripts/vendor-deps.sh)
+          scripts/package-plugin.sh plugin-build/deck-progress-tracker "${{ github.ref_name }}"
 
       - name: Create release zip
         run: |
@@ -100,8 +68,8 @@ jobs:
           **Option 2: Download and Install Manually**
           1. Download `deck-progress-tracker-${{ github.ref_name }}.zip` below
           2. Extract to `~/homebrew/plugins/` on your Steam Deck
-          3. Install Python dependencies: `pip install --user -r requirements.txt`
-          4. Restart Decky Loader
+             (Python dependencies are already bundled in `py_modules/vendor`)
+          3. Restart Decky Loader
 
           ### Features
           - 🎮 Automatic game tagging (Completed, In Progress, Mastered)

@@ -1,0 +1,12 @@
+aiounittest-1.5.0.dist-info/INSTALLER,sha256=zuuue4knoyJ-UwPPXg8fezS7VCrXJQrAP7zeNuwvFQg,4
+aiounittest-1.5.0.dist-info/LICENSE,sha256=wlK9k8_Fjxlk2UWsZn4d0ZSwpWg-BVKCQPt8gvVq8vU,1079
+aiounittest-1.5.0.dist-info/METADATA,sha256=Ld0b8B4FDy5dUMUaQTvAyaGRbInKTfHFw_GlxAzaAPs,3010
+aiounittest-1.5.0.dist-info/RECORD,,
+aiounittest-1.5.0.dist-info/REQUESTED,sha256=47DEQpj8HBSa-_TImW-5JCeuQeRkm5NMpJWZG3hSuFU,0
+aiounittest-1.5.0.dist-info/WHEEL,sha256=jB7zZ3N9hIM9adW7qlTAyycLYW9npaWKLRzaoVcLKcM,91
+aiounittest-1.5.0.dist-info/top_level.txt,sha256=b6V1TPxfPMVNdAPro5zmSwwB2IiTeq7HYPfGP8fgFeM,12
+aiounittest/__init__.py,sha256=tUp981fB_UIhhUCFqwC8qR_vkD96FpeiwLZF5_1S0g4,171
+aiounittest/case.py,sha256=HdOCaVwauXoTMB1ZZ4Js9cWecVHvQNU3Yhp5pvGilMA,2578
+aiounittest/helpers.py,sha256=3IRLYSg4UnM6qrNQGLEENcu__DIpirhWJrTxuG8pHm8,4741
+aiounittest/mock.py,sha256=92eU5xHNvYuZbnHMeQ-S6HQmPQTXOgZ19L2vZeWp-cI,1998
+aiounittest/py.typed,sha256=47DEQpj8HBSa-_TImW-5JCeuQeRkm5NMpJWZG3hSuFU,0

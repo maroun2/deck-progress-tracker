@@ -58,6 +58,11 @@ def _entry_to_dict(entry, game_name: str) -> Dict[str, Any]:
 
 
 class HLTBService:
+    # main.py swaps in a stand-in with available = False when this module
+    # can't be imported (missing bundled dependencies).
+    available = True
+    unavailable_reason = ""
+
     def __init__(self):
         self.min_similarity = 0.7  # Minimum similarity threshold
         self._hltb = HowLongToBeat(self.min_similarity)
