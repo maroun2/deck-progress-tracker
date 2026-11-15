@@ -50,6 +50,3 @@ temp/
 dev-console-scripts/
 CLAUDE.md
 CLAUDE.local.md
-
-# Decky CLI backend build output
-backend/out/

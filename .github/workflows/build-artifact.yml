@@ -64,10 +64,19 @@ jobs:
       - name: Build frontend
         run: npm run build
 
+      - name: Check py_modules/vendor matches requirements.txt
+        run: |
+          # The vendored packages are committed (the Decky store build only
+          # copies py_modules/). Reinstall them from requirements.txt and
+          # fail if the committed copy differs.
+          scripts/vendor-deps.sh "$RUNNER_TEMP/vendor-check"
+          diff -r py_modules/vendor "$RUNNER_TEMP/vendor-check" \
+            || { echo "::error::py_modules/vendor is out of date - run scripts/vendor-deps.sh and commit"; exit 1; }
+
       - name: Package plugin (same layout as the Decky store build)
         run: |
-          # py_modules/ as-is, third-party deps from requirements.txt in
-          # bin/py_modules (pure-Python wheels, see backend/install-py-deps.sh)
+          # py_modules/ as-is, including the committed third-party deps in
+          # py_modules/vendor (pure-Python wheels, see scripts/vendor-deps.sh)
           scripts/package-plugin.sh plugin-build/deck-progress-tracker "${{ steps.version.outputs.version }}"
 
       - name: Verify directory contents

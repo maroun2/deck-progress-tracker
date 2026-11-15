@@ -4,8 +4,8 @@
 # match:
 #   LICENSE main.py package.json plugin.json README.md
 #   dist/              frontend build (run `npm run build` first)
-#   py_modules/        our backend modules + stdlib shims (copied as-is)
-#   bin/py_modules/    third-party Python deps (backend/install-py-deps.sh)
+#   py_modules/        our backend modules, stdlib shims and the committed
+#                      third-party deps in py_modules/vendor (copied as-is)
 #
 # Usage: scripts/package-plugin.sh <output-dir> [version]
 #   [version] is written to <output-dir>/VERSION (release zips only).
@@ -20,8 +20,13 @@ if [ ! -f "$ROOT/dist/index.js" ]; then
     exit 1
 fi
 
+if [ ! -d "$ROOT/py_modules/vendor/howlongtobeatpy" ]; then
+    echo "ERROR: py_modules/vendor is missing - run scripts/vendor-deps.sh" >&2
+    exit 1
+fi
+
 rm -rf "$OUT"
-mkdir -p "$OUT/bin"
+mkdir -p "$OUT"
 
 for f in LICENSE main.py package.json plugin.json README.md; do
     cp "$ROOT/$f" "$OUT/"
@@ -29,8 +34,6 @@ done
 cp -r "$ROOT/dist" "$OUT/"
 cp -r "$ROOT/py_modules" "$OUT/"
 find "$OUT/py_modules" -name __pycache__ -type d -prune -exec rm -rf {} +
-
-"$ROOT/backend/install-py-deps.sh" "$ROOT/requirements.txt" "$OUT/bin/py_modules"
 
 if [ -n "$VERSION" ]; then
     echo "$VERSION" > "$OUT/VERSION"

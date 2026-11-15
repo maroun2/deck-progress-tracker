@@ -158,7 +158,7 @@ if [ "$SKIP_BUILD" = false ] || [ "$ONLY_MODE" = "package" ]; then
     rm -f deck-progress-tracker-*.zip
 
     # Same layout as the Decky store build (decky CLI): py_modules/ as-is,
-    # third-party deps (requirements.txt) in bin/py_modules.
+    # including the committed third-party deps in py_modules/vendor.
     scripts/package-plugin.sh plugin-build/deck-progress-tracker "$VERSION"
 
     # Create zip

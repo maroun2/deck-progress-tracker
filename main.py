@@ -19,15 +19,11 @@ PLUGIN_DIR = Path(decky.DECKY_PLUGIN_DIR)
 
 # Decky Loader does NOT install requirements.txt for plugins - it's each
 # plugin's own responsibility. Third-party deps (howlongtobeatpy, aiohttp,
-# etc.) are bundled in the zip as pure-Python wheels (no compiled code, so
-# they work on every Python Decky embeds: 3.11 up to v3.2.x, 3.14 since
-# v3.3.0), installed by backend/install-py-deps.sh into:
-#   - bin/py_modules: the Decky store build (decky CLI runs
-#     backend/Dockerfile, whose output becomes the zip's bin/) and our own
-#     release zips (release.sh / CI, same layout)
-#   - py_modules/vendor: zips built before 1.5.1 (fallback only)
+# etc.) are committed to the repo in py_modules/vendor (scripts/vendor-deps.sh)
+# as pure-Python wheels: no compiled code, so they work on every Python Decky
+# embeds (3.11 up to v3.2.x, 3.14 since v3.3.0). The Decky store build (decky
+# CLI) and our release zips both copy py_modules/ into the zip as-is.
 DEPENDENCY_DIRS = [
-    PLUGIN_DIR / "bin" / "py_modules",
     PLUGIN_DIR / "py_modules" / "vendor",
 ]
 DEPENDENCY_DIR = next((d for d in DEPENDENCY_DIRS if d.is_dir()), None)
@@ -43,12 +39,9 @@ if DEPENDENCY_DIR is not None:
 # stdlib html.parser always wins when present.
 try:
     import html as _html_pkg
-    for _html_shim_dir in (
-        PLUGIN_DIR / "py_modules" / "stdlib_shims" / "html",
-        PLUGIN_DIR / "py_modules" / "vendor" / "html",  # zips before 1.5.1
-    ):
-        if _html_shim_dir.is_dir() and str(_html_shim_dir) not in _html_pkg.__path__:
-            _html_pkg.__path__.append(str(_html_shim_dir))
+    _html_shim_dir = PLUGIN_DIR / "py_modules" / "stdlib_shims" / "html"
+    if _html_shim_dir.is_dir() and str(_html_shim_dir) not in _html_pkg.__path__:
+        _html_pkg.__path__.append(str(_html_shim_dir))
 except Exception as _html_patch_error:
     decky.logger.error(f"Failed to patch html package search path: {_html_patch_error}")
 

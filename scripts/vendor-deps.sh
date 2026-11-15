@@ -1,16 +1,18 @@
 #!/bin/sh
-# Install the plugin's Python dependencies (requirements.txt) into a
-# directory that main.py adds to sys.path (bin/py_modules in the plugin zip).
+# (Re)create py_modules/vendor from requirements.txt.
 #
-# This is the one place dependencies get installed. It is used by:
-#   - the Decky store build: decky CLI -> backend/Dockerfile -> entrypoint.sh
-#   - release.sh and the GitHub workflows (via scripts/package-plugin.sh)
+# The vendored packages are committed to the repo: Decky Loader doesn't
+# install requirements.txt, and the Decky store build (decky CLI) copies
+# py_modules/ into the zip as-is without running any install step. Run this
+# after changing requirements.txt and commit the result; CI
+# (build-artifact.yml) fails if py_modules/vendor doesn't match.
 #
-# Usage: install-py-deps.sh <requirements.txt> <target-dir>
+# Usage: scripts/vendor-deps.sh [target-dir]   (default: py_modules/vendor)
 set -eu
 
-REQUIREMENTS="$1"
-TARGET="$2"
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+REQUIREMENTS="$ROOT/requirements.txt"
+TARGET="${1:-$ROOT/py_modules/vendor}"
 PYTHON="${PYTHON:-python3}"
 
 rm -rf "$TARGET"
@@ -35,8 +37,13 @@ mkdir -p "$TARGET"
     --target "$TARGET" \
     -r "$REQUIREMENTS"
 
-# Console scripts aren't used, and they hard-code the build interpreter path.
+# Console scripts aren't used, and they hard-code the build interpreter's
+# path. Drop them and their RECORD lines, so the result is the same on every
+# machine (CI compares it with the committed copy).
 rm -rf "$TARGET/bin"
+for record in "$TARGET"/*.dist-info/RECORD; do
+    sed -i '\#^\.\./\.\./bin/#d' "$record"
+done
 
 # Guard: no compiled code may end up in the bundle.
 COMPILED=$(find "$TARGET" -type f \( -name '*.so' -o -name '*.so.*' -o -name '*.pyd' \) | head -n 5)

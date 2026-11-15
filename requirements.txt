@@ -1,8 +1,8 @@
 # Python dependencies of the plugin backend (HowLongToBeat lookups).
 #
-# Decky Loader does not install this file. backend/install-py-deps.sh
-# installs it into bin/py_modules for every build: the Decky store build
-# (decky CLI -> backend/Dockerfile), release.sh and the GitHub workflows.
+# Decky Loader does not install this file. scripts/vendor-deps.sh installs
+# it into py_modules/vendor, which is committed to the repo; the Decky store
+# build (decky CLI) and release.sh copy py_modules/ into the zip as-is.
 #
 # This is the complete, pinned dependency closure (installed with
 # --no-deps --require-hashes), and every hash is the pure-Python
@@ -16,6 +16,7 @@
 #   pip download --no-deps --only-binary=:all: --platform any \
 #     --implementation py --abi none --python-version 3.11 -d wheels <pkg>==<ver>
 #   pip hash wheels/*.whl
+# then run scripts/vendor-deps.sh and commit py_modules/vendor.
 
 aiohappyeyeballs==2.7.1 \
     --hash=sha256:9243213661e29250eb41368e5daa826fc017156c3b8a11440826b2e3ed376472
