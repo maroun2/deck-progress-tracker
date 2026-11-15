@@ -7,7 +7,7 @@
  */
 
 import React, { FC, useEffect, useRef } from 'react';
-import { ButtonItem, Dropdown, PanelSection, PanelSectionRow, SliderField, TextField } from '@decky/ui';
+import { ButtonItem, Dropdown, PanelSection, PanelSectionRow, SliderField, TextField, ToggleField } from '@decky/ui';
 import { FaArrowLeft } from 'react-icons/fa';
 import { BADGE_SETTINGS_UPDATED_EVENT, LibraryBadgePosition, PluginSettings } from '../types';
 import { useTranslation, LANGUAGE_UPDATED_EVENT, TranslationKey } from '../i18n';
@@ -159,6 +159,15 @@ export const SettingsPanel: FC<{ onBack: () => void; focusBack: boolean }> = ({ 
               onChange={(option) => update({ library_badge_position: option.data }, BADGE_SETTINGS_UPDATED_EVENT)}
             />
           </div>
+        </PanelSectionRow>
+        <PanelSectionRow>
+          <ToggleField
+            label={t('settings.libraryShowBacklog')}
+            description={t('settings.libraryShowBacklogDesc')}
+            checked={settings.library_badge_show_backlog !== false}
+            disabled={settings.library_badge_position === 'none'}
+            onChange={(checked: boolean) => update({ library_badge_show_backlog: checked }, BADGE_SETTINGS_UPDATED_EVENT)}
+          />
         </PanelSectionRow>
       </PanelSection>
 

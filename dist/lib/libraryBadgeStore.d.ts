@@ -14,6 +14,8 @@ type TagColorSettings = Partial<Pick<PluginSettings, 'tag_color_mastered' | 'tag
 export type LibraryBadgeTag = CustomizableTagType | 'backlog';
 interface LibraryBadgeState {
     position: LibraryBadgePosition;
+    /** Badge untagged games as Backlog (setting library_badge_show_backlog) */
+    showBacklog: boolean;
     tags: Record<string, LibraryBadgeTag>;
     /** Apps the plugin hides (Steam tools, demos, non-Steam apps): no badge at all */
     hidden: Record<string, true>;

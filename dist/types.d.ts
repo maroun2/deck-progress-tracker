@@ -48,6 +48,7 @@ export interface PluginSettings {
     badge_position_v: 'top' | 'center' | 'bottom';
     badge_overlap_offset: number;
     library_badge_position: LibraryBadgePosition;
+    library_badge_show_backlog: boolean;
     language: 'auto' | 'en' | 'pt-BR';
     tag_label_mastered: string;
     tag_label_completed: string;

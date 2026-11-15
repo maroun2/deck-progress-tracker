@@ -28,6 +28,8 @@ export type LibraryBadgeTag = CustomizableTagType | 'backlog';
 
 interface LibraryBadgeState {
   position: LibraryBadgePosition;
+  /** Badge untagged games as Backlog (setting library_badge_show_backlog) */
+  showBacklog: boolean;
   tags: Record<string, LibraryBadgeTag>;
   /** Apps the plugin hides (Steam tools, demos, non-Steam apps): no badge at all */
   hidden: Record<string, true>;
@@ -46,6 +48,7 @@ const TAG_REFRESH_DEBOUNCE_MS = 1_500;
 
 let state: LibraryBadgeState = {
   position: DEFAULT_LIBRARY_BADGE_POSITION,
+  showBacklog: true,
   tags: {},
   hidden: {},
   tagsLoaded: false,
@@ -88,13 +91,14 @@ async function loadSettings() {
     const position = VALID_POSITIONS.includes(s.library_badge_position)
       ? s.library_badge_position
       : DEFAULT_LIBRARY_BADGE_POSITION;
+    const showBacklog = s.library_badge_show_backlog !== false;
     const colors: TagColorSettings = {};
     (Object.keys(TAG_COLOR_SETTING_KEY) as CustomizableTagType[]).forEach((type) => {
       const key = TAG_COLOR_SETTING_KEY[type];
       colors[key] = (s[key] as string) || '';
     });
-    if (position !== state.position || JSON.stringify(colors) !== JSON.stringify(state.colors)) {
-      emit({ ...state, position, colors });
+    if (position !== state.position || showBacklog !== state.showBacklog || JSON.stringify(colors) !== JSON.stringify(state.colors)) {
+      emit({ ...state, position, showBacklog, colors });
     }
   } catch (e) {
     // Keep previous settings on failure

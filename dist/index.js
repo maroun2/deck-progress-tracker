@@ -192,6 +192,8 @@ const en = {
     // Settings - Library tile badges
     'settings.libraryBadgePosition': 'Library badge position',
     'settings.libraryBadgePositionDesc': 'Small tag icon on every game tile in the library, collections and Home. ProtonDB Badges uses the bottom left by default; if both are in the same corner, this badge steps aside.',
+    'settings.libraryShowBacklog': 'Show Backlog badges',
+    'settings.libraryShowBacklogDesc': 'Turn off to badge only tagged games (In Progress, Completed, Mastered, Dropped). Untagged games then have no badge.',
     'settings.positionNone': 'None (off)',
     'settings.positionTopLeft': 'Top left',
     'settings.positionTopRight': 'Top right',
@@ -296,6 +298,8 @@ const ptBR = {
     // Settings - Library tile badges
     'settings.libraryBadgePosition': 'Posição do badge na biblioteca',
     'settings.libraryBadgePositionDesc': 'Pequeno ícone da tag em cada jogo da biblioteca, das coleções e da tela inicial. O ProtonDB Badges usa o canto inferior esquerdo por padrão; se ambos estiverem no mesmo canto, este badge se afasta.',
+    'settings.libraryShowBacklog': 'Mostrar badges de Backlog',
+    'settings.libraryShowBacklogDesc': 'Desative para mostrar badges só nos jogos com tag (Em Progresso, Completo, Dominado, Abandonado). Jogos sem tag ficam sem badge.',
     'settings.positionNone': 'Nenhuma (desligado)',
     'settings.positionTopLeft': 'Superior esquerdo',
     'settings.positionTopRight': 'Superior direito',
@@ -493,6 +497,7 @@ const DEFAULT_SETTINGS = {
     badge_position_v: 'top',
     badge_overlap_offset: 0,
     library_badge_position: DEFAULT_LIBRARY_BADGE_POSITION,
+    library_badge_show_backlog: true,
     language: 'auto',
     tag_label_mastered: '',
     tag_label_completed: '',
@@ -571,6 +576,7 @@ const TAG_MAP_STALE_MS = 60000;
 const TAG_REFRESH_DEBOUNCE_MS = 1500;
 let state = {
     position: DEFAULT_LIBRARY_BADGE_POSITION,
+    showBacklog: true,
     tags: {},
     hidden: {},
     tagsLoaded: false,
@@ -610,13 +616,14 @@ async function loadSettings() {
         const position = VALID_POSITIONS.includes(s.library_badge_position)
             ? s.library_badge_position
             : DEFAULT_LIBRARY_BADGE_POSITION;
+        const showBacklog = s.library_badge_show_backlog !== false;
         const colors = {};
         Object.keys(TAG_COLOR_SETTING_KEY).forEach((type) => {
             const key = TAG_COLOR_SETTING_KEY[type];
             colors[key] = s[key] || '';
         });
-        if (position !== state.position || JSON.stringify(colors) !== JSON.stringify(state.colors)) {
-            emit({ ...state, position, colors });
+        if (position !== state.position || showBacklog !== state.showBacklog || JSON.stringify(colors) !== JSON.stringify(state.colors)) {
+            emit({ ...state, position, showBacklog, colors });
         }
     }
     catch (e) {
@@ -1307,7 +1314,9 @@ const SettingsPanel = ({ onBack, focusBack }) => {
             SP_REACT.createElement("div", { style: styles$2.description }, t('settings.libraryBadgePositionDesc')),
             SP_REACT.createElement(DFL.PanelSectionRow, null,
                 SP_REACT.createElement("div", { style: styles$2.fullWidth },
-                    SP_REACT.createElement(DFL.Dropdown, { menuLabel: t('settings.libraryBadgePosition'), rgOptions: libraryOptions, selectedOption: settings.library_badge_position, onChange: (option) => update({ library_badge_position: option.data }, BADGE_SETTINGS_UPDATED_EVENT) })))),
+                    SP_REACT.createElement(DFL.Dropdown, { menuLabel: t('settings.libraryBadgePosition'), rgOptions: libraryOptions, selectedOption: settings.library_badge_position, onChange: (option) => update({ library_badge_position: option.data }, BADGE_SETTINGS_UPDATED_EVENT) }))),
+            SP_REACT.createElement(DFL.PanelSectionRow, null,
+                SP_REACT.createElement(DFL.ToggleField, { label: t('settings.libraryShowBacklog'), description: t('settings.libraryShowBacklogDesc'), checked: settings.library_badge_show_backlog !== false, disabled: settings.library_badge_position === 'none', onChange: (checked) => update({ library_badge_show_backlog: checked }, BADGE_SETTINGS_UPDATED_EVENT) }))),
         SP_REACT.createElement(DFL.PanelSection, { title: t('settings.badgePosition') },
             SP_REACT.createElement("div", { style: styles$2.description }, t('settings.badgePositionDesc')),
             SP_REACT.createElement(DFL.PanelSectionRow, null,
@@ -2468,11 +2477,12 @@ function removeLibraryBadgeStylesheets() {
     styledDocuments.clear();
 }
 function derive(appid) {
-    const { position, tags, hidden, tagsLoaded, colors } = getLibraryBadgeState();
+    const { position, showBacklog, tags, hidden, tagsLoaded, colors } = getLibraryBadgeState();
     // No tag = Backlog, for Steam games, non-Steam games and games not synced
     // yet. Apps the plugin hides (Steam tools, demos, Discord, browsers, ...)
     // get no badge at all.
-    const tag = !tagsLoaded || hidden[appid] ? null : tags[appid] || 'backlog';
+    // The Backlog badge can be turned off in the settings.
+    const tag = !tagsLoaded || hidden[appid] ? null : tags[appid] || (showBacklog ? 'backlog' : null);
     let background = '';
     if (tag === 'backlog') {
         background = BACKLOG_BACKGROUND;

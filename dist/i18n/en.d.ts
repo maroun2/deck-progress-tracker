@@ -38,6 +38,8 @@ export declare const en: {
     'settings.customizeTagsDesc': string;
     'settings.libraryBadgePosition': string;
     'settings.libraryBadgePositionDesc': string;
+    'settings.libraryShowBacklog': string;
+    'settings.libraryShowBacklogDesc': string;
     'settings.positionNone': string;
     'settings.positionTopLeft': string;
     'settings.positionTopRight': string;

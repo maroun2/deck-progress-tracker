@@ -66,6 +66,8 @@ export interface PluginSettings {
   // Small icon-only badge on every game capsule in the library/Home/
   // collections. 'none' turns the feature off entirely.
   library_badge_position: LibraryBadgePosition;
+  // false = untagged (Backlog) games get no library badge, only tagged ones do
+  library_badge_show_backlog: boolean;
   // UI language: 'auto' follows the system/browser locale
   language: 'auto' | 'en' | 'pt-BR';
   // Custom tag labels/colors - empty string means "use the built-in default"

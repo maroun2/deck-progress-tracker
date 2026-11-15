@@ -51,6 +51,8 @@ export const ptBR: Record<TranslationKey, string> = {
   // Settings - Library tile badges
   'settings.libraryBadgePosition': 'Posição do badge na biblioteca',
   'settings.libraryBadgePositionDesc': 'Pequeno ícone da tag em cada jogo da biblioteca, das coleções e da tela inicial. O ProtonDB Badges usa o canto inferior esquerdo por padrão; se ambos estiverem no mesmo canto, este badge se afasta.',
+  'settings.libraryShowBacklog': 'Mostrar badges de Backlog',
+  'settings.libraryShowBacklogDesc': 'Desative para mostrar badges só nos jogos com tag (Em Progresso, Completo, Dominado, Abandonado). Jogos sem tag ficam sem badge.',
   'settings.positionNone': 'Nenhuma (desligado)',
   'settings.positionTopLeft': 'Superior esquerdo',
   'settings.positionTopRight': 'Superior direito',

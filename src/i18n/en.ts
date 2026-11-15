@@ -49,6 +49,8 @@ export const en = {
   // Settings - Library tile badges
   'settings.libraryBadgePosition': 'Library badge position',
   'settings.libraryBadgePositionDesc': 'Small tag icon on every game tile in the library, collections and Home. ProtonDB Badges uses the bottom left by default; if both are in the same corner, this badge steps aside.',
+  'settings.libraryShowBacklog': 'Show Backlog badges',
+  'settings.libraryShowBacklogDesc': 'Turn off to badge only tagged games (In Progress, Completed, Mastered, Dropped). Untagged games then have no badge.',
   'settings.positionNone': 'None (off)',
   'settings.positionTopLeft': 'Top left',
   'settings.positionTopRight': 'Top right',

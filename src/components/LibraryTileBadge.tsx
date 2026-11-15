@@ -94,11 +94,13 @@ interface Derived {
 }
 
 function derive(appid: string): Derived {
-  const { position, tags, hidden, tagsLoaded, colors } = getLibraryBadgeState();
+  const { position, showBacklog, tags, hidden, tagsLoaded, colors } = getLibraryBadgeState();
   // No tag = Backlog, for Steam games, non-Steam games and games not synced
   // yet. Apps the plugin hides (Steam tools, demos, Discord, browsers, ...)
   // get no badge at all.
-  const tag: LibraryBadgeTag | null = !tagsLoaded || hidden[appid] ? null : tags[appid] || 'backlog';
+  // The Backlog badge can be turned off in the settings.
+  const tag: LibraryBadgeTag | null =
+    !tagsLoaded || hidden[appid] ? null : tags[appid] || (showBacklog ? 'backlog' : null);
   let background = '';
   if (tag === 'backlog') {
     background = BACKLOG_BACKGROUND;
