@@ -9,7 +9,7 @@
 import React, { FC, useEffect, useRef } from 'react';
 import { ButtonItem, Dropdown, PanelSection, PanelSectionRow, SliderField, TextField, ToggleField } from '@decky/ui';
 import { FaArrowLeft } from 'react-icons/fa';
-import { BADGE_SETTINGS_UPDATED_EVENT, LibraryBadgePosition, PluginSettings } from '../types';
+import { BADGE_SETTINGS_UPDATED_EVENT, LibraryBadgePosition, PluginSettings, SyncNotificationMode } from '../types';
 import { useTranslation, LANGUAGE_UPDATED_EVENT, TranslationKey } from '../i18n';
 import { usePluginSettings } from '../hooks/usePluginSettings';
 import { useLibrarySync } from '../hooks/useLibrarySync';
@@ -68,6 +68,11 @@ export const SettingsPanel: FC<{ onBack: () => void; focusBack: boolean }> = ({ 
     { data: 'bottom-left', label: t('settings.positionBottomLeft') },
     { data: 'bottom-right', label: t('settings.positionBottomRight') },
   ];
+  const syncNotificationOptions: Array<{ data: SyncNotificationMode; label: string }> = [
+    { data: 'all', label: t('settings.syncNotificationsAll') },
+    { data: 'errors', label: t('settings.syncNotificationsErrors') },
+    { data: 'off', label: t('settings.syncNotificationsOff') },
+  ];
   const hOptions: Array<{ data: PluginSettings['badge_position_h']; label: string }> = [
     { data: 'left', label: t('settings.left') },
     { data: 'center', label: t('settings.center') },
@@ -117,6 +122,18 @@ export const SettingsPanel: FC<{ onBack: () => void; focusBack: boolean }> = ({ 
           <ButtonItem layout="below" description={t('settings.syncDesc')} onClick={syncLibrary} disabled={syncing}>
             {syncing ? t('settings.syncing') : t('settings.syncLibrary')}
           </ButtonItem>
+        </PanelSectionRow>
+        <PanelSectionRow>
+          <div style={styles.syncNotificationsRow}>
+            <div style={styles.fieldLabel}>{t('settings.syncNotifications')}</div>
+            <div style={styles.description}>{t('settings.syncNotificationsDesc')}</div>
+            <Dropdown
+              menuLabel={t('settings.syncNotifications')}
+              rgOptions={syncNotificationOptions}
+              selectedOption={settings.sync_notifications}
+              onChange={(option) => update({ sync_notifications: option.data })}
+            />
+          </div>
         </PanelSectionRow>
       </PanelSection>
 
@@ -268,6 +285,8 @@ const styles: Record<string, React.CSSProperties> = {
   message: { padding: '12px', backgroundColor: 'rgba(102, 126, 234, 0.2)', borderRadius: '4px', marginBottom: '8px', fontSize: '14px', border: '1px solid rgba(102, 126, 234, 0.5)' },
   description: { fontSize: '12px', color: '#8b929a', marginBottom: '8px', lineHeight: '1.4' },
   fullWidth: { width: '100%' },
+  syncNotificationsRow: { width: '100%', marginTop: '8px' },
+  fieldLabel: { fontSize: '14px', marginBottom: '4px' },
   dropdownRow: { width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between' },
   avoidOverlapRow: { width: '100%', marginTop: '12px', paddingTop: '12px', borderTop: '1px solid #333' },
   customTagRow: { width: '100%', display: 'flex', flexDirection: 'column' },

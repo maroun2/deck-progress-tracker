@@ -4,7 +4,7 @@
 
 import { useEffect, useState } from 'react';
 import { call } from '@decky/api';
-import { BADGE_SETTINGS_UPDATED_EVENT, DEFAULT_LIBRARY_BADGE_POSITION, PluginSettings } from '../types';
+import { BADGE_SETTINGS_UPDATED_EVENT, DEFAULT_LIBRARY_BADGE_POSITION, DEFAULT_SYNC_NOTIFICATION_MODE, PluginSettings } from '../types';
 
 export const DEFAULT_SETTINGS: PluginSettings = {
   auto_tag_enabled: true,
@@ -19,6 +19,7 @@ export const DEFAULT_SETTINGS: PluginSettings = {
   badge_overlap_offset: 0,
   library_badge_position: DEFAULT_LIBRARY_BADGE_POSITION,
   library_badge_show_backlog: true,
+  sync_notifications: DEFAULT_SYNC_NOTIFICATION_MODE,
   language: 'auto',
   tag_label_mastered: '',
   tag_label_completed: '',

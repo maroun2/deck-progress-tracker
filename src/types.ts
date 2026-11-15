@@ -68,6 +68,9 @@ export interface PluginSettings {
   library_badge_position: LibraryBadgePosition;
   // false = untagged (Backlog) games get no library badge, only tagged ones do
   library_badge_show_backlog: boolean;
+  // Which automatic sync toasts to show: 'all', 'errors' (default) or
+  // 'off'. Syncs the user starts from the plugin UI always report back.
+  sync_notifications: SyncNotificationMode;
   // UI language: 'auto' follows the system/browser locale
   language: 'auto' | 'en' | 'pt-BR';
   // Custom tag labels/colors - empty string means "use the built-in default"
@@ -89,6 +92,9 @@ export const TAGS_UPDATED_EVENT = 'deck-progress-tracker:tags-updated';
 
 export type LibraryBadgePosition = 'none' | 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
 export const DEFAULT_LIBRARY_BADGE_POSITION: LibraryBadgePosition = 'top-right';
+
+export type SyncNotificationMode = 'all' | 'errors' | 'off';
+export const DEFAULT_SYNC_NOTIFICATION_MODE: SyncNotificationMode = 'errors';
 
 export interface TagStatistics {
   completed: number;

@@ -18,6 +18,11 @@ interface AppLifetimeNotification {
 
 const sessionStarts = new Map<number, number>();
 
+/** True while a game started since the plugin loaded is still running. */
+export function hasActiveGameSession(): boolean {
+  return sessionStarts.size > 0;
+}
+
 function handleAppLifetimeNotification(data: AppLifetimeNotification) {
   if (data.bRunning) {
     sessionStarts.set(data.unAppID, Date.now());

@@ -5,8 +5,9 @@
  */
 
 import { useEffect, useRef, useState } from 'react';
-import { call, toaster } from '@decky/api';
+import { call } from '@decky/api';
 import { syncLibraryProgressive } from '../lib/syncUtils';
+import { notify } from '../lib/notifications';
 import { useTranslation } from '../i18n';
 
 export function useLibrarySync(onProgressUpdate?: () => void) {
@@ -67,14 +68,21 @@ export function useLibrarySync(onProgressUpdate?: () => void) {
       });
 
       onUpdateRef.current?.();
+      if (!result.success) {
+        throw new Error(result.error || 'Unknown');
+      }
       const newTagsSuffix = result.new_tags
         ? t('settings.syncCompleteNewTags', { count: result.new_tags })
         : '';
       const msg = t('settings.syncCompleteDetailed', { synced: result.synced ?? 0, newTags: newTagsSuffix });
       showTransient(msg, 10000);
-      toaster.toast({ title: 'Deck Progress Tracker', body: msg, duration: 5000 });
+      // Started from the plugin UI, so always report back (even with
+      // notifications Off) - the panel may be closed by the time it ends.
+      notify('manual', msg);
     } catch (err: any) {
-      setMessage(t('settings.syncError', { error: err?.message || 'Unknown' }));
+      const msg = t('settings.syncError', { error: err?.message || 'Unknown' });
+      setMessage(msg);
+      notify('manual', msg);
     } finally {
       localSyncRef.current = false;
       setSyncing(false);

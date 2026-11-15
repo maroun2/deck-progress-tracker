@@ -139,6 +139,7 @@ class Database:
                 ('badge_overlap_offset', '0'),
                 ('library_badge_position', 'top-right'),
                 ('library_badge_show_backlog', 'true'),
+                ('sync_notifications', 'errors'),
                 ('language', 'auto'),
                 ('tag_label_mastered', ''),
                 ('tag_label_completed', ''),
