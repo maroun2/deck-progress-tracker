@@ -231,5 +231,7 @@ echo "======================================"
 echo "Complete!"
 echo "======================================"
 echo "Version: $VERSION"
-[ "$SKIP_RELEASE" = false ] && echo "URL: https://github.com/maroun2/deck-progress-tracker/releases/tag/$VERSION"
-[ "$SKIP_RELEASE" = false ] && echo "Install URL: https://github.com/maroun2/deck-progress-tracker/releases/download/${VERSION}/deck-progress-tracker-${VERSION}.zip"
+if [ "$SKIP_RELEASE" = false ]; then
+    echo "URL: https://github.com/maroun2/deck-progress-tracker/releases/tag/$VERSION"
+    echo "Install URL: https://github.com/maroun2/deck-progress-tracker/releases/download/${VERSION}/deck-progress-tracker-${VERSION}.zip"
+fi
