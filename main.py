@@ -1083,14 +1083,19 @@ class Plugin:
         if should_fetch_hltb:
             logger.info(f"  Fetching HLTB for: {game_name} (cached={bool(cached_hltb)}, has_main_story={cached_hltb.get('main_story') if cached_hltb else None})")
             hltb_data = await self.hltb_service.search_game(game_name)
-            if hltb_data and hltb_data.get('main_story'):
-                # Only cache if we got actual completion time data
+            if hltb_data:
+                # Cache any match, also one without completion times (MMOs and
+                # endless games like World of Warcraft: Forever have an HLTB
+                # entry but no main story time): being on HLTB is what tells a
+                # non-Steam game apart from an app below. No main_story means
+                # it's looked up again next sync; a failed lookup (e.g. rate
+                # limit) keeps the cached match instead of hiding the game.
                 await self.db.cache_hltb_data(appid, hltb_data)
                 cached_hltb = hltb_data
                 logger.info(f"  HLTB cached: main_story={hltb_data.get('main_story')}h")
 
         # Determine if this game should be hidden from library
-        # Hide non-Steam apps that have no HLTB data (likely not real games: Discord, Chrome, etc.)
+        # Hide non-Steam apps that aren't on HLTB at all (likely not real games: Discord, Chrome, etc.)
         # Also hide Steam tools/apps (dedicated servers, redistributables, SDKs, etc.) that
         # the frontend identified via Steam's own app_type - they clutter the Backlog since
         # they're not real games and never get a meaningful tag.
@@ -1200,6 +1205,33 @@ class Plugin:
             import traceback
             logger.error(traceback.format_exc())
             return {'success': False, 'error': str(e)}
+
+    async def get_tag_map(self) -> Dict[str, Any]:
+        """Lightweight {appid: tag} map for the library tile badges.
+
+        One query for the whole library, so the frontend can badge every
+        capsule without calling the backend per tile. Games without a tag are
+        Backlog: they're absent here and the frontend shows them as Backlog.
+
+        Hidden games (Steam tools, demos, non-Steam apps such as Discord) get
+        no badge at all: they're listed in `hidden` and left out of `tags`,
+        unless the user tagged them manually (same rule as the panel lists).
+        """
+        try:
+            all_tags = await self.db.get_all_tags()
+            all_ids = {str(r['appid']) for r in await self.db.get_all_game_stats(include_hidden=True)}
+            visible_ids = {str(r['appid']) for r in await self.db.get_all_game_stats(include_hidden=False)}
+            manual_ids = {str(t['appid']) for t in all_tags if t.get('is_manual')}
+            hidden = (all_ids - visible_ids) - manual_ids
+            tags = {
+                str(t['appid']): t['tag']
+                for t in all_tags
+                if t.get('tag') and str(t['appid']) not in hidden
+            }
+            return {'success': True, 'tags': tags, 'hidden': sorted(hidden)}
+        except Exception as e:
+            logger.error(f"Error getting tag map: {e}")
+            return {'success': False, 'error': str(e), 'tags': {}, 'hidden': []}
 
     async def get_backlog_games(self) -> Dict[str, Any]:
         """Get all games without a tag (backlog games)"""
