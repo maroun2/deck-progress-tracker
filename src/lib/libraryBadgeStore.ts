@@ -1,0 +1,177 @@
+/**
+ * Shared, cached state for the library tile badges.
+ *
+ * Steam can render hundreds of game capsules at once (library grid, Home
+ * shelves, collections), so tiles never talk to the backend themselves:
+ * the whole {appid: tag} map is fetched with a single `get_tag_map` call and
+ * cached here, together with the badge position and tag colour settings.
+ * Tiles subscribe and only re-render when their own derived badge changes.
+ */
+
+import { call } from '@decky/api';
+import {
+  BADGE_SETTINGS_UPDATED_EVENT,
+  DEFAULT_LIBRARY_BADGE_POSITION,
+  LibraryBadgePosition,
+  PluginSettings,
+  TAGS_UPDATED_EVENT,
+} from '../types';
+import { CustomizableTagType, TAG_COLOR_SETTING_KEY } from './tagCustomization';
+
+type TagColorSettings = Partial<Pick<
+  PluginSettings,
+  'tag_color_mastered' | 'tag_color_completed' | 'tag_color_in_progress' | 'tag_color_dropped'
+>>;
+
+/** Backlog = any game without a tag (not in the tag map). */
+export type LibraryBadgeTag = CustomizableTagType | 'backlog';
+
+interface LibraryBadgeState {
+  position: LibraryBadgePosition;
+  /** Badge untagged games as Backlog (setting library_badge_show_backlog) */
+  showBacklog: boolean;
+  tags: Record<string, LibraryBadgeTag>;
+  /** Apps the plugin hides (Steam tools, demos, non-Steam apps): no badge at all */
+  hidden: Record<string, true>;
+  /** False until the first tag map arrives - don't show everything as Backlog meanwhile */
+  tagsLoaded: boolean;
+  colors: TagColorSettings;
+}
+
+const VALID_POSITIONS: LibraryBadgePosition[] = ['none', 'top-left', 'top-right', 'bottom-left', 'bottom-right'];
+
+// A tile mounting after this long triggers one background refresh of the
+// tag map (covers tag changes made by the automatic background checks).
+const TAG_MAP_STALE_MS = 60_000;
+// Coalesce bursts of "tags changed" events (e.g. during a library sync).
+const TAG_REFRESH_DEBOUNCE_MS = 1_500;
+
+let state: LibraryBadgeState = {
+  position: DEFAULT_LIBRARY_BADGE_POSITION,
+  showBacklog: true,
+  tags: {},
+  hidden: {},
+  tagsLoaded: false,
+  colors: {},
+};
+
+const listeners = new Set<() => void>();
+let lastTagFetch = 0;
+let tagFetchInFlight = false;
+let tagRefreshTimer: ReturnType<typeof setTimeout> | null = null;
+let active = false;
+
+function emit(next: LibraryBadgeState) {
+  state = next;
+  listeners.forEach((listener) => {
+    try {
+      listener();
+    } catch (e) {
+      // A broken subscriber must never break the others
+    }
+  });
+}
+
+export function getLibraryBadgeState(): LibraryBadgeState {
+  return state;
+}
+
+export function subscribeLibraryBadges(listener: () => void): () => void {
+  listeners.add(listener);
+  return () => {
+    listeners.delete(listener);
+  };
+}
+
+async function loadSettings() {
+  try {
+    const result = await call<[], { settings: PluginSettings }>('get_settings');
+    const s = result?.settings;
+    if (!s || !active) return;
+    const position = VALID_POSITIONS.includes(s.library_badge_position)
+      ? s.library_badge_position
+      : DEFAULT_LIBRARY_BADGE_POSITION;
+    const showBacklog = s.library_badge_show_backlog !== false;
+    const colors: TagColorSettings = {};
+    (Object.keys(TAG_COLOR_SETTING_KEY) as CustomizableTagType[]).forEach((type) => {
+      const key = TAG_COLOR_SETTING_KEY[type];
+      colors[key] = (s[key] as string) || '';
+    });
+    if (position !== state.position || showBacklog !== state.showBacklog || JSON.stringify(colors) !== JSON.stringify(state.colors)) {
+      emit({ ...state, position, showBacklog, colors });
+    }
+  } catch (e) {
+    // Keep previous settings on failure
+  }
+}
+
+async function loadTags() {
+  if (tagFetchInFlight) return;
+  tagFetchInFlight = true;
+  try {
+    const result = await call<[], { success: boolean; tags: Record<string, LibraryBadgeTag>; hidden?: string[] }>('get_tag_map');
+    lastTagFetch = Date.now();
+    if (result?.success && result.tags && active) {
+      const hidden: Record<string, true> = {};
+      (result.hidden || []).forEach((appid) => {
+        hidden[appid] = true;
+      });
+      if (
+        !state.tagsLoaded ||
+        JSON.stringify(result.tags) !== JSON.stringify(state.tags) ||
+        JSON.stringify(hidden) !== JSON.stringify(state.hidden)
+      ) {
+        emit({ ...state, tags: result.tags, hidden, tagsLoaded: true });
+      }
+    }
+  } catch (e) {
+    // Keep previous tags on failure
+  } finally {
+    tagFetchInFlight = false;
+  }
+}
+
+function scheduleTagRefresh() {
+  if (tagRefreshTimer) clearTimeout(tagRefreshTimer);
+  tagRefreshTimer = setTimeout(() => {
+    tagRefreshTimer = null;
+    loadTags();
+  }, TAG_REFRESH_DEBOUNCE_MS);
+}
+
+/**
+ * Called by tiles on mount; refreshes the tag map at most once per
+ * TAG_MAP_STALE_MS no matter how many tiles mount.
+ */
+export function refreshTagsIfStale() {
+  if (active && !tagFetchInFlight && Date.now() - lastTagFetch > TAG_MAP_STALE_MS) {
+    loadTags();
+  }
+}
+
+/**
+ * Tell the library badges that tags changed (manual edit, sync, ...).
+ */
+export function notifyTagsChanged() {
+  window.dispatchEvent(new CustomEvent(TAGS_UPDATED_EVENT));
+}
+
+export function initLibraryBadgeStore(): () => void {
+  active = true;
+  const onSettings = () => loadSettings();
+  const onTags = () => scheduleTagRefresh();
+  window.addEventListener(BADGE_SETTINGS_UPDATED_EVENT, onSettings);
+  window.addEventListener(TAGS_UPDATED_EVENT, onTags);
+  loadSettings();
+  loadTags();
+
+  return () => {
+    window.removeEventListener(BADGE_SETTINGS_UPDATED_EVENT, onSettings);
+    window.removeEventListener(TAGS_UPDATED_EVENT, onTags);
+    if (tagRefreshTimer) clearTimeout(tagRefreshTimer);
+    tagRefreshTimer = null;
+    active = false;
+    // Hide every badge that is still mounted when the plugin unloads
+    emit({ ...state, position: 'none' });
+  };
+}
