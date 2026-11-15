@@ -15,6 +15,8 @@ export type LibraryBadgeTag = CustomizableTagType | 'backlog';
 interface LibraryBadgeState {
     position: LibraryBadgePosition;
     tags: Record<string, LibraryBadgeTag>;
+    /** Apps the plugin hides (Steam tools, demos, non-Steam apps): no badge at all */
+    hidden: Record<string, true>;
     /** False until the first tag map arrives - don't show everything as Backlog meanwhile */
     tagsLoaded: boolean;
     colors: TagColorSettings;

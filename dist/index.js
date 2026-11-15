@@ -572,6 +572,7 @@ const TAG_REFRESH_DEBOUNCE_MS = 1500;
 let state = {
     position: DEFAULT_LIBRARY_BADGE_POSITION,
     tags: {},
+    hidden: {},
     tagsLoaded: false,
     colors: {},
 };
@@ -630,8 +631,14 @@ async function loadTags() {
         const result = await call('get_tag_map');
         lastTagFetch = Date.now();
         if (result?.success && result.tags && active) {
-            if (!state.tagsLoaded || JSON.stringify(result.tags) !== JSON.stringify(state.tags)) {
-                emit({ ...state, tags: result.tags, tagsLoaded: true });
+            const hidden = {};
+            (result.hidden || []).forEach((appid) => {
+                hidden[appid] = true;
+            });
+            if (!state.tagsLoaded ||
+                JSON.stringify(result.tags) !== JSON.stringify(state.tags) ||
+                JSON.stringify(hidden) !== JSON.stringify(state.hidden)) {
+                emit({ ...state, tags: result.tags, hidden, tagsLoaded: true });
             }
         }
     }
@@ -2190,7 +2197,15 @@ const GameTagBadge = ({ appid }) => {
     const [position, setPosition] = SP_REACT.useState(DEFAULT_BADGE_POSITION);
     const [tagCustomization, setTagCustomization] = SP_REACT.useState(EMPTY_TAG_CUSTOMIZATION);
     const [bannerHeight, setBannerHeight] = SP_REACT.useState(null);
+    // Apps the plugin hides (Steam tools, demos, Discord, browsers, ...) get no
+    // badge and no "Add Tag" button, unless they were tagged manually.
+    const [hidden, setHidden] = SP_REACT.useState(() => !!getLibraryBadgeState().hidden[appid]);
     const ref = SP_REACT.useRef(null);
+    SP_REACT.useEffect(() => {
+        const update = () => setHidden(!!getLibraryBadgeState().hidden[appid]);
+        update();
+        return subscribeLibraryBadges(update);
+    }, [appid]);
     SP_REACT.useLayoutEffect(() => {
         const headerElement = findHeaderElement(ref.current);
         if (headerElement) {
@@ -2235,6 +2250,8 @@ const GameTagBadge = ({ appid }) => {
                 const result = await syncSingleGameWithFrontendData(appid);
                 if (result.success) {
                     refetch();
+                    // The sync may have just (un)hidden this app; refresh the shared map
+                    notifyTagsChanged();
                 }
             }
             catch (e) {
@@ -2268,7 +2285,7 @@ const GameTagBadge = ({ appid }) => {
             mutationObserver.disconnect();
         };
     }, []);
-    if (loading) {
+    if (loading || (hidden && !tag?.is_manual)) {
         return SP_REACT.createElement("div", { ref: ref, style: { display: 'none' } });
     }
     const handleClick = () => {
@@ -2451,11 +2468,11 @@ function removeLibraryBadgeStylesheets() {
     styledDocuments.clear();
 }
 function derive(appid) {
-    const { position, tags, tagsLoaded, colors } = getLibraryBadgeState();
-    // No tag = Backlog, for every tile: Steam games, non-Steam shortcuts (also
-    // the ones the plugin hides from its lists for lack of HLTB data) and
-    // games not synced yet.
-    const tag = tagsLoaded ? tags[appid] || 'backlog' : null;
+    const { position, tags, hidden, tagsLoaded, colors } = getLibraryBadgeState();
+    // No tag = Backlog, for Steam games, non-Steam games and games not synced
+    // yet. Apps the plugin hides (Steam tools, demos, Discord, browsers, ...)
+    // get no badge at all.
+    const tag = !tagsLoaded || hidden[appid] ? null : tags[appid] || 'backlog';
     let background = '';
     if (tag === 'backlog') {
         background = BACKLOG_BACKGROUND;

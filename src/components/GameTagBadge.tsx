@@ -14,6 +14,7 @@ import { CustomizableTagType, TAG_COLOR_SETTING_KEY, resolveTagLabel, resolveTag
 import { TagManager } from './TagManager';
 import { useGameTag } from '../hooks/useGameTag';
 import { syncSingleGameWithFrontendData } from '../lib/syncUtils';
+import { getLibraryBadgeState, notifyTagsChanged, subscribeLibraryBadges } from '../lib/libraryBadgeStore';
 import { PluginSettings, BADGE_SETTINGS_UPDATED_EVENT } from '../types';
 import { useTranslation } from '../i18n';
 
@@ -135,7 +136,16 @@ export const GameTagBadge: FC<GameTagBadgeProps> = ({ appid }) => {
   const [position, setPosition] = useState(DEFAULT_BADGE_POSITION);
   const [tagCustomization, setTagCustomization] = useState(EMPTY_TAG_CUSTOMIZATION);
   const [bannerHeight, setBannerHeight] = useState<number | null>(null);
+  // Apps the plugin hides (Steam tools, demos, Discord, browsers, ...) get no
+  // badge and no "Add Tag" button, unless they were tagged manually.
+  const [hidden, setHidden] = useState(() => !!getLibraryBadgeState().hidden[appid]);
   const ref = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const update = () => setHidden(!!getLibraryBadgeState().hidden[appid]);
+    update();
+    return subscribeLibraryBadges(update);
+  }, [appid]);
 
   useLayoutEffect(() => {
     const headerElement = findHeaderElement(ref.current);
@@ -184,6 +194,8 @@ export const GameTagBadge: FC<GameTagBadgeProps> = ({ appid }) => {
         const result = await syncSingleGameWithFrontendData(appid);
         if (result.success) {
           refetch();
+          // The sync may have just (un)hidden this app; refresh the shared map
+          notifyTagsChanged();
         }
       } catch (e) {
         // Error syncing game
@@ -224,7 +236,7 @@ export const GameTagBadge: FC<GameTagBadgeProps> = ({ appid }) => {
     };
   }, []);
 
-  if (loading) {
+  if (loading || (hidden && !tag?.is_manual)) {
     return <div ref={ref} style={{ display: 'none' }} />;
   }
 

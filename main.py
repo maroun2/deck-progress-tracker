@@ -1188,14 +1188,26 @@ class Plugin:
         One query for the whole library, so the frontend can badge every
         capsule without calling the backend per tile. Games without a tag are
         Backlog: they're absent here and the frontend shows them as Backlog.
+
+        Hidden games (Steam tools, demos, non-Steam apps such as Discord) get
+        no badge at all: they're listed in `hidden` and left out of `tags`,
+        unless the user tagged them manually (same rule as the panel lists).
         """
         try:
             all_tags = await self.db.get_all_tags()
-            tags = {str(t['appid']): t['tag'] for t in all_tags if t.get('tag')}
-            return {'success': True, 'tags': tags}
+            all_ids = {str(r['appid']) for r in await self.db.get_all_game_stats(include_hidden=True)}
+            visible_ids = {str(r['appid']) for r in await self.db.get_all_game_stats(include_hidden=False)}
+            manual_ids = {str(t['appid']) for t in all_tags if t.get('is_manual')}
+            hidden = (all_ids - visible_ids) - manual_ids
+            tags = {
+                str(t['appid']): t['tag']
+                for t in all_tags
+                if t.get('tag') and str(t['appid']) not in hidden
+            }
+            return {'success': True, 'tags': tags, 'hidden': sorted(hidden)}
         except Exception as e:
             logger.error(f"Error getting tag map: {e}")
-            return {'success': False, 'error': str(e), 'tags': {}}
+            return {'success': False, 'error': str(e), 'tags': {}, 'hidden': []}
 
     async def get_backlog_games(self) -> Dict[str, Any]:
         """Get all games without a tag (backlog games)"""

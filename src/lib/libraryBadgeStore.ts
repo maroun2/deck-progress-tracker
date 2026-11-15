@@ -29,6 +29,8 @@ export type LibraryBadgeTag = CustomizableTagType | 'backlog';
 interface LibraryBadgeState {
   position: LibraryBadgePosition;
   tags: Record<string, LibraryBadgeTag>;
+  /** Apps the plugin hides (Steam tools, demos, non-Steam apps): no badge at all */
+  hidden: Record<string, true>;
   /** False until the first tag map arrives - don't show everything as Backlog meanwhile */
   tagsLoaded: boolean;
   colors: TagColorSettings;
@@ -45,6 +47,7 @@ const TAG_REFRESH_DEBOUNCE_MS = 1_500;
 let state: LibraryBadgeState = {
   position: DEFAULT_LIBRARY_BADGE_POSITION,
   tags: {},
+  hidden: {},
   tagsLoaded: false,
   colors: {},
 };
@@ -102,11 +105,19 @@ async function loadTags() {
   if (tagFetchInFlight) return;
   tagFetchInFlight = true;
   try {
-    const result = await call<[], { success: boolean; tags: Record<string, LibraryBadgeTag> }>('get_tag_map');
+    const result = await call<[], { success: boolean; tags: Record<string, LibraryBadgeTag>; hidden?: string[] }>('get_tag_map');
     lastTagFetch = Date.now();
     if (result?.success && result.tags && active) {
-      if (!state.tagsLoaded || JSON.stringify(result.tags) !== JSON.stringify(state.tags)) {
-        emit({ ...state, tags: result.tags, tagsLoaded: true });
+      const hidden: Record<string, true> = {};
+      (result.hidden || []).forEach((appid) => {
+        hidden[appid] = true;
+      });
+      if (
+        !state.tagsLoaded ||
+        JSON.stringify(result.tags) !== JSON.stringify(state.tags) ||
+        JSON.stringify(hidden) !== JSON.stringify(state.hidden)
+      ) {
+        emit({ ...state, tags: result.tags, hidden, tagsLoaded: true });
       }
     }
   } catch (e) {
