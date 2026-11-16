@@ -12,7 +12,6 @@ import { FaArrowLeft } from 'react-icons/fa';
 import { BADGE_SETTINGS_UPDATED_EVENT, LibraryBadgePosition, PluginSettings, SyncNotificationMode } from '../types';
 import { useTranslation, LANGUAGE_UPDATED_EVENT, TranslationKey } from '../i18n';
 import { usePluginSettings } from '../hooks/usePluginSettings';
-import { useLibrarySync } from '../hooks/useLibrarySync';
 import { CustomizableTagType, TAG_COLOR_PRESETS, TAG_LABEL_SETTING_KEY, TAG_COLOR_SETTING_KEY, resolveTagLabel, resolveTagColor } from '../lib/tagCustomization';
 
 const CUSTOMIZABLE_TAGS: CustomizableTagType[] = ['mastered', 'completed', 'in_progress', 'dropped'];
@@ -54,7 +53,6 @@ export function focusFirstButton(el: HTMLElement | null, scrollToTop = false): (
 export const SettingsPanel: FC<{ onBack: () => void; focusBack: boolean }> = ({ onBack, focusBack }) => {
   const { t } = useTranslation();
   const { settings, updateSettings: update } = usePluginSettings();
-  const { syncing, message, syncLibrary } = useLibrarySync();
   const containerRef = useRef<HTMLDivElement>(null);
 
   // The Settings button that had controller focus is gone now; hand focus
@@ -116,13 +114,7 @@ export const SettingsPanel: FC<{ onBack: () => void; focusBack: boolean }> = ({ 
         </PanelSectionRow>
       </PanelSection>
 
-      <PanelSection title={t('settings.syncSection')}>
-        {message && <div style={styles.message}>{message}</div>}
-        <PanelSectionRow>
-          <ButtonItem layout="below" description={t('settings.syncDesc')} onClick={syncLibrary} disabled={syncing}>
-            {syncing ? t('settings.syncing') : t('settings.syncLibrary')}
-          </ButtonItem>
-        </PanelSectionRow>
+      <PanelSection title={t('settings.notificationsSection')}>
         <PanelSectionRow>
           <div style={styles.syncNotificationsRow}>
             <div style={styles.fieldLabel}>{t('settings.syncNotifications')}</div>
@@ -282,10 +274,9 @@ export const SettingsPanel: FC<{ onBack: () => void; focusBack: boolean }> = ({ 
 const styles: Record<string, React.CSSProperties> = {
   container: { paddingTop: '8px', color: 'white', width: '100%', maxWidth: '100%', overflow: 'hidden' },
   backButton: { display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' },
-  message: { padding: '12px', backgroundColor: 'rgba(102, 126, 234, 0.2)', borderRadius: '4px', marginBottom: '8px', fontSize: '14px', border: '1px solid rgba(102, 126, 234, 0.5)' },
   description: { fontSize: '12px', color: '#8b929a', marginBottom: '8px', lineHeight: '1.4' },
   fullWidth: { width: '100%' },
-  syncNotificationsRow: { width: '100%', marginTop: '8px' },
+  syncNotificationsRow: { width: '100%' },
   fieldLabel: { fontSize: '14px', marginBottom: '4px' },
   dropdownRow: { width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between' },
   avoidOverlapRow: { width: '100%', marginTop: '12px', paddingTop: '12px', borderTop: '1px solid #333' },

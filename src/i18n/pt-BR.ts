@@ -9,15 +9,17 @@ export const ptBR: Record<TranslationKey, string> = {
   'settings.noGamesFound': 'Nenhum jogo encontrado',
   'settings.manual': 'manual',
 
-  // Settings - Sync
-  'settings.syncLibrary': 'Sincronizar Biblioteca Inteira',
-  'settings.syncing': 'Sincronizando...',
-  'settings.syncStarting': 'Iniciando sincronização...',
-  'settings.syncingProgress': 'Sincronizando: {current}/{total} jogos',
-  'settings.syncComplete': 'Sincronização concluída! Biblioteca atualizada.',
-  'settings.syncCompleteDetailed': 'Sincronização concluída! {synced} jogos atualizados{newTags}.',
-  'settings.syncCompleteNewTags': ', {count} novas tags',
-  'settings.syncError': 'Erro na sincronização: {error}',
+  // Library sync (main panel)
+  'sync.section': 'Sincronização da biblioteca',
+  'sync.desc': 'Verifica novamente o tempo de jogo e as conquistas de todos os jogos e atualiza as tags.',
+  'sync.button': 'Sincronizar Biblioteca Inteira',
+  'sync.buttonBusy': 'Sincronizando...',
+  'sync.starting': 'Iniciando sincronização...',
+  'sync.progress': 'Sincronizando: {current}/{total} jogos',
+  'sync.complete': 'Sincronização concluída! Biblioteca atualizada.',
+  'sync.completeDetailed': 'Sincronização concluída! {synced} jogos atualizados{newTags}.',
+  'sync.completeNewTags': ', {count} novas tags',
+  'sync.error': 'Erro na sincronização: {error}',
 
   // Settings - Badge Position
   'settings.badgePosition': 'Badge da página do jogo',
@@ -43,14 +45,13 @@ export const ptBR: Record<TranslationKey, string> = {
   // Settings page / panel
   'settings.back': 'Voltar',
   'settings.openSettings': 'Configurações',
-  'settings.syncSection': 'Sincronização da biblioteca',
-  'settings.syncDesc': 'Verifica novamente o tempo de jogo e as conquistas de todos os jogos e atualiza as tags.',
+  'settings.notificationsSection': 'Notificações',
   'settings.syncNotifications': 'Notificações de sincronização',
-  'settings.syncNotificationsDesc': 'Pop-ups da sincronização automática ao iniciar. Pop-ups de sucesso nunca aparecem durante um jogo. Uma sincronização iniciada aqui sempre mostra o resultado.',
+  'settings.syncNotificationsDesc': 'Pop-ups da sincronização automática ao iniciar. Pop-ups de sucesso nunca aparecem durante um jogo. Uma sincronização iniciada na página principal sempre mostra o resultado.',
   'settings.syncNotificationsAll': 'Todas',
   'settings.syncNotificationsErrors': 'Somente erros',
   'settings.syncNotificationsOff': 'Desativadas',
-  'notify.startupSyncFailed': 'A sincronização automática falhou: {error}. Use "Sincronizar Biblioteca Inteira" nas Configurações para tentar novamente.',
+  'notify.startupSyncFailed': 'A sincronização automática falhou: {error}. Use "Sincronizar Biblioteca Inteira" na página principal do plugin para tentar novamente.',
   'settings.badgePositionDesc': 'Onde o badge da tag aparece no banner da página do jogo.',
   'settings.customizeTagsDesc': 'Renomeie as tags e escolha suas cores. As cores são usadas nas listas, na página do jogo e nos blocos da biblioteca.',
 

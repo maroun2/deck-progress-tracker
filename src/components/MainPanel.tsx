@@ -1,14 +1,15 @@
 /**
  * MainPanel - the Quick Access panel content.
- * Kept deliberately clean: the tag lists, a Settings button and the About
- * info. The Settings button swaps the whole panel for SettingsPanel (still
- * inside the sidebar); its Back button returns here.
+ * Kept deliberately clean: the tag lists, the library sync (button and
+ * progress), a Settings button and the About info. The Settings button
+ * swaps the whole panel for SettingsPanel (still inside the sidebar); its
+ * Back button returns here.
  */
 
 import React, { FC, useState, useEffect, useRef } from 'react';
 import { call } from '@decky/api';
 import { PanelSection, PanelSectionRow, ButtonItem, Navigation } from '@decky/ui';
-import { FaCog } from 'react-icons/fa';
+import { FaCog, FaSync } from 'react-icons/fa';
 import { TagStatistics, TaggedGame } from '../types';
 import { TagIcon, TagType } from './TagIcon';
 import { useTranslation, TranslationKey } from '../i18n';
@@ -102,9 +103,9 @@ const TagListsPanel: FC<{ onOpenSettings: () => void; focusSettings: boolean }> 
     } catch (err) {}
   };
 
-  // Read-only here: shows sync progress started from the settings page or
-  // the automatic startup sync, and refreshes the lists as tags change.
-  const { message } = useLibrarySync(smartUpdateUI);
+  // Sync button + progress; also follows the automatic startup sync and
+  // refreshes the lists as tags change.
+  const { syncing, message, syncLibrary } = useLibrarySync(smartUpdateUI);
 
   useEffect(() => {
     if (containerRef.current && !focusSettings) {
@@ -139,8 +140,6 @@ const TagListsPanel: FC<{ onOpenSettings: () => void; focusSettings: boolean }> 
 
   return (
     <div ref={containerRef} style={styles.container}>
-      {message && <div style={styles.message}>{message}</div>}
-
       <div style={styles.section}>
         <h3 style={styles.sectionTitle}>{t('settings.library')} ({stats?.total || 0})</h3>
         <PanelSection>
@@ -199,11 +198,23 @@ const TagListsPanel: FC<{ onOpenSettings: () => void; focusSettings: boolean }> 
         </PanelSection>
       </div>
 
+      <PanelSection title={t('sync.section')}>
+        {message && <div style={styles.message}>{message}</div>}
+        <PanelSectionRow>
+          <ButtonItem layout="below" description={t('sync.desc')} onClick={syncLibrary} disabled={syncing}>
+            <div style={styles.iconButton}>
+              <FaSync />
+              <span>{syncing ? t('sync.buttonBusy') : t('sync.button')}</span>
+            </div>
+          </ButtonItem>
+        </PanelSectionRow>
+      </PanelSection>
+
       <PanelSection>
         <PanelSectionRow>
           <div ref={settingsButtonRef} style={{ width: '100%' }}>
             <ButtonItem layout="below" onClick={onOpenSettings}>
-              <div style={styles.settingsButton}>
+              <div style={styles.iconButton}>
                 <FaCog />
                 <span>{t('settings.openSettings')}</span>
               </div>
@@ -230,7 +241,7 @@ const TagListsPanel: FC<{ onOpenSettings: () => void; focusSettings: boolean }> 
 
 const styles: Record<string, React.CSSProperties> = {
   container: { paddingTop: '16px', color: 'white', width: '100%', maxWidth: '100%', overflow: 'hidden' },
-  message: { padding: '12px', backgroundColor: 'rgba(102, 126, 234, 0.2)', borderRadius: '4px', marginBottom: '16px', fontSize: '14px', border: '1px solid rgba(102, 126, 234, 0.5)', marginLeft: '16px', marginRight: '16px' },
+  message: { padding: '12px', backgroundColor: 'rgba(102, 126, 234, 0.2)', borderRadius: '4px', marginBottom: '8px', fontSize: '14px', border: '1px solid rgba(102, 126, 234, 0.5)' },
   section: { marginBottom: '8px', paddingBottom: '16px', borderBottom: '1px solid #333', width: '100%', overflow: 'hidden' },
   sectionTitle: { margin: '0 0 12px 0', fontSize: '16px', fontWeight: 'bold', color: '#aaa', marginLeft: '16px' },
   gameItemContent: { display: 'flex', alignItems: 'center', gap: '8px', width: '100%', overflow: 'hidden', flexFlow: 'row nowrap' },
@@ -245,7 +256,7 @@ const styles: Record<string, React.CSSProperties> = {
   expandIcon: { fontSize: '18px', color: '#888', width: '20px', textAlign: 'center' },
   emptySection: { padding: '12px 16px', color: '#666', fontSize: '13px', fontStyle: 'italic' },
   tagDescription: { padding: '8px 16px 12px 16px', color: '#999', fontSize: '12px', fontStyle: 'italic', borderBottom: '1px solid #2a2a2a' },
-  settingsButton: { display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' },
+  iconButton: { display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' },
   about: { fontSize: '14px', lineHeight: '1.6', marginLeft: '16px', marginRight: '16px' },
   aboutLine: { margin: '8px 0', color: '#ccc' },
 };
