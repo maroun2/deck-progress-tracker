@@ -7,15 +7,17 @@ export const en = {
   'settings.noGamesFound': 'No games found',
   'settings.manual': 'manual',
 
-  // Settings - Sync
-  'settings.syncLibrary': 'Sync Entire Library',
-  'settings.syncing': 'Syncing...',
-  'settings.syncStarting': 'Starting sync...',
-  'settings.syncingProgress': 'Syncing: {current}/{total} games',
-  'settings.syncComplete': 'Sync complete! Library updated.',
-  'settings.syncCompleteDetailed': 'Sync complete! {synced} games updated{newTags}.',
-  'settings.syncCompleteNewTags': ', {count} new tags',
-  'settings.syncError': 'Sync error: {error}',
+  // Library sync (main panel)
+  'sync.section': 'Library sync',
+  'sync.desc': 'Re-scan playtime and achievements for every game and update tags.',
+  'sync.button': 'Sync Entire Library',
+  'sync.buttonBusy': 'Syncing...',
+  'sync.starting': 'Starting sync...',
+  'sync.progress': 'Syncing: {current}/{total} games',
+  'sync.complete': 'Sync complete! Library updated.',
+  'sync.completeDetailed': 'Sync complete! {synced} games updated{newTags}.',
+  'sync.completeNewTags': ', {count} new tags',
+  'sync.error': 'Sync error: {error}',
 
   // Settings - Badge Position
   'settings.badgePosition': 'Game page badge',
@@ -41,14 +43,13 @@ export const en = {
   // Settings page / panel
   'settings.back': 'Back',
   'settings.openSettings': 'Settings',
-  'settings.syncSection': 'Library sync',
-  'settings.syncDesc': 'Re-scan playtime and achievements for every game and update tags.',
+  'settings.notificationsSection': 'Notifications',
   'settings.syncNotifications': 'Sync notifications',
-  'settings.syncNotificationsDesc': 'Pop-ups from the automatic sync at startup. Success pop-ups never show while a game is running. A sync you start here always reports back.',
+  'settings.syncNotificationsDesc': 'Pop-ups from the automatic sync at startup. Success pop-ups never show while a game is running. A sync you start from the main page always reports back.',
   'settings.syncNotificationsAll': 'All',
   'settings.syncNotificationsErrors': 'Errors only',
   'settings.syncNotificationsOff': 'Off',
-  'notify.startupSyncFailed': 'Automatic sync failed: {error}. Use Sync Entire Library in Settings to try again.',
+  'notify.startupSyncFailed': 'Automatic sync failed: {error}. Use Sync Entire Library on the plugin\'s main page to try again.',
   'settings.badgePositionDesc': 'Where the tag badge sits on a game\'s page banner.',
   'settings.customizeTagsDesc': 'Rename tags and pick their colours. Colours are used in the lists, on the game page and on library tiles.',
 

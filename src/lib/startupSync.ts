@@ -80,9 +80,9 @@ export function startStartupSync(isDisposed: () => boolean): Promise<unknown> {
     sleep,
     isDisposed,
     log: (message) => logFrontend('info', message),
-    successMessage: (result) => translate('settings.syncCompleteDetailed', {
+    successMessage: (result) => translate('sync.completeDetailed', {
       synced: result.synced ?? 0,
-      newTags: result.new_tags ? translate('settings.syncCompleteNewTags', { count: result.new_tags }) : '',
+      newTags: result.new_tags ? translate('sync.completeNewTags', { count: result.new_tags }) : '',
     }),
     failureMessage: (error) => translate('notify.startupSyncFailed', { error }),
   })

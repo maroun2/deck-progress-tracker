@@ -841,12 +841,6 @@ class Plugin:
                 game_name, rt_last_time_played, is_tool
             )
 
-            # Clear sync progress if this was the last game
-            if is_bulk_sync and current_index >= total_count:
-                self.sync_in_progress = False
-                self.sync_current = 0
-                self.sync_total = 0
-
             return {
                 "success": True,
                 "appid": appid,
@@ -859,6 +853,15 @@ class Plugin:
             import traceback
             logger.error(traceback.format_exc())
             return {"success": False, "error": str(e)}
+
+        finally:
+            # Clear sync progress after the last game, even if it failed -
+            # otherwise the main panel keeps showing "Syncing" and the
+            # Sync button stays disabled until Decky restarts.
+            if params.get('is_bulk_sync') and params.get('current_index', 0) >= params.get('total_count', 1):
+                self.sync_in_progress = False
+                self.sync_current = 0
+                self.sync_total = 0
 
     async def get_all_games(self) -> Dict[str, Any]:
         """Get list of all games for frontend to fetch playtime"""

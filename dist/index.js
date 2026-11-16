@@ -1,4 +1,4 @@
-const manifest = {"name":"Deck Progress Tracker","author":"Maron","version":"1.5.0","api_version":1,"flags":[],"publish":{"tags":["library","achievements","statistics","enhancement","progress-tracking"],"description":"Automatic game tagging based on achievements, playtime, and completion time. Track your progress with visual badges in the Steam library. Features 5 intelligent tags: Mastered, Completed, Dropped, In Progress, and Backlog.","image":"https://raw.githubusercontent.com/maroun2/deck-progress-tracker/main/assets/library-badges.png"}};
+const manifest = {"name":"Deck Progress Tracker","author":"Maron","version":"1.5.2","api_version":1,"flags":[],"publish":{"tags":["library","achievements","statistics","enhancement","progress-tracking"],"description":"Automatic game tagging based on achievements, playtime, and completion time. Track your progress with visual badges in the Steam library. Features 5 intelligent tags: Mastered, Completed, Dropped, In Progress, and Backlog.","image":"https://raw.githubusercontent.com/maroun2/deck-progress-tracker/main/assets/library-badges.png"}};
 const API_VERSION = 2;
 if (!manifest?.name) {
     throw new Error('[@decky/api]: Failed to find plugin manifest.');
@@ -89,6 +89,8 @@ function FaArrowLeft (props) {
   return GenIcon({"tag":"svg","attr":{"viewBox":"0 0 448 512"},"child":[{"tag":"path","attr":{"d":"M257.5 445.1l-22.2 22.2c-9.4 9.4-24.6 9.4-33.9 0L7 273c-9.4-9.4-9.4-24.6 0-33.9L201.4 44.7c9.4-9.4 24.6-9.4 33.9 0l22.2 22.2c9.5 9.5 9.3 25-.4 34.3L136.6 216H424c13.3 0 24 10.7 24 24v32c0 13.3-10.7 24-24 24H136.6l120.5 114.8c9.8 9.3 10 24.8.4 34.3z"},"child":[]}]})(props);
 }function FaCog (props) {
   return GenIcon({"tag":"svg","attr":{"viewBox":"0 0 512 512"},"child":[{"tag":"path","attr":{"d":"M487.4 315.7l-42.6-24.6c4.3-23.2 4.3-47 0-70.2l42.6-24.6c4.9-2.8 7.1-8.6 5.5-14-11.1-35.6-30-67.8-54.7-94.6-3.8-4.1-10-5.1-14.8-2.3L380.8 110c-17.9-15.4-38.5-27.3-60.8-35.1V25.8c0-5.6-3.9-10.5-9.4-11.7-36.7-8.2-74.3-7.8-109.2 0-5.5 1.2-9.4 6.1-9.4 11.7V75c-22.2 7.9-42.8 19.8-60.8 35.1L88.7 85.5c-4.9-2.8-11-1.9-14.8 2.3-24.7 26.7-43.6 58.9-54.7 94.6-1.7 5.4.6 11.2 5.5 14L67.3 221c-4.3 23.2-4.3 47 0 70.2l-42.6 24.6c-4.9 2.8-7.1 8.6-5.5 14 11.1 35.6 30 67.8 54.7 94.6 3.8 4.1 10 5.1 14.8 2.3l42.6-24.6c17.9 15.4 38.5 27.3 60.8 35.1v49.2c0 5.6 3.9 10.5 9.4 11.7 36.7 8.2 74.3 7.8 109.2 0 5.5-1.2 9.4-6.1 9.4-11.7v-49.2c22.2-7.9 42.8-19.8 60.8-35.1l42.6 24.6c4.9 2.8 11 1.9 14.8-2.3 24.7-26.7 43.6-58.9 54.7-94.6 1.5-5.5-.7-11.3-5.6-14.1zM256 336c-44.1 0-80-35.9-80-80s35.9-80 80-80 80 35.9 80 80-35.9 80-80 80z"},"child":[]}]})(props);
+}function FaSync (props) {
+  return GenIcon({"tag":"svg","attr":{"viewBox":"0 0 512 512"},"child":[{"tag":"path","attr":{"d":"M440.65 12.57l4 82.77A247.16 247.16 0 0 0 255.83 8C134.73 8 33.91 94.92 12.29 209.82A12 12 0 0 0 24.09 224h49.05a12 12 0 0 0 11.67-9.26 175.91 175.91 0 0 1 317-56.94l-101.46-4.86a12 12 0 0 0-12.57 12v47.41a12 12 0 0 0 12 12H500a12 12 0 0 0 12-12V12a12 12 0 0 0-12-12h-47.37a12 12 0 0 0-11.98 12.57zM255.83 432a175.61 175.61 0 0 1-146-77.8l101.8 4.87a12 12 0 0 0 12.57-12v-47.4a12 12 0 0 0-12-12H12a12 12 0 0 0-12 12V500a12 12 0 0 0 12 12h47.35a12 12 0 0 0 12-12.6l-4.15-82.57A247.17 247.17 0 0 0 255.83 504c121.11 0 221.93-86.92 243.55-201.82a12 12 0 0 0-11.8-14.18h-49.05a12 12 0 0 0-11.67 9.26A175.86 175.86 0 0 1 255.83 432z"},"child":[]}]})(props);
 }function FaTrophy (props) {
   return GenIcon({"tag":"svg","attr":{"viewBox":"0 0 576 512"},"child":[{"tag":"path","attr":{"d":"M552 64H448V24c0-13.3-10.7-24-24-24H152c-13.3 0-24 10.7-24 24v40H24C10.7 64 0 74.7 0 88v56c0 35.7 22.5 72.4 61.9 100.7 31.5 22.7 69.8 37.1 110 41.7C203.3 338.5 240 360 240 360v72h-48c-35.3 0-64 20.7-64 56v12c0 6.6 5.4 12 12 12h296c6.6 0 12-5.4 12-12v-12c0-35.3-28.7-56-64-56h-48v-72s36.7-21.5 68.1-73.6c40.3-4.6 78.6-19 110-41.7 39.3-28.3 61.9-65 61.9-100.7V88c0-13.3-10.7-24-24-24zM99.3 192.8C74.9 175.2 64 155.6 64 144v-16h64.2c1 32.6 5.8 61.2 12.8 86.2-15.1-5.2-29.2-12.4-41.7-21.4zM512 144c0 16.1-17.7 36.1-35.3 48.8-12.5 9-26.7 16.2-41.8 21.4 7-25 11.8-53.6 12.8-86.2H512v16z"},"child":[]}]})(props);
 }
@@ -154,15 +156,17 @@ const en = {
     'settings.library': 'Library',
     'settings.noGamesFound': 'No games found',
     'settings.manual': 'manual',
-    // Settings - Sync
-    'settings.syncLibrary': 'Sync Entire Library',
-    'settings.syncing': 'Syncing...',
-    'settings.syncStarting': 'Starting sync...',
-    'settings.syncingProgress': 'Syncing: {current}/{total} games',
-    'settings.syncComplete': 'Sync complete! Library updated.',
-    'settings.syncCompleteDetailed': 'Sync complete! {synced} games updated{newTags}.',
-    'settings.syncCompleteNewTags': ', {count} new tags',
-    'settings.syncError': 'Sync error: {error}',
+    // Library sync (main panel)
+    'sync.section': 'Library sync',
+    'sync.desc': 'Re-scan playtime and achievements for every game and update tags.',
+    'sync.button': 'Sync Entire Library',
+    'sync.buttonBusy': 'Syncing...',
+    'sync.starting': 'Starting sync...',
+    'sync.progress': 'Syncing: {current}/{total} games',
+    'sync.complete': 'Sync complete! Library updated.',
+    'sync.completeDetailed': 'Sync complete! {synced} games updated{newTags}.',
+    'sync.completeNewTags': ', {count} new tags',
+    'sync.error': 'Sync error: {error}',
     // Settings - Badge Position
     'settings.badgePosition': 'Game page badge',
     'settings.horizontal': 'Horizontal',
@@ -185,14 +189,13 @@ const en = {
     // Settings page / panel
     'settings.back': 'Back',
     'settings.openSettings': 'Settings',
-    'settings.syncSection': 'Library sync',
-    'settings.syncDesc': 'Re-scan playtime and achievements for every game and update tags.',
+    'settings.notificationsSection': 'Notifications',
     'settings.syncNotifications': 'Sync notifications',
-    'settings.syncNotificationsDesc': 'Pop-ups from the automatic sync at startup. Success pop-ups never show while a game is running. A sync you start here always reports back.',
+    'settings.syncNotificationsDesc': 'Pop-ups from the automatic sync at startup. Success pop-ups never show while a game is running. A sync you start from the main page always reports back.',
     'settings.syncNotificationsAll': 'All',
     'settings.syncNotificationsErrors': 'Errors only',
     'settings.syncNotificationsOff': 'Off',
-    'notify.startupSyncFailed': 'Automatic sync failed: {error}. Use Sync Entire Library in Settings to try again.',
+    'notify.startupSyncFailed': 'Automatic sync failed: {error}. Use Sync Entire Library on the plugin\'s main page to try again.',
     'settings.badgePositionDesc': 'Where the tag badge sits on a game\'s page banner.',
     'settings.customizeTagsDesc': 'Rename tags and pick their colours. Colours are used in the lists, on the game page and on library tiles.',
     // Settings - Library tile badges
@@ -266,15 +269,17 @@ const ptBR = {
     'settings.library': 'Biblioteca',
     'settings.noGamesFound': 'Nenhum jogo encontrado',
     'settings.manual': 'manual',
-    // Settings - Sync
-    'settings.syncLibrary': 'Sincronizar Biblioteca Inteira',
-    'settings.syncing': 'Sincronizando...',
-    'settings.syncStarting': 'Iniciando sincronização...',
-    'settings.syncingProgress': 'Sincronizando: {current}/{total} jogos',
-    'settings.syncComplete': 'Sincronização concluída! Biblioteca atualizada.',
-    'settings.syncCompleteDetailed': 'Sincronização concluída! {synced} jogos atualizados{newTags}.',
-    'settings.syncCompleteNewTags': ', {count} novas tags',
-    'settings.syncError': 'Erro na sincronização: {error}',
+    // Library sync (main panel)
+    'sync.section': 'Sincronização da biblioteca',
+    'sync.desc': 'Verifica novamente o tempo de jogo e as conquistas de todos os jogos e atualiza as tags.',
+    'sync.button': 'Sincronizar Biblioteca Inteira',
+    'sync.buttonBusy': 'Sincronizando...',
+    'sync.starting': 'Iniciando sincronização...',
+    'sync.progress': 'Sincronizando: {current}/{total} jogos',
+    'sync.complete': 'Sincronização concluída! Biblioteca atualizada.',
+    'sync.completeDetailed': 'Sincronização concluída! {synced} jogos atualizados{newTags}.',
+    'sync.completeNewTags': ', {count} novas tags',
+    'sync.error': 'Erro na sincronização: {error}',
     // Settings - Badge Position
     'settings.badgePosition': 'Badge da página do jogo',
     'settings.horizontal': 'Horizontal',
@@ -297,14 +302,13 @@ const ptBR = {
     // Settings page / panel
     'settings.back': 'Voltar',
     'settings.openSettings': 'Configurações',
-    'settings.syncSection': 'Sincronização da biblioteca',
-    'settings.syncDesc': 'Verifica novamente o tempo de jogo e as conquistas de todos os jogos e atualiza as tags.',
+    'settings.notificationsSection': 'Notificações',
     'settings.syncNotifications': 'Notificações de sincronização',
-    'settings.syncNotificationsDesc': 'Pop-ups da sincronização automática ao iniciar. Pop-ups de sucesso nunca aparecem durante um jogo. Uma sincronização iniciada aqui sempre mostra o resultado.',
+    'settings.syncNotificationsDesc': 'Pop-ups da sincronização automática ao iniciar. Pop-ups de sucesso nunca aparecem durante um jogo. Uma sincronização iniciada na página principal sempre mostra o resultado.',
     'settings.syncNotificationsAll': 'Todas',
     'settings.syncNotificationsErrors': 'Somente erros',
     'settings.syncNotificationsOff': 'Desativadas',
-    'notify.startupSyncFailed': 'A sincronização automática falhou: {error}. Use "Sincronizar Biblioteca Inteira" nas Configurações para tentar novamente.',
+    'notify.startupSyncFailed': 'A sincronização automática falhou: {error}. Use "Sincronizar Biblioteca Inteira" na página principal do plugin para tentar novamente.',
     'settings.badgePositionDesc': 'Onde o badge da tag aparece no banner da página do jogo.',
     'settings.customizeTagsDesc': 'Renomeie as tags e escolha suas cores. As cores são usadas nas listas, na página do jogo e nos blocos da biblioteca.',
     // Settings - Library tile badges
@@ -381,7 +385,7 @@ function detectSystemLanguage() {
 }
 let currentLanguage = detectSystemLanguage();
 let initialized = false;
-const listeners$1 = new Set();
+const listeners$2 = new Set();
 async function resolveLanguage() {
     try {
         const result = await call('get_settings');
@@ -394,7 +398,7 @@ async function resolveLanguage() {
 }
 async function refreshLanguage() {
     currentLanguage = await resolveLanguage();
-    listeners$1.forEach((listener) => listener());
+    listeners$2.forEach((listener) => listener());
 }
 function ensureInitialized() {
     if (initialized) {
@@ -417,8 +421,8 @@ function translate(key, vars) {
  */
 function subscribeToLanguage(listener) {
     ensureInitialized();
-    listeners$1.add(listener);
-    return () => listeners$1.delete(listener);
+    listeners$2.add(listener);
+    return () => listeners$2.delete(listener);
 }
 /**
  * React hook giving components a `t()` function that re-renders when the
@@ -596,14 +600,14 @@ let state = {
     tagsLoaded: false,
     colors: {},
 };
-const listeners = new Set();
+const listeners$1 = new Set();
 let lastTagFetch = 0;
 let tagFetchInFlight = false;
 let tagRefreshTimer = null;
 let active = false;
 function emit(next) {
     state = next;
-    listeners.forEach((listener) => {
+    listeners$1.forEach((listener) => {
         try {
             listener();
         }
@@ -616,9 +620,9 @@ function getLibraryBadgeState() {
     return state;
 }
 function subscribeLibraryBadges(listener) {
-    listeners.add(listener);
+    listeners$1.add(listener);
     return () => {
-        listeners.delete(listener);
+        listeners$1.delete(listener);
     };
 }
 async function loadSettings() {
@@ -1348,91 +1352,150 @@ async function notify(kind, body, duration = 5000) {
 }
 
 /**
- * Library sync state shared by the main panel (status line) and the
- * settings page (Sync button). Polls the backend so a sync started from
- * anywhere (startup auto-sync, the other view) is reflected.
+ * Library sync state for the main panel (Sync button + status line).
+ *
+ * A sync started with the button runs in module scope, not in the
+ * component: closing the Quick Access panel unmounts the plugin, but the
+ * sync keeps going and a reopened panel picks its progress up again (and
+ * can't start a second one on top of it). Syncs started elsewhere (the
+ * automatic startup sync) are followed by polling the backend while the
+ * panel is mounted.
  */
+const POLL_IDLE_MS = 2000;
+const POLL_SYNCING_MS = 500;
+let manual = { running: false, message: null, tick: 0 };
+let clearMessageTimer = null;
+const listeners = new Set();
+function setManual(patch) {
+    manual = { ...manual, ...patch };
+    listeners.forEach((listener) => listener());
+}
+function showManualMessage(message, clearAfterMs) {
+    if (clearMessageTimer)
+        clearTimeout(clearMessageTimer);
+    clearMessageTimer = clearAfterMs
+        ? setTimeout(() => {
+            clearMessageTimer = null;
+            setManual({ message: null });
+        }, clearAfterMs)
+        : null;
+    setManual({ message });
+}
+async function startManualSync() {
+    if (manual.running)
+        return;
+    setManual({ running: true });
+    showManualMessage(translate('sync.starting'));
+    try {
+        const result = await syncLibraryProgressive((current, total) => {
+            const refresh = current % 10 === 0 || current === total;
+            showManualMessage(translate('sync.progress', { current, total }));
+            if (refresh)
+                setManual({ tick: manual.tick + 1 });
+        });
+        if (!result.success) {
+            throw new Error(result.error || 'Unknown');
+        }
+        const newTagsSuffix = result.new_tags ? translate('sync.completeNewTags', { count: result.new_tags }) : '';
+        const msg = translate('sync.completeDetailed', { synced: result.synced ?? 0, newTags: newTagsSuffix });
+        showManualMessage(msg, 10000);
+        // Started from the plugin UI, so always report back (even with
+        // notifications Off) - the panel may be closed by the time it ends.
+        notify('manual', msg);
+    }
+    catch (err) {
+        const msg = translate('sync.error', { error: err?.message || 'Unknown' });
+        showManualMessage(msg, 15000);
+        notify('manual', msg);
+    }
+    finally {
+        setManual({ running: false, tick: manual.tick + 1 });
+    }
+}
+// --- hook ---------------------------------------------------------------
 function useLibrarySync(onProgressUpdate) {
-    const { t } = useTranslation();
-    const [syncing, setSyncing] = SP_REACT.useState(false);
-    const [message, setMessage] = SP_REACT.useState(null);
-    // Set while a sync started from this view is running - its own
-    // completion message wins over the poller's generic one.
-    const localSyncRef = SP_REACT.useRef(false);
+    const [manualState, setManualState] = SP_REACT.useState(manual);
+    // Progress of a sync this panel didn't start (startup auto-sync)
+    const [backendSyncing, setBackendSyncing] = SP_REACT.useState(false);
+    const [backendMessage, setBackendMessage] = SP_REACT.useState(null);
     const onUpdateRef = SP_REACT.useRef(onProgressUpdate);
     onUpdateRef.current = onProgressUpdate;
-    const clearTimerRef = SP_REACT.useRef(null);
-    const showTransient = (msg, ms) => {
-        setMessage(msg);
-        if (clearTimerRef.current)
-            clearTimeout(clearTimerRef.current);
-        clearTimerRef.current = setTimeout(() => setMessage(null), ms);
-    };
-    SP_REACT.useEffect(() => () => {
-        if (clearTimerRef.current)
-            clearTimeout(clearTimerRef.current);
-    }, []);
     SP_REACT.useEffect(() => {
-        const pollSync = async () => {
-            if (localSyncRef.current)
-                return;
-            try {
-                const res = await call('get_sync_progress');
-                if (res.success && res.syncing) {
-                    setMessage(t('settings.syncingProgress', { current: res.current, total: res.total }));
-                    setSyncing(true);
-                }
-                else if (res.success && !res.syncing && syncing) {
-                    setSyncing(false);
-                    onUpdateRef.current?.();
-                    if (res.total && res.total > 0) {
-                        showTransient(t('settings.syncComplete'), 5000);
-                    }
-                    else {
-                        setMessage(null);
-                    }
-                }
-            }
-            catch (err) { }
+        const listener = () => setManualState(manual);
+        listeners.add(listener);
+        listener();
+        return () => {
+            listeners.delete(listener);
         };
-        const interval = setInterval(pollSync, syncing ? 500 : 2000);
-        return () => clearInterval(interval);
-    }, [syncing]);
-    const syncLibrary = async () => {
-        localSyncRef.current = true;
-        try {
-            setSyncing(true);
-            setMessage(t('settings.syncStarting'));
-            const result = await syncLibraryProgressive((current, total) => {
-                setMessage(t('settings.syncingProgress', { current, total }));
-                if (current % 10 === 0 || current === total) {
-                    onUpdateRef.current?.();
-                }
-            });
+    }, []);
+    // Refresh the tag lists while a manual sync runs and when it ends
+    SP_REACT.useEffect(() => {
+        if (manualState.tick > 0)
             onUpdateRef.current?.();
-            if (!result.success) {
-                throw new Error(result.error || 'Unknown');
+    }, [manualState.tick]);
+    SP_REACT.useEffect(() => {
+        let cancelled = false;
+        let timer = null;
+        let wasSyncing = false;
+        let lastTotal = 0;
+        let clearTimer = null;
+        const poll = async () => {
+            let syncing = wasSyncing;
+            if (!manual.running) {
+                try {
+                    const res = await call('get_sync_progress');
+                    if (cancelled)
+                        return;
+                    if (res.success && res.syncing) {
+                        syncing = true;
+                        lastTotal = res.total;
+                        if (clearTimer)
+                            clearTimeout(clearTimer);
+                        setBackendSyncing(true);
+                        setBackendMessage(translate('sync.progress', { current: res.current, total: res.total }));
+                    }
+                    else if (res.success && wasSyncing) {
+                        syncing = false;
+                        setBackendSyncing(false);
+                        onUpdateRef.current?.();
+                        // The backend resets total to 0 at the end, so use the last one seen
+                        if (lastTotal > 0) {
+                            setBackendMessage(translate('sync.complete'));
+                            clearTimer = setTimeout(() => setBackendMessage(null), 5000);
+                        }
+                        else {
+                            setBackendMessage(null);
+                        }
+                    }
+                }
+                catch (err) {
+                    // backend not ready - try again next tick
+                }
             }
-            const newTagsSuffix = result.new_tags
-                ? t('settings.syncCompleteNewTags', { count: result.new_tags })
-                : '';
-            const msg = t('settings.syncCompleteDetailed', { synced: result.synced ?? 0, newTags: newTagsSuffix });
-            showTransient(msg, 10000);
-            // Started from the plugin UI, so always report back (even with
-            // notifications Off) - the panel may be closed by the time it ends.
-            notify('manual', msg);
-        }
-        catch (err) {
-            const msg = t('settings.syncError', { error: err?.message || 'Unknown' });
-            setMessage(msg);
-            notify('manual', msg);
-        }
-        finally {
-            localSyncRef.current = false;
-            setSyncing(false);
-        }
+            else if (wasSyncing) {
+                // Our own sync took over the status line
+                syncing = false;
+                setBackendSyncing(false);
+                setBackendMessage(null);
+            }
+            wasSyncing = syncing;
+            if (!cancelled)
+                timer = setTimeout(poll, syncing ? POLL_SYNCING_MS : POLL_IDLE_MS);
+        };
+        poll();
+        return () => {
+            cancelled = true;
+            if (timer)
+                clearTimeout(timer);
+            if (clearTimer)
+                clearTimeout(clearTimer);
+        };
+    }, []);
+    return {
+        syncing: manualState.running || backendSyncing,
+        message: manualState.running || manualState.message ? manualState.message : backendMessage,
+        syncLibrary: startManualSync,
     };
-    return { syncing, message, syncLibrary };
 }
 
 /**
@@ -1479,7 +1542,6 @@ function focusFirstButton(el, scrollToTop = false) {
 const SettingsPanel = ({ onBack, focusBack }) => {
     const { t } = useTranslation();
     const { settings, updateSettings: update } = usePluginSettings();
-    const { syncing, message, syncLibrary } = useLibrarySync();
     const containerRef = SP_REACT.useRef(null);
     // The Settings button that had controller focus is gone now; hand focus
     // to Back and start the view at the top.
@@ -1530,10 +1592,7 @@ const SettingsPanel = ({ onBack, focusBack }) => {
                     SP_REACT.createElement("div", { style: styles$2.backButton },
                         SP_REACT.createElement(FaArrowLeft, null),
                         SP_REACT.createElement("span", null, t('settings.back')))))),
-        SP_REACT.createElement(DFL.PanelSection, { title: t('settings.syncSection') },
-            message && SP_REACT.createElement("div", { style: styles$2.message }, message),
-            SP_REACT.createElement(DFL.PanelSectionRow, null,
-                SP_REACT.createElement(DFL.ButtonItem, { layout: "below", description: t('settings.syncDesc'), onClick: syncLibrary, disabled: syncing }, syncing ? t('settings.syncing') : t('settings.syncLibrary'))),
+        SP_REACT.createElement(DFL.PanelSection, { title: t('settings.notificationsSection') },
             SP_REACT.createElement(DFL.PanelSectionRow, null,
                 SP_REACT.createElement("div", { style: styles$2.syncNotificationsRow },
                     SP_REACT.createElement("div", { style: styles$2.fieldLabel }, t('settings.syncNotifications')),
@@ -1584,10 +1643,9 @@ const SettingsPanel = ({ onBack, focusBack }) => {
 const styles$2 = {
     container: { paddingTop: '8px', color: 'white', width: '100%', maxWidth: '100%', overflow: 'hidden' },
     backButton: { display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' },
-    message: { padding: '12px', backgroundColor: 'rgba(102, 126, 234, 0.2)', borderRadius: '4px', marginBottom: '8px', fontSize: '14px', border: '1px solid rgba(102, 126, 234, 0.5)' },
     description: { fontSize: '12px', color: '#8b929a', marginBottom: '8px', lineHeight: '1.4' },
     fullWidth: { width: '100%' },
-    syncNotificationsRow: { width: '100%', marginTop: '8px' },
+    syncNotificationsRow: { width: '100%' },
     fieldLabel: { fontSize: '14px', marginBottom: '4px' },
     dropdownRow: { width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between' },
     avoidOverlapRow: { width: '100%', marginTop: '12px', paddingTop: '12px', borderTop: '1px solid #333' },
@@ -1600,9 +1658,10 @@ const styles$2 = {
 
 /**
  * MainPanel - the Quick Access panel content.
- * Kept deliberately clean: the tag lists, a Settings button and the About
- * info. The Settings button swaps the whole panel for SettingsPanel (still
- * inside the sidebar); its Back button returns here.
+ * Kept deliberately clean: the tag lists, the library sync (button and
+ * progress), a Settings button and the About info. The Settings button
+ * swaps the whole panel for SettingsPanel (still inside the sidebar); its
+ * Back button returns here.
  */
 const BACKLOG_COLOR = '#888';
 const TAG_LABEL_KEY = {
@@ -1673,9 +1732,9 @@ const TagListsPanel = ({ onOpenSettings, focusSettings }) => {
         }
         catch (err) { }
     };
-    // Read-only here: shows sync progress started from the settings page or
-    // the automatic startup sync, and refreshes the lists as tags change.
-    const { message } = useLibrarySync(smartUpdateUI);
+    // Sync button + progress; also follows the automatic startup sync and
+    // refreshes the lists as tags change.
+    const { syncing, message, syncLibrary } = useLibrarySync(smartUpdateUI);
     SP_REACT.useEffect(() => {
         if (containerRef.current && !focusSettings) {
             containerRef.current.scrollIntoView({ block: 'start' });
@@ -1706,7 +1765,6 @@ const TagListsPanel = ({ onOpenSettings, focusSettings }) => {
         return acc;
     }, {});
     return (SP_REACT.createElement("div", { ref: containerRef, style: styles$1.container },
-        message && SP_REACT.createElement("div", { style: styles$1.message }, message),
         SP_REACT.createElement("div", { style: styles$1.section },
             SP_REACT.createElement("h3", { style: styles$1.sectionTitle },
                 t('settings.library'),
@@ -1740,24 +1798,31 @@ const TagListsPanel = ({ onOpenSettings, focusSettings }) => {
                                     game.is_manual && SP_REACT.createElement("span", { style: styles$1.manualBadge }, t('settings.manual')))))))),
                     isExpanded && games.length === 0 && !loadingBacklog && SP_REACT.createElement("div", { style: styles$1.emptySection }, t('settings.noGamesFound'))));
             }))),
+        SP_REACT.createElement(DFL.PanelSection, { title: t('sync.section') },
+            message && SP_REACT.createElement("div", { style: styles$1.message }, message),
+            SP_REACT.createElement(DFL.PanelSectionRow, null,
+                SP_REACT.createElement(DFL.ButtonItem, { layout: "below", description: t('sync.desc'), onClick: syncLibrary, disabled: syncing },
+                    SP_REACT.createElement("div", { style: styles$1.iconButton },
+                        SP_REACT.createElement(FaSync, null),
+                        SP_REACT.createElement("span", null, syncing ? t('sync.buttonBusy') : t('sync.button')))))),
         SP_REACT.createElement(DFL.PanelSection, null,
             SP_REACT.createElement(DFL.PanelSectionRow, null,
                 SP_REACT.createElement("div", { ref: settingsButtonRef, style: { width: '100%' } },
                     SP_REACT.createElement(DFL.ButtonItem, { layout: "below", onClick: onOpenSettings },
-                        SP_REACT.createElement("div", { style: styles$1.settingsButton },
+                        SP_REACT.createElement("div", { style: styles$1.iconButton },
                             SP_REACT.createElement(FaCog, null),
                             SP_REACT.createElement("span", null, t('settings.openSettings'))))))),
         SP_REACT.createElement(DFL.PanelSection, { title: t('settings.about') },
             SP_REACT.createElement("div", { style: styles$1.about },
                 SP_REACT.createElement("p", { style: styles$1.aboutLine }, "Deck Progress Tracker"),
-                SP_REACT.createElement("p", { style: styles$1.aboutLine }, "1.5.0"),
+                SP_REACT.createElement("p", { style: styles$1.aboutLine }, "1.5.2"),
                 SP_REACT.createElement("p", { style: styles$1.aboutLine }, t('settings.aboutDataSource'))),
             SP_REACT.createElement(DFL.PanelSectionRow, null,
                 SP_REACT.createElement(DFL.ButtonItem, { layout: "below", onClick: () => DFL.Navigation.NavigateToExternalWeb('https://patreon.com/DeckProgressTracker') }, t('settings.supportPatreon'))))));
 };
 const styles$1 = {
     container: { paddingTop: '16px', color: 'white', width: '100%', maxWidth: '100%', overflow: 'hidden' },
-    message: { padding: '12px', backgroundColor: 'rgba(102, 126, 234, 0.2)', borderRadius: '4px', marginBottom: '16px', fontSize: '14px', border: '1px solid rgba(102, 126, 234, 0.5)', marginLeft: '16px', marginRight: '16px' },
+    message: { padding: '12px', backgroundColor: 'rgba(102, 126, 234, 0.2)', borderRadius: '4px', marginBottom: '8px', fontSize: '14px', border: '1px solid rgba(102, 126, 234, 0.5)' },
     section: { marginBottom: '8px', paddingBottom: '16px', borderBottom: '1px solid #333', width: '100%', overflow: 'hidden' },
     sectionTitle: { margin: '0 0 12px 0', fontSize: '16px', fontWeight: 'bold', color: '#aaa', marginLeft: '16px' },
     gameItemContent: { display: 'flex', alignItems: 'center', gap: '8px', width: '100%', overflow: 'hidden', flexFlow: 'row nowrap' },
@@ -1772,7 +1837,7 @@ const styles$1 = {
     expandIcon: { fontSize: '18px', color: '#888', width: '20px', textAlign: 'center' },
     emptySection: { padding: '12px 16px', color: '#666', fontSize: '13px', fontStyle: 'italic' },
     tagDescription: { padding: '8px 16px 12px 16px', color: '#999', fontSize: '12px', fontStyle: 'italic', borderBottom: '1px solid #2a2a2a' },
-    settingsButton: { display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' },
+    iconButton: { display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' },
     about: { fontSize: '14px', lineHeight: '1.6', marginLeft: '16px', marginRight: '16px' },
     aboutLine: { margin: '8px 0', color: '#ccc' },
 };
@@ -2915,9 +2980,9 @@ function startStartupSync(isDisposed) {
         sleep,
         isDisposed,
         log: (message) => logFrontend('info', message),
-        successMessage: (result) => translate('settings.syncCompleteDetailed', {
+        successMessage: (result) => translate('sync.completeDetailed', {
             synced: result.synced ?? 0,
-            newTags: result.new_tags ? translate('settings.syncCompleteNewTags', { count: result.new_tags }) : '',
+            newTags: result.new_tags ? translate('sync.completeNewTags', { count: result.new_tags }) : '',
         }),
         failureMessage: (error) => translate('notify.startupSyncFailed', { error }),
     })
